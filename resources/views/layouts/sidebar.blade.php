@@ -4,7 +4,7 @@
     <div class="m-header">
       <a href="../dashboard/index.html" class="b-brand text-primary">
         <!-- ========   Change your logo from here   ============ -->
-        <img src="../assets/images/logo-dark.svg" alt="" class="logo logo-lg" />
+        <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="" class="logo logo-lg" />
       </a>
     </div>
     <div class="navbar-content">
@@ -14,19 +14,22 @@
           <i class="ti ti-dashboard"></i>
         </li>
         <li class="pc-item">
-          <a href="../dashboard/index.html" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Default</span></a
-          >
+          <a href="{{ route('dashboard') }}" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a>
+        </li>
+        <li class="pc-item">
+          <a href="#" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Akun</span></a>
         </li>
 
         <li class="pc-item pc-caption">
-          <label>Elements</label>
+          <label>Kepegawaian</label>
           <i class="ti ti-apps"></i>
         </li>
         <li class="pc-item">
-          <a href="../elements/bc_typography.html" class="pc-link">
+          <a href="{{ route('pegawai.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-typography"></i></span>
-            <span class="pc-mtext">Typography</span>
+            <span class="pc-mtext">Pegawai</span>
           </a>
         </li>
         <li class="pc-item">
@@ -60,9 +63,21 @@
         </li>
 
         <li class="pc-item pc-caption">
-          <label>Other</label>
+          <label>Master Data</label>
           <i class="ti ti-brand-chrome"></i>
         </li>
+        {{-- master data pegawai --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Pegawai</span
+            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
+          ></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('kategori.index') }}">Kategori</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li>
+          </ul>
+        </li>
+        {{-- end master data pegawai --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
             ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Menu levels</span
@@ -116,13 +131,13 @@
         </li>
 
       </ul>
-      <div class="pc-navbar-card bg-primary rounded">
+      {{-- <div class="pc-navbar-card bg-primary rounded">
         <h4 class="text-white">Explore full code</h4>
         <p class="text-white opacity-75">Buy now to get full access of code files</p>
         <a href="https://codedthemes.com/item/berry-bootstrap-5-admin-template/" target="_blank" class="btn btn-light text-primary">
           Buy Now
         </a>
-      </div>
+      </div> --}}
       <div class="w-100 text-center">
         <div class="badge theme-version badge rounded-pill bg-light text-dark f-12"></div>
       </div>
