@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Tambah Akun')
+@section('title', 'Edit Akun')
 @push('link')
   {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -114,21 +114,22 @@
                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
                                 <i class="bi bi-person-plus-fill fs-4"></i>
                             </div>
-                            <h4 class="fw-bold">Buat Akun Baru</h4>
+                            <h4 class="fw-bold">Edit Akun</h4>
                             <p class="text-muted small">Isi formulir di bawah untuk mendaftarkan user baru.</p>
                         </div>
 
-                        <form id="form-tambah-akun" method="POST" action="{{ route('simpan-akun', $pegawai->id) }}">
+                        <form id="form-tambah-akun" method="POST" action="{{ route('user.update', $user->id) }}">
                           @csrf
+                          @method('PUT')
                             <div class="mb-3">
                                 {{-- <label for="nama" class="form-label">Nama</label> --}}
                                 
-                                <input type="hidden" id="nama" name="name" class="form-control" value="{{ $pegawai->nama }}">
-                                <input type="hidden" id="updated_by" name="updated_by" class="form-control" value="{{ $pegawai->nama }}">
+                                <input type="hidden" id="nama" name="name" class="form-control" value="{{ $user->name }}">
+                                <input type="hidden" id="updated_by" name="updated_by" class="form-control" value="{{ $user->name }}">
                                 <label for="no_hp" class="form-label">Nomor HP</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0 text-muted" style="border-radius: 10px 0 0 10px;">+62</span>
-                                    <input type="tel" name="no_hp" class="form-control" id="no_hp" placeholder="812-3456-7890" style="border-radius: 0 10px 10px 0; border-left: none;">
+                                    <input type="tel" name="no_hp" class="form-control" id="no_hp" placeholder="812-3456-7890" style="border-radius: 0 10px 10px 0; border-left: none;" value="{{ old('no_hp', $user->no_hp) }}">
                                 </div>
                             </div>
 
@@ -136,22 +137,22 @@
                                 <label for="role" class="form-label">Role Pengguna</label>
                                 <select class="form-select" id="role" name="role">
                                     <option selected disabled>Pilih Role...</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Guru">Guru</option>
+                                    <option value="Admin" {{ old('role', $user->role) == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="Guru" {{ old('role', $user->role) == 'Guru' ? 'selected' : '' }}>Guru</option>
                                 </select>
                             </div>
 
                             <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
+                                <label for="password" class="form-label">Password Baru (Opsional)</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Isi jika ingin mengubah">
                                     <span class="input-group-text" onclick="togglePassword('password', 'icon-pass')">
                                         <i class="bi bi-eye-slash" id="icon-pass"></i>
                                     </span>
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="confirmPassword" class="form-label">Konfirmasi Password</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="confirmPassword" placeholder="Ulangi password">
@@ -171,8 +172,8 @@
                                     <!-- Input tersembunyi untuk nilai default 'nonaktif' -->
                                     <input type="hidden" name="status" value="Nonaktif">
                                     <!-- Switch yang akan mengirimkan 'aktif' jika dicentang -->
-                                    <input class="form-check-input mt-0" type="checkbox" role="switch" id="statusSwitch" name="status" value="Aktif" checked>
-                                    <span class="status-text text-success" id="statusLabel">Aktif</span>
+                                    <input class="form-check-input mt-0" type="checkbox" role="switch" id="statusSwitch" name="status" value="Aktif" {{ old('status', $user->status) == 'Aktif' ? 'checked' : '' }}>
+                                    <span class="status-text {{ $user->status == 'Aktif' ? 'text-success' : 'text-danger' }}" id="statusLabel">{{ $user->status }}</span>
                                 </div>
                             </div>
 
@@ -214,11 +215,11 @@
 
       statusSwitch.addEventListener('change', function() {
           if (this.checked) {
-              statusLabel.textContent = "Aktif";
+              statusLabel.textContent = "Aktif"; // Perhatikan, value di form adalah "Aktif"
               statusLabel.classList.remove("text-danger");
               statusLabel.classList.add("text-success");
           } else {
-              statusLabel.textContent = "Nonaktif";
+              statusLabel.textContent = "Nonaktif"; // Perhatikan, value di form adalah "Nonaktif"
               statusLabel.classList.remove("text-success");
               statusLabel.classList.add("text-danger");
           }

@@ -27,7 +27,8 @@ class UserSeeder extends Seeder
             'no_hp'               => '081234567890', // Nomor HP statis untuk Admin
             'email_verified_at'   => Carbon::now(),
             'password'            => Hash::make('password'), // Hash untuk 'password'
-            'role'                => 'admin',
+            'role'                => 'Admin',
+            'updated_by'          => 'Rian',
             'created_at'          => Carbon::now(),
             'updated_at'          => Carbon::now(),
         ]);
@@ -40,7 +41,8 @@ class UserSeeder extends Seeder
                 'no_hp'               => $faker->unique()->numerify('08##########'), // 10-12 digit unik
                 'email_verified_at'   => $faker->optional(0.8)->dateTimeThisYear(), // 80% kemungkinan terverifikasi
                 'password'            => Hash::make('password'), // Hash untuk 'password'
-                'role'                => 'guru',
+                'role'                => 'Guru',
+                'updated_by'          => 'Rian',
                 'created_at'          => Carbon::now(),
                 'updated_at'          => Carbon::now(),
             ]);

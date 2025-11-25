@@ -60,10 +60,10 @@
                                 </button>
                             </div>
                             @if($pegawai->user_id != null)
-                            <a href="{{ route('tambah-akun', $pegawai->id) }}" class="btn btn-success">
+                            <button class="btn btn-success" disabled>
                                 <i class="fas fa-pencil-alt me-1"></i>
-                                Edit Akun
-                            </a>
+                                Akun Sudah Dibuat
+                            </button>
                             @else
                             <a href="{{ route('tambah-akun', $pegawai->id) }}" class="btn btn-success">
                                 <i class="fas fa-pencil-alt me-1"></i>

@@ -17,6 +17,8 @@ Route::resource('/pegawai', PegawaiController::class);
 Route::resource('/user', UserController::class);
 Route::get('/user/create/{pegawai}', [UserController::class, 'create'])->name('tambah-akun');
 Route::post('/user/create/{pegawai}', [UserController::class, 'store'])->name('simpan-akun');
+// Route untuk update status user
+Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])->name('users.updateStatus');
 
 // Route::get('/users', [UserController::class, 'index'])->name('users');
 // Route::get('/tambah-akun', fn() => view('user.tambah-akun'))->name('tambah-akun');

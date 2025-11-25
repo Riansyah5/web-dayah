@@ -109,7 +109,7 @@
                 <i class="bi bi-plus-lg"></i> Add User
             </button>
         </div>
-{{ $users }}
+
         <div class="card card-modern mb-4">
             <div class="card-body p-3">
                 <div class="row g-3">
@@ -161,13 +161,27 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="badge-soft-primary fw-normal"><i class="bi bi-shield-lock me-1"></i>{{ $user->role }}</span></td>
-                                <td><span class="badge-soft-success fw-normal">{{ $user->status }}</span></td>
+                                <td><span class="badge-soft-primary fw-normal">{{ $user->role }}</span></td>
+                                <td>
+                                    <div class="{{ $user->status == 'Aktif' ? 'badge-soft-success' : 'badge-soft-danger' }}" id="badgeStatus{{ $user->id }}">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input status-toggle" type="checkbox" role="switch" id="statusSwitch{{ $user->id }}" data-user-id="{{ $user->id }}" {{ $user->status == 'Aktif' ? 'checked' : '' }}>
+                                            <label class="form-check-label status-label" for="statusSwitch{{ $user->id }}">{{ ucfirst($user->status) }}</label>
+                                        </div>
+                                    </div>
+                                    
+                                </td>
                                 <td class="text-muted">{{ $user->created_at }}</td>
                                 <td class="text-muted">{{ $user->updated_by }}</td>
                                 <td class="text-end pe-4">
-                                    <a href="#" class="btn btn-icon btn-light text-primary me-2"><i class="bi bi-pencil-square"></i></a>
-                                    <a href="#" class="btn btn-icon btn-light text-danger"><i class="bi bi-trash"></i></a>
+                                    <div class="d-flex justify-content-end">
+                                        <a href="{{ route('user.edit', $user->id) }}" class="btn btn-icon btn-light text-primary me-2"><i class="bi bi-pencil-square"></i></a>
+                                        <form action="{{ route('user.destroy', $user->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-icon btn-light text-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                           @endforeach
@@ -233,7 +247,20 @@
 
 @push('scripts')
   {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+    {{-- sweetAlert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (session('success'))
     <script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+    });
+    </script>
+    @endif
+
+    <script>
+      // Script untuk filter
       document.addEventListener('DOMContentLoaded', function() {
           // Ambil elemen input
           const searchInput = document.getElementById('searchInput');
@@ -273,6 +300,58 @@
           searchInput.addEventListener('keyup', filterTable);
           roleFilter.addEventListener('change', filterTable);
           statusFilter.addEventListener('change', filterTable);
+
+          // Script untuk update status
+          const statusToggles = document.querySelectorAll('.status-toggle');
+          statusToggles.forEach(toggle => {
+              toggle.addEventListener('change', function() {
+                  const userId = this.dataset.userId;
+                  const newStatus = this.checked ? 'Aktif' : 'Nonaktif';
+                  const statusLabel = this.nextElementSibling; // Ambil elemen label
+                  const badgeWrapper = document.getElementById(`badgeStatus${userId}`);
+
+                  // Update label text
+                  statusLabel.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+
+                  // Update badge class
+                  if (this.checked) {
+                      badgeWrapper.classList.replace('badge-soft-danger', 'badge-soft-success');
+                  } else {
+                      badgeWrapper.classList.replace('badge-soft-success', 'badge-soft-danger');
+                  }
+
+                  // Kirim request ke server
+                  fetch(`/users/${userId}/status`, {
+                      method: 'PATCH',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRF-TOKEN': '{{ csrf_token() }}' // Penting untuk keamanan Laravel
+                      },
+                      body: JSON.stringify({
+                          status: newStatus
+                      })
+                  })
+                  .then(response => {
+                      if (!response.ok) {
+                          // Jika gagal, kembalikan toggle ke posisi semula
+                          this.checked = !this.checked;
+                          statusLabel.textContent = this.checked ? 'Aktif' : 'Nonaktif';
+                          // Kembalikan juga class badge
+                          if (this.checked) {
+                            badgeWrapper.classList.replace('badge-soft-danger', 'badge-soft-success');
+                          } else {
+                            badgeWrapper.classList.replace('badge-soft-success', 'badge-soft-danger');
+                          }
+                          alert('Gagal memperbarui status.');
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      console.log(data.message); // Tampilkan pesan sukses di console
+                      // Anda bisa menambahkan notifikasi toast di sini
+                  }).catch(error => console.error('Error:', error));
+              });
+          });
       });
     </script>
 @endpush

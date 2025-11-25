@@ -78,6 +78,18 @@
           </ul>
         </li>
         {{-- end master data pegawai --}}
+        {{-- master data User --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Akun</span
+            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
+          ></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('user.index') }}">Manajemen Akun</a></li>
+            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li> --}}
+          </ul>
+        </li>
+        {{-- end master data User --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
             ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Menu levels</span

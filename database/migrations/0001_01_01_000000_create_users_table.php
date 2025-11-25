@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('no_hp')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'guru'])->default('guru');
-            $table->enum('status', ['aktif', 'nonaktif'])->nullable()->default('aktif');
+            $table->enum('role', ['Admin', 'Guru'])->default('Guru');
+            $table->enum('status', ['Aktif', 'Nonaktif'])->nullable()->default('Aktif');
             $table->string('updated_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
