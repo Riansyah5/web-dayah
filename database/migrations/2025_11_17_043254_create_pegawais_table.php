@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pegawais', function (Blueprint $table) {
             // Id: Kunci utama (primary key) auto-increment
             $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->nullable()->constrained('users')->onDelete('set null');
 
             // Nik: string 16 karakter, dan unik (tidak boleh ada yang sama)
             $table->string('nik', 16)->unique();

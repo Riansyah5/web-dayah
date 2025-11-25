@@ -34,7 +34,8 @@
                 <div class="card shadow border-0 sticky-top " style="top: 1.5rem;">
                     <div class="card-body text-center">
                         <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
-                            <i class="fas fa-user fa-3x"></i>
+                            {{-- <i class="fas fa-user fa-3x"></i> --}}
+                            <img src="https://ui-avatars.com/api/?name={{ $pegawai->nama }}&background=random" alt="Avatar" class="avatar me-3 shadow-sm rounded-circle">
                             </div>
                         
                         <h4 class="mb-1 text-dark-emphasis">{{ $pegawai->nama }}</h4>
@@ -46,6 +47,7 @@
                                 <i class="fas fa-pencil-alt me-1"></i>
                                 Edit Data Pegawai
                             </a>
+                            
                             <div class="btn-group">
                                 <button type="button" class="btn btn-outline-secondary" id="copyBtn" title="Salin ke Clipboard">
                                     <i class="fas fa-copy"></i> Copy
@@ -57,12 +59,23 @@
                                     <i class="fas fa-print"></i> Print
                                 </button>
                             </div>
+                            @if($pegawai->user_id != null)
+                            <a href="{{ route('tambah-akun', $pegawai->id) }}" class="btn btn-success">
+                                <i class="fas fa-pencil-alt me-1"></i>
+                                Edit Akun
+                            </a>
+                            @else
+                            <a href="{{ route('tambah-akun', $pegawai->id) }}" class="btn btn-success">
+                                <i class="fas fa-pencil-alt me-1"></i>
+                                Buat Akun
+                            </a>
+                            @endif
                         </div>
                     </div>
                     <div class="card-footer border-0 text-center">
                         <span class="badge bg-success-subtle text-success-emphasis py-2 px-3">
                             <i class="fas fa-check-circle me-1"></i>
-                            Status: Pegawai Tetap
+                            Status: {{ $pegawai->status_pegawai }}
                         </span>
                     </div>
                 </div>
@@ -158,7 +171,18 @@
 @endsection
 
 @push('scripts')
-  <!-- Pustaka untuk generate PDF -->
+    {{-- sweetAlert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (session('success'))
+    <script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+    });
+    </script>
+    @endif
+    <!-- Pustaka untuk generate PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- Bootstrap JavaScript Libraries -->
@@ -168,11 +192,10 @@
       crossorigin="anonymous"
     ></script>
 
-    <script
+    {{-- <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-      crossorigin="anonymous"
-    ></script>
+      crossorigin="anonymous"></script> --}}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

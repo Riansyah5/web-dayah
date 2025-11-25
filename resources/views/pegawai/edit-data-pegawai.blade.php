@@ -19,7 +19,7 @@
     .form-label {
       font-weight: 600;
     }
-  </style>
+  </style> 
 @endpush
 @section('content') {{-- Memulai bagian konten utama --}}
 
