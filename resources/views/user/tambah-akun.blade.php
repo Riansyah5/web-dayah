@@ -121,15 +121,11 @@
                         <form id="form-tambah-akun" method="POST" action="{{ route('simpan-akun', $pegawai->id) }}">
                           @csrf
                             <div class="mb-3">
-                                {{-- <label for="nama" class="form-label">Nama</label> --}}
                                 
                                 <input type="hidden" id="nama" name="name" class="form-control" value="{{ $pegawai->nama }}">
                                 <input type="hidden" id="updated_by" name="updated_by" class="form-control" value="{{ $pegawai->nama }}">
-                                <label for="no_hp" class="form-label">Nomor HP</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0 text-muted" style="border-radius: 10px 0 0 10px;">+62</span>
-                                    <input type="tel" name="no_hp" class="form-control" id="no_hp" placeholder="812-3456-7890" style="border-radius: 0 10px 10px 0; border-left: none;">
-                                </div>
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" name="username" class="form-control" id="username" placeholder="masukkan username" value="{{ old('username') }}">
                             </div>
 
                             <div class="mb-3">

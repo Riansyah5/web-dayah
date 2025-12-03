@@ -119,16 +119,15 @@
                     <div class="col-md-3 ms-auto">
                         <select id="roleFilter" class="form-select border-0 bg-light py-2" style="border-radius: 10px;">
                             <option value="all" selected>All Roles</option>
-                            <option value="admin">Admin</option>
-                            <option value="editor">Editor</option>
-                            <option value="viewer">Viewer</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Guru">Guru</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <select id="statusFilter" class="form-select border-0 bg-light py-2" style="border-radius: 10px;">
                             <option value="all" selected>All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="Aktif">Aktif</option>
+                            <option value="Nonaktif">Nonaktif</option>
                         </select>
                     </div>
                 </div>
@@ -157,7 +156,7 @@
                                         <img src="https://ui-avatars.com/api/?name={{ $user->name }}&background=random" alt="Avatar" class="avatar me-3 shadow-sm">
                                         <div>
                                             <h6 class="mb-0 fw-semibold text-dark user-name">{{ $user->name }}</h6>
-                                            <small class="text-muted user-email">{{ $user->no_hp }}</small>
+                                            <small class="text-muted user-email">{{ $user->username }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -176,10 +175,10 @@
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end">
                                         <a href="{{ route('user.edit', $user->id) }}" class="btn btn-icon btn-light text-primary me-2"><i class="bi bi-pencil-square"></i></a>
-                                        <form action="{{ route('user.destroy', $user->id) }}" method="POST">
+                                        <form action="{{ route('user.destroy', $user->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-icon btn-light text-danger"><i class="bi bi-trash"></i></button>
+                                            <button type="submit" class="btn btn-icon btn-light text-danger delete-btn"><i class="bi bi-trash"></i></button>
                                         </form>
                                     </div>
                                 </td>
@@ -350,6 +349,32 @@
                       console.log(data.message); // Tampilkan pesan sukses di console
                       // Anda bisa menambahkan notifikasi toast di sini
                   }).catch(error => console.error('Error:', error));
+              });
+          });
+
+          // Script untuk konfirmasi hapus
+          const deleteButtons = document.querySelectorAll('.delete-btn');
+          deleteButtons.forEach(button => {
+              button.addEventListener('click', function(event) {
+                  event.preventDefault(); // Mencegah form submit secara langsung
+
+                  const form = this.closest('form');
+                  const userName = form.closest('tr').querySelector('.user-name').textContent.trim();
+
+                  Swal.fire({
+                      title: 'Anda yakin?',
+                      html: `Akun untuk "<b>${userName}</b>" akan dihapus secara permanen!`,
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#dc3545',
+                      cancelButtonColor: '#6c757d',
+                      confirmButtonText: 'Ya, hapus!',
+                      cancelButtonText: 'Batal'
+                  }).then((result) => {
+                      if (result.isConfirmed) {
+                          form.submit(); // Jika dikonfirmasi, submit form
+                      }
+                  });
               });
           });
       });

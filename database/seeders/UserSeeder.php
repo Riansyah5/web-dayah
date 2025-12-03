@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'id'                  => Str::ulid(),
             'name'                => 'Admin Utama',
-            'no_hp'               => '081234567890', // Nomor HP statis untuk Admin
+            'username'            => '081234567890', // Nomor HP statis untuk Admin
             'email_verified_at'   => Carbon::now(),
             'password'            => Hash::make('password'), // Hash untuk 'password'
             'role'                => 'Admin',
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
             DB::table('users')->insert([
                 'id'                  => Str::ulid(),
                 'name'                => $faker->name,
-                'no_hp'               => $faker->unique()->numerify('08##########'), // 10-12 digit unik
+                'username'            => $faker->unique()->numerify('08##########'), // 10-12 digit unik
                 'email_verified_at'   => $faker->optional(0.8)->dateTimeThisYear(), // 80% kemungkinan terverifikasi
                 'password'            => Hash::make('password'), // Hash untuk 'password'
                 'role'                => 'Guru',

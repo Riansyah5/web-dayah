@@ -20,8 +20,7 @@ Route::post('/user/create/{pegawai}', [UserController::class, 'store'])->name('s
 // Route untuk update status user
 Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])->name('users.updateStatus');
 
-// Route::get('/users', [UserController::class, 'index'])->name('users');
-// Route::get('/tambah-akun', fn() => view('user.tambah-akun'))->name('tambah-akun');
+
 
 
 

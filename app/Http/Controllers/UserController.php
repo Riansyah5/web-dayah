@@ -35,7 +35,7 @@ class UserController extends Controller
         // validasi request
         $request->validate([
             'name' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
+            'username' => 'required|string|max:20',
             'password' => 'required',
             'role' => 'required|in:Admin,Guru',
             'status' => 'required|in:Aktif,Nonaktif',
@@ -79,7 +79,7 @@ class UserController extends Controller
         // validasi request
         $request->validate([
             'name' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
+            'username' => 'required|string|max:20',
             'password' => 'nullable',
             'role' => 'required|in:Admin,Guru',
             'status' => 'required|in:Aktif,Nonaktif',
