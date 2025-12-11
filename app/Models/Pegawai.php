@@ -26,4 +26,8 @@ class Pegawai extends Model
     public function user(): BelongsTo {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function roomsAsWarden() {
+        return $this->hasMany(Room::class, 'warden_id', 'id');
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\AcademicYear;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share variabel $globalActiveYear ke SEMUA view blade
+        // Kita pakai View Composer agar query hanya jalan jika view dirender
+        View::composer('*', function ($view) {
+            // Cache sederhana bisa ditambahkan nanti, sekarang query langsung saja
+            $activeYear = AcademicYear::where('is_active', true)->first();
+            $view->with('globalActiveYear', $activeYear);
+        });
     }
 }

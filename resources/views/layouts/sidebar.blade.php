@@ -4,7 +4,7 @@
     <div class="m-header">
       <a href="#" class="b-brand text-primary">
         <!-- ========   Change your logo from here   ============ -->
-        <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="" class="logo logo-lg" />
+        <img src="{{ asset('assets/images/logo-mataqu4.svg') }}" alt="" class="logo"/>
       </a>
     </div>
     <div class="navbar-content">
@@ -46,19 +46,36 @@
         </li>
 
         <li class="pc-item pc-caption">
-          <label>Pages</label>
+          <label>Santri</label>
           <i class="ti ti-news"></i>
         </li>
         <li class="pc-item">
-          <a class="pc-link" target="_blank" href="../pages/login-v3.html">
+          <a class="pc-link" href="{{ route('students.index') }}">
             <span class="pc-micon"><i class="ti ti-lock"></i></span>
-            <span class="pc-mtext">Login</span>
+            <span class="pc-mtext">Santri</span>
           </a>
         </li>
         <li class="pc-item">
           <a href="../pages/register-v3.html" target="_blank" class="pc-link">
             <span class="pc-micon"><i class="ti ti-user-plus"></i></span>
             <span class="pc-mtext">Register</span>
+          </a>
+        </li>
+
+        <li class="pc-item pc-caption">
+          <label>Pengasuhan</label>
+          <i class="ti ti-news"></i>
+        </li>
+        <li class="pc-item">
+          <a class="pc-link" href="{{ route('students.rooms') }}">
+            <span class="pc-micon"><i class="ti ti-lock"></i></span>
+            <span class="pc-mtext">Asrama</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a class="pc-link" href="{{ route('assignments.create') }}">
+            <span class="pc-micon"><i class="ti ti-lock"></i></span>
+            <span class="pc-mtext">Penempatan Kamar</span>
           </a>
         </li>
 
@@ -90,6 +107,30 @@
           </ul>
         </li>
         {{-- end master data User --}}
+        {{-- master data pengasuhan --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Pengasuhan</span
+            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
+          ></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('dorms.index') }}">Asrama</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li>
+          </ul>
+        </li>
+        {{-- end master data pengasuhan--}}
+        {{-- master data sekolah --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Sekolah</span
+            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
+          ></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic-years.index') }}">Tahun Ajaran</a></li>
+            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li> --}}
+          </ul>
+        </li>
+        {{-- end master data sekolah --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
             ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Menu levels</span

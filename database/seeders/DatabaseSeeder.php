@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             // Seeder lain (jika ada)
             PegawaiSeeder::class,
             UserSeeder::class,
+            StudentSeeder::class,
         ]);
     }
 }
