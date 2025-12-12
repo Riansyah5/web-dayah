@@ -62,21 +62,15 @@
           </a>
         </li>
 
-        <li class="pc-item pc-caption">
-          <label>Pengasuhan</label>
-          <i class="ti ti-news"></i>
-        </li>
-        <li class="pc-item">
-          <a class="pc-link" href="{{ route('students.rooms') }}">
-            <span class="pc-micon"><i class="ti ti-lock"></i></span>
-            <span class="pc-mtext">Asrama</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a class="pc-link" href="{{ route('assignments.create') }}">
-            <span class="pc-micon"><i class="ti ti-lock"></i></span>
-            <span class="pc-mtext">Penempatan Kamar</span>
-          </a>
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Pengasuhan</span
+            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
+          ></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('students.rooms') }}">Asrama</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('assignments.create') }}">Penempatan Kamar</a></li>
+          </ul>
         </li>
 
         <li class="pc-item pc-caption">

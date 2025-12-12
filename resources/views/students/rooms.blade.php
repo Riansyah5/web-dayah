@@ -143,6 +143,9 @@
                         </div>
                         <div>
                           <h6 class="fw-bold text-dark mb-0">Kamar {{ $roomNumber }}</h6>
+                          <small class="text-muted" style="font-size: 0.75rem;">
+                            {{ $roomDetails[$dormName][$roomNumber]->warden->nama ?? 'Tanpa Wali' }}
+                          </small>
                         </div>
                       </div>
                       <span class="badge-count">{{ $students->count() }} Org</span>

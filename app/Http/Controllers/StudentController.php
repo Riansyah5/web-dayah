@@ -227,7 +227,8 @@ class StudentController extends Controller
             fclose($file);
         }, 'template_import_santri.csv');
     }
-
+// ----------------------------------------------------------------------
+// fitur kamar dan pindah kamar santri
     public function rooms()
     {
         // Ambil data santri aktif yang memiliki asrama dan kamar
@@ -241,7 +242,16 @@ class StudentController extends Controller
             ->groupBy(['dormitory', 'room']);
         // Hasil grouping: ['Asrama A' => ['Kamar 1' => [Student1, Student2], 'Kamar 2' => ...]]
 
-        return view('students.rooms', compact('dormitories'));
+        // Ambil data detail kamar untuk info warden
+        $allRooms = \App\Models\Room::with(['dorm', 'warden'])->get();
+        $roomDetails = [];
+        foreach ($allRooms as $r) {
+            if ($r->dorm) {
+                $roomDetails[$r->dorm->name][$r->name] = $r;
+            }
+        }
+
+        return view('students.rooms', compact('dormitories', 'roomDetails'));
     }
 
     public function moveRoom(Request $request, Student $student)

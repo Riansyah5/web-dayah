@@ -17,17 +17,22 @@ class RoomAssignmentController extends Controller
             return redirect()->back()->with('error', 'Belum ada Tahun Ajaran aktif!');
         }
 
-        // 2. Ambil Santri yang BELUM punya kamar di tahun ajaran ini
-        // Kita pakai fitur "whereDoesntHave" milik Eloquent
-        $students = Student::whereDoesntHave('roomAssignments', function($query) use ($activeYear){
-            $query->where('academic_year_id', $activeYear->id);
-        })->where('status', 'active')
-          ->orderBy('class_group') // Urutkan biar rapi saat grouping
-          ->orderBy('name')->get();
+        // 2. Ambil SEMUA Santri aktif dengan relasi assignment tahun ini
+        $allStudents = Student::where('status', 'active')
+            ->with(['roomAssignments' => function($q) use ($activeYear) {
+                $q->where('academic_year_id', $activeYear->id)->with('room.dorm');
+            }])
+            ->orderBy('class_group')
+            ->orderBy('name')
+            ->get();
+
+        // Pisahkan menjadi dua koleksi
+        $studentsNoRoom = $allStudents->filter(fn($s) => $s->roomAssignments->isEmpty());
+        $studentsHasRoom = $allStudents->filter(fn($s) => $s->roomAssignments->isNotEmpty());
 
         // 3. Ambil Kamar yang masih tersedia (Opsional: filter by capacity)
-        $rooms = Room::with('dorm')->get();
-        return view('assignments.create', compact('students', 'rooms', 'activeYear'));
+        $rooms = Room::with(['dorm', 'warden'])->get();
+        return view('assignments.create', compact('studentsNoRoom', 'studentsHasRoom', 'rooms', 'activeYear'));
     }
 
     public function store(Request $request)
@@ -44,20 +49,29 @@ class RoomAssignmentController extends Controller
             $q->where('academic_year_id', $request->academic_year_id);
         }])->find($request->room_id);
 
+        // Hitung berapa siswa terpilih yang SUDAH ada di kamar tujuan (tidak mengurangi slot)
+        $existingInTarget = RoomAssignment::where('academic_year_id', $request->academic_year_id)
+            ->where('room_id', $request->room_id)
+            ->whereIn('student_id', $request->student_ids)
+            ->count();
+
         $countSelected = count($request->student_ids);
+        $neededSlots = $countSelected - $existingInTarget;
         $remaining = $room->capacity - $room->assignments_count;
 
-        if ($countSelected > $remaining) {
-            return back()->with('error', "Kapasitas tidak cukup! Sisa: $remaining, Dipilih: $countSelected");
+        if ($neededSlots > $remaining) {
+            return back()->with('error', "Kapasitas tidak cukup! Sisa: $remaining, Dibutuhkan slot baru: $neededSlots");
         }
 
-        // Simpan Data
+        // Simpan Data (Gunakan updateOrCreate agar bisa handle pindah kamar)
         foreach ($request->student_ids as $studentId) {
-            RoomAssignment::create([
-                'student_id' => $studentId,
-                'room_id' => $request->room_id,
-                'academic_year_id' => $request->academic_year_id,
-            ]);
+            RoomAssignment::updateOrCreate(
+                [
+                    'student_id' => $studentId,
+                    'academic_year_id' => $request->academic_year_id,
+                ],
+                ['room_id' => $request->room_id]
+            );
         }
 
         return redirect()->route('students.index')->with('success', "$countSelected Santri berhasil ditempatkan di kamar!");
