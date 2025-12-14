@@ -379,7 +379,7 @@
                     <div class="form-floating">
                       <input type="text" name="room" class="form-control"
                         value="{{ old('room', $student->room) }}">
-                      <label>Nomor Kamar</label>
+                      <label>Nama Kamar</label>
                     </div>
                   </div>
                   <div class="col-md-6">

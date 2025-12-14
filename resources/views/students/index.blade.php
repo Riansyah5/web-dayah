@@ -153,6 +153,7 @@
                   <option value="">Semua Status</option>
                   <option value="Aktif">Aktif</option>
                   <option value="Lulus">Lulus</option>
+                  <option value="Pindah">Pindah</option>
                   <option value="Skorsing">Skorsing</option>
                 </select>
               </div>
@@ -201,7 +202,7 @@
                             {{ $initial }}
                           </div> --}}
                           <div>
-                            <div class="fw-bold text-dark student-name">{{ $student->name }}</div>
+                            <div class="fw-bold text-dark student-name"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
                             <div class="small text-muted">
                               {{ $student->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}
                             </div>
@@ -234,6 +235,7 @@
                               'active' => 'Aktif',
                               'graduated' => 'Lulus',
                               'suspended' => 'Skorsing',
+                              'moved' => 'Pindah',
                               default => $student->status,
                           };
                         @endphp
@@ -399,7 +401,7 @@
 
       // 3. Konek Custom Filter Status
       $('#customStatusFilter').on('change', function() {
-        table.column(3).search(this.value).draw(); // Kolom index 3 adalah Status
+        table.column(6).search(this.value).draw(); // Kolom index 6 adalah Status
       });
 
       // 4. Konek Custom Page Length

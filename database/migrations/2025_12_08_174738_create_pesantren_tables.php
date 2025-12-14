@@ -120,27 +120,7 @@ return new class extends Migration
             $table->unique(['student_id', 'academic_year_id']); 
         });
 
-        // Tabel Perizinan Asrama
-        Schema::create('student_permissions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignUlid('student_id')->constrained('students')->cascadeOnDelete();
-            
-            // Jenis Izin
-            $table->enum('type', ['sick', 'leave', 'event']); // Sakit, Pulang, Kegiatan
-            
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->text('reason'); // Alasan
-            
-            // Status Approval
-            $table->enum('status', ['pending', 'approved', 'rejected', 'returned'])->default('pending');
-            
-            // Siapa yang menyetujui (User/Musyrif)
-            $table->foreignUlid('approved_by')->nullable()->constrained('users');
-            $table->text('notes')->nullable(); // Catatan dari musyrif (misal: "Jangan terlambat")
-            
-            $table->timestamps();
-        });
+        
     }
 
     /**
@@ -149,7 +129,7 @@ return new class extends Migration
     public function down(): void
     {
         // Drop tables in reverse order of creation to respect foreign key constraints
-        Schema::dropIfExists('student_permissions');
+        // Schema::dropIfExists('student_permissions');
         Schema::dropIfExists('room_assignments');
         Schema::dropIfExists('rooms');
         Schema::dropIfExists('dorms');

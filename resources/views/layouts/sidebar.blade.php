@@ -22,43 +22,25 @@
             ><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Akun</span></a>
         </li>
 
-        <li class="pc-item pc-caption">
+        {{-- <li class="pc-item pc-caption">
           <label>Kepegawaian</label>
           <i class="ti ti-apps"></i>
-        </li>
+        </li> --}}
         <li class="pc-item">
           <a href="{{ route('pegawai.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-typography"></i></span>
             <span class="pc-mtext">Pegawai</span>
           </a>
         </li>
-        <li class="pc-item">
-          <a href="../elements/bc_color.html" class="pc-link">
-            <span class="pc-micon"><i class="ti ti-color-swatch"></i></span>
-            <span class="pc-mtext">Color</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="../elements/icon-tabler.html" class="pc-link">
-            <span class="pc-micon"><i class="ti ti-plant-2"></i></span>
-            <span class="pc-mtext">Icons</span>
-          </a>
-        </li>
 
-        <li class="pc-item pc-caption">
+        {{-- <li class="pc-item pc-caption">
           <label>Santri</label>
           <i class="ti ti-news"></i>
-        </li>
+        </li> --}}
         <li class="pc-item">
           <a class="pc-link" href="{{ route('students.index') }}">
             <span class="pc-micon"><i class="ti ti-lock"></i></span>
             <span class="pc-mtext">Santri</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="../pages/register-v3.html" target="_blank" class="pc-link">
-            <span class="pc-micon"><i class="ti ti-user-plus"></i></span>
-            <span class="pc-mtext">Register</span>
           </a>
         </li>
 
@@ -70,6 +52,8 @@
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('students.rooms') }}">Asrama</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('assignments.create') }}">Penempatan Kamar</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('permissions.index') }}">Perizinan</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('violations.dashboard') }}">Kedisiplinan</a></li>
           </ul>
         </li>
 

@@ -33,12 +33,6 @@ class Student extends Model
             });
     }
 
-    // Relasi: 1 Santri punya banyak surat izin
-    public function permissions(): HasMany
-    {
-        return $this->hasMany(StudentPermission::class);
-    }
-
     // Relasi ke History
     public function roomHistories()
     {
@@ -49,5 +43,24 @@ class Student extends Model
     public function currentRoom()
     {
         return $this->belongsTo(Room::class, 'room_id');
+    }
+
+    // Relasi: 1 Santri punya banyak surat izin
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(Permission::class)->latest();
+    }
+
+    // Cek apakah santri sedang di luar?
+    public function isOut()
+    {
+        return $this->permissions()
+            ->where('status', 'approved')
+            ->whereNull('returned_at')
+            ->exists();
+    }
+
+    public function violations() {
+        return $this->hasMany(Violation::class)->orderBy('violation_date', 'desc');
     }
 }

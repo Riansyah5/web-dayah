@@ -10,6 +10,7 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
 
@@ -78,3 +79,17 @@ Route::resource('/academic-years', AcademicYearController::class);
 // Route untuk assign kamar
 Route::get('assignments/create', [RoomAssignmentController::class, 'create'])->name('assignments.create');
 Route::post('assignments', [RoomAssignmentController::class, 'store'])->name('assignments.store');
+
+// Route untuk melihat daftar perizinan santri
+Route::resource('/permissions', PermissionController::class);
+Route::put('/permissions/{id}/return', [PermissionController::class, 'markAsReturned'])->name('permissions.return');
+Route::get('/permissions/{id}/print', [PermissionController::class, 'print'])->name('permissions.print');
+Route::get('/students/{student}/permissions', [PermissionController::class, 'history'])->name('students.permissions');
+Route::get('/students/{student}/permissions/pdf', [PermissionController::class, 'pdf'])->name('permissions.pdf');
+
+use App\Http\Controllers\ViolationController;
+
+// Route untuk melihat riwayat dan download PDF (gabung di index)
+Route::get('violations/dashboard', [ViolationController::class, 'indexAll'])->name('violations.dashboard');
+Route::get('students/{student}/violations', [ViolationController::class, 'index'])->name('violations.index');
+Route::post('violations', [ViolationController::class, 'store'])->name('violations.store');
