@@ -100,7 +100,18 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
+
         $all_rooms = \App\Models\Room::with('dorm')->withCount('assignments')->get();
+        
+        // Load relasi classrooms beserta tahun ajaran, tingkat, dan jenjang
+        $student->load(['classrooms.academicYear', 'classrooms.level.stage', 'classrooms.major']);
+
+        // Sort manual collection classrooms berdasarkan nama tahun ajaran (descending)
+        $sortedClassrooms = $student->classrooms->sortByDesc(function ($classroom) {
+            return $classroom->academicYear->name . ' ' . $classroom->academicYear->semester;
+        });
+        $student->setRelation('classrooms', $sortedClassrooms);
+        
         return view('students.show', compact('student', 'all_rooms'));
     }
 
@@ -227,8 +238,8 @@ class StudentController extends Controller
             fclose($file);
         }, 'template_import_santri.csv');
     }
-// ----------------------------------------------------------------------
-// fitur kamar dan pindah kamar santri
+    // ----------------------------------------------------------------------
+    // fitur kamar dan pindah kamar santri
     public function rooms()
     {
         // Ambil data santri aktif yang memiliki asrama dan kamar

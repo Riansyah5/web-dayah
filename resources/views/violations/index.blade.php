@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Pelanggaran Santri')
 @push('link')
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 @endpush
 @push('styles')
 @endpush

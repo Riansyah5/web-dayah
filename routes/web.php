@@ -13,6 +13,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
+use App\Http\Controllers\DataMasterController;
+use App\Http\Controllers\ClassroomController;
+
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -93,3 +96,25 @@ use App\Http\Controllers\ViolationController;
 Route::get('violations/dashboard', [ViolationController::class, 'indexAll'])->name('violations.dashboard');
 Route::get('students/{student}/violations', [ViolationController::class, 'index'])->name('violations.index');
 Route::post('violations', [ViolationController::class, 'store'])->name('violations.store');
+
+
+// Group Admin Master Data
+Route::prefix('admin/master-data')->name('master.')->group(function () {
+	Route::get('/', [DataMasterController::class, 'index'])->name('index');
+	Route::post('/stages', [DataMasterController::class, 'storeStage'])->name('stages.store');
+	Route::post('/levels', [DataMasterController::class, 'storeLevel'])->name('levels.store');
+	Route::post('/majors', [DataMasterController::class, 'storeMajor'])->name('majors.store');
+	Route::post('/academic-years', [DataMasterController::class, 'storeAcademicYear'])->name('academic-years.store');
+	Route::put('/academic-years/{id}/activate', [DataMasterController::class, 'activateYear'])->name('academic-years.activate');
+	// Route Delete Baru
+	Route::delete('/stages/{stage}', [DataMasterController::class, 'destroyStage'])->name('stages.destroy');
+	Route::delete('/levels/{level}', [DataMasterController::class, 'destroyLevel'])->name('levels.destroy');
+	Route::delete('/majors/{major}', [DataMasterController::class, 'destroyMajor'])->name('majors.destroy');
+	Route::delete('/academic-years/{academicYear}', [DataMasterController::class, 'destroyAcademicYear'])->name('academic-years.destroy');
+});
+
+// Group Akademik Kelas
+Route::resource('academic/classrooms', ClassroomController::class);
+Route::post('academic/classrooms/{classroom}/add', [ClassroomController::class, 'addStudent'])->name('classrooms.addStudent');
+Route::delete('academic/classrooms/{classroom}/remove/{studentId}', [ClassroomController::class, 'removeStudent'])->name('classrooms.removeStudent');
+Route::put('academic/classrooms/{classroom}/move/{studentId}', [ClassroomController::class, 'moveStudent'])->name('classrooms.moveStudent');

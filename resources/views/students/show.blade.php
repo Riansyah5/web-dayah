@@ -93,6 +93,41 @@
       background-color: #4f46e5;
       box-shadow: 0 0 0 4px #e0e7ff;
     }
+
+    /* styling classroom history  */
+    .academic-timeline {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-left: 0.5rem;
+      border-left: 2px solid #e5e7eb;
+    }
+
+    .academic-item {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .academic-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .academic-dot {
+      position: absolute;
+      left: -1.95rem;
+      top: 0.25rem;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 2px solid #9ca3af;
+    }
+
+    .academic-item.current .academic-dot {
+      background-color: #4f46e5;
+      /* Primary color */
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
   </style>
 @endpush
 
@@ -277,6 +312,71 @@
                 <p class="text-muted small fst-italic">Belum ada riwayat kamar.</p>
               @endforelse
             </div>
+          </div>
+        </div>
+
+        <div class="card card-section mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+              <i class="bi bi-mortarboard-fill me-2 text-primary"></i>Riwayat Kelas
+            </h6>
+
+            <div class="academic-timeline">
+              @forelse($student->classrooms as $class)
+                @php
+                  // Cek apakah ini kelas di tahun ajaran aktif saat ini
+                  $isActive = $class->academicYear->is_active;
+                @endphp
+
+                <div class="academic-item {{ $isActive ? 'current' : '' }}">
+                  <div class="academic-dot"></div>
+
+                  <div class="card border-0 shadow-sm bg-light">
+                    <div class="card-body p-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge {{ $isActive ? 'bg-primary' : 'bg-secondary text-light' }} rounded-pill">
+                          {{ $class->academicYear->name }} - {{ $class->academicYear->semester }}
+                        </span>
+
+                        @if ($isActive)
+                          <small class="text-primary fw-bold">Sedang Menempuh</small>
+                        @else
+                          <small class="text-muted"><i
+                              class="bi bi-check-circle-fill text-success me-1"></i>Selesai</small>
+                        @endif
+                      </div>
+
+                      <h5 class="fw-bold text-dark mb-1">
+                        {{ $class->name }}
+                      </h5>
+
+                      <div class="small text-muted mb-2">
+                        {{ $class->level->stage->code ?? '' }} &bull; {{ $class->level->name }}
+                        @if ($class->major)
+                          &bull; Jurusan {{ $class->major->name }}
+                        @endif
+                      </div>
+
+                      <div class="d-flex align-items-center border-top pt-2 mt-2">
+                        <div
+                          class="avatar-xs bg-white text-muted border rounded-circle me-2 d-flex justify-content-center align-items-center"
+                          style="width:24px; height:24px; font-size:10px;">
+                          <i class="bi bi-person"></i>
+                        </div>
+                        <small class="text-muted">
+                          Wali: <strong>{{ $class->homeroom_teacher ?? '-' }}</strong>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              @empty
+                <div class="text-center py-3">
+                  <p class="text-muted small fst-italic">Belum ada riwayat kelas.</p>
+                </div>
+              @endforelse
+            </div>
+
           </div>
         </div>
 

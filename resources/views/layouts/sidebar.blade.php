@@ -19,7 +19,7 @@
         </li>
         <li class="pc-item">
           <a href="#" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Akun</span></a>
+            ><span class="pc-micon"><i class="ti ti-user-circle"></i></span><span class="pc-mtext">Akun</span></a>
         </li>
 
         {{-- <li class="pc-item pc-caption">
@@ -28,7 +28,7 @@
         </li> --}}
         <li class="pc-item">
           <a href="{{ route('pegawai.index') }}" class="pc-link">
-            <span class="pc-micon"><i class="ti ti-typography"></i></span>
+            <span class="pc-micon"><i class="ti ti-users"></i></span>
             <span class="pc-mtext">Pegawai</span>
           </a>
         </li>
@@ -39,14 +39,24 @@
         </li> --}}
         <li class="pc-item">
           <a class="pc-link" href="{{ route('students.index') }}">
-            <span class="pc-micon"><i class="ti ti-lock"></i></span>
+            <span class="pc-micon"><i class="ti ti-school"></i></span>
             <span class="pc-mtext">Santri</span>
           </a>
         </li>
 
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Pengasuhan</span
+            ><span class="pc-micon"><i class="ti ti-book"></i></span><span class="pc-mtext">Akademik</span
+            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
+          ></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('classrooms.index') }}">Kelas</a></li>
+          </ul>
+        </li>
+
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"
+            ><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">Pengasuhan</span
             ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
           ></a>
           <ul class="pc-submenu">
@@ -59,12 +69,12 @@
 
         <li class="pc-item pc-caption">
           <label>Master Data</label>
-          <i class="ti ti-brand-chrome"></i>
+          <i class="ti ti-database"></i>
         </li>
         {{-- master data pegawai --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Pegawai</span
+            ><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">Pegawai</span
             ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
           ></a>
           <ul class="pc-submenu">
@@ -76,7 +86,7 @@
         {{-- master data User --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Akun</span
+            ><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Akun</span
             ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
           ></a>
           <ul class="pc-submenu">
@@ -88,7 +98,7 @@
         {{-- master data pengasuhan --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Pengasuhan</span
+            ><span class="pc-micon"><i class="ti ti-bed"></i></span><span class="pc-mtext">Pengasuhan</span
             ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
           ></a>
           <ul class="pc-submenu">
@@ -100,65 +110,14 @@
         {{-- master data sekolah --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Sekolah</span
+            ><span class="pc-micon"><i class="ti ti-certificate"></i></span><span class="pc-mtext">Akademik</span
             ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
           ></a>
           <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic-years.index') }}">Tahun Ajaran</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
+            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('academic-years.index') }}">Tahun Ajaran</a></li> --}}
             {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li> --}}
           </ul>
-        </li>
-        {{-- end master data sekolah --}}
-        <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"
-            ><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Menu levels</span
-            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
-          ></a>
-          <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="#!">Level 2.1</a></li>
-            <li class="pc-item pc-hasmenu">
-              <a href="#!" class="pc-link"
-                >Level 2.2<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-              ></a>
-              <ul class="pc-submenu">
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                <li class="pc-item pc-hasmenu">
-                  <a href="#!" class="pc-link"
-                    >Level 3.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-                  ></a>
-                  <ul class="pc-submenu">
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li class="pc-item pc-hasmenu">
-              <a href="#!" class="pc-link"
-                >Level 2.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-              ></a>
-              <ul class="pc-submenu">
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                <li class="pc-item pc-hasmenu">
-                  <a href="#!" class="pc-link"
-                    >Level 3.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-                  ></a>
-                  <ul class="pc-submenu">
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="pc-item">
-          <a href="../other/sample-page.html" class="pc-link">
-            <span class="pc-micon"><i class="ti ti-brand-chrome"></i></span>
-            <span class="pc-mtext">Sample page</span>
-          </a>
         </li>
 
       </ul>
