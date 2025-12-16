@@ -15,6 +15,7 @@ use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\DataMasterController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\PromotionController;
 
 
 // Guest (Belum Login)
@@ -118,3 +119,9 @@ Route::resource('academic/classrooms', ClassroomController::class);
 Route::post('academic/classrooms/{classroom}/add', [ClassroomController::class, 'addStudent'])->name('classrooms.addStudent');
 Route::delete('academic/classrooms/{classroom}/remove/{studentId}', [ClassroomController::class, 'removeStudent'])->name('classrooms.removeStudent');
 Route::put('academic/classrooms/{classroom}/move/{studentId}', [ClassroomController::class, 'moveStudent'])->name('classrooms.moveStudent');
+
+
+Route::prefix('academic/promotion')->name('promotion.')->group(function () {
+    Route::get('/', [PromotionController::class, 'index'])->name('index');
+    Route::post('/process', [PromotionController::class, 'process'])->name('process');
+});

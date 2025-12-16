@@ -21,7 +21,7 @@ class ClassroomController extends Controller
             ->where('academic_year_id', $activeYear?->id);
 
         if ($request->filled('stage_id')) {
-            $query->whereHas('level', fn ($q) => $q->where('stage_id', $request->stage_id));
+            $query->whereHas('level', fn($q) => $q->where('stage_id', $request->stage_id));
         }
 
         $classrooms = $query->orderBy('level_id')->orderBy('name')->get();
@@ -89,6 +89,19 @@ class ClassroomController extends Controller
     }
 
     /* ==========================
+     |  EDIT
+     ========================== */
+    public function edit(Classroom $classroom)
+    {
+        // Kita butuh data Levels dan Majors untuk mengisi Dropdown
+        $levels = \App\Models\Level::with('stage')->orderBy('stage_id')->get();
+        $majors = \App\Models\Major::all();
+        $teachers = Pegawai::orderBy('nama')->get();
+
+        return view('academic.classrooms.edit', compact('classroom', 'levels', 'majors', 'teachers'));
+    }
+
+    /* ==========================
      |  UPDATE
      ========================== */
     public function update(Request $request, Classroom $classroom)
@@ -141,7 +154,7 @@ class ClassroomController extends Controller
         foreach ($request->student_ids as $studentId) {
             $data[] = [
                 'id'           => (string) Str::ulid(),
-                'classroom_id'=> $classroom->id,
+                'classroom_id' => $classroom->id,
                 'student_id'  => $studentId,
                 'created_at'  => $now,
                 'updated_at'  => $now,
@@ -183,7 +196,7 @@ class ClassroomController extends Controller
 
             DB::table('classroom_student')->insert([
                 'id'           => (string) Str::ulid(),
-                'classroom_id'=> $newClass->id,
+                'classroom_id' => $newClass->id,
                 'student_id'  => $studentId,
                 'created_at'  => now(),
                 'updated_at'  => now(),
