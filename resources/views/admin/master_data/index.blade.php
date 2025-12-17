@@ -212,7 +212,13 @@
             <form action="{{ route('master.teachers.store') }}" method="POST"
               class="row g-2 mb-4 bg-light p-3 rounded">
               @csrf
-              <div class="col-md-5"><input name="name" class="form-control" placeholder="Nama Lengkap" required>
+              <div class="col-md-5">
+                <select name="name" class="form-select" required>
+                  <option value="">Pilih Guru...</option>
+                  @foreach ($pegawais as $p)
+                    <option value="{{ $p->nama }}">{{ $p->nama }}</option>
+                  @endforeach
+                </select>
               </div>
               <div class="col-md-3"><input name="title" class="form-control" placeholder="Gelar (S.Pd)"></div>
               <div class="col-md-2"><input name="nip" class="form-control" placeholder="NIP/NIY"></div>
@@ -234,10 +240,9 @@
                     <td>{{ $t->nip ?? '-' }}</td>
                     <td><span class="badge bg-success">Aktif</span></td>
                     <td>
-                      <form action="{{ route('master.teachers.destroy', $t->id) }}" method="POST"
-                        onsubmit="return confirm('Hapus?')">
+                      <form action="{{ route('master.teachers.destroy', $t->id) }}" method="POST">
                         @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i></button>
+                        <button type="button" class="btn btn-sm btn-light text-danger btn-delete" data-text="Hapus Guru ini?"><i class="bi bi-trash"></i></button>
                       </form>
                     </td>
                   </tr>
@@ -250,42 +255,76 @@
             <form action="{{ route('master.subjects.store') }}" method="POST"
               class="row g-2 mb-4 bg-light p-3 rounded">
               @csrf
-              <div class="col-md-4"><input name="name" class="form-control" placeholder="Nama Mapel (Fiqih)"
-                  required></div>
-              <div class="col-md-2"><input name="code" class="form-control" placeholder="Kode (FQH)" required>
+              <div class="col-md-3">
+                <label class="small text-muted mb-1">Nama Mapel</label>
+                <input name="name" class="form-control" placeholder="Contoh: Tematik" required>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-2">
+                <label class="small text-muted mb-1">Kode</label>
+                <input name="code" class="form-control" placeholder="TMT" required>
+              </div>
+              <div class="col-md-3">
+                <label class="small text-muted mb-1">Kelompok</label>
                 <select name="group" class="form-select">
-                  <option value="A">Kelompok A (Wajib/Umum)</option>
-                  <option value="B">Kelompok B (Seni/Olahraga)</option>
-                  <option value="Diniyah">Kelompok Diniyah (Pondok)</option>
-                  <option value="Mulok">Muatan Lokal</option>
+                  <option value="A">Kelompok A (Wajib)</option>
+                  <option value="B">Kelompok B (Seni/OR)</option>
+                  <option value="Diniyah">Diniyah (Pondok)</option>
+                  <option value="Mulok">Mulok</option>
                 </select>
               </div>
-              <div class="col-md-2"><button class="btn btn-primary w-100">Simpan</button></div>
+
+              <div class="col-md-4">
+                <label class="small text-muted mb-1">Tersedia Untuk Jenjang:</label>
+                <div class="d-flex gap-2 flex-wrap bg-white p-2 border rounded">
+                  @foreach ($stages as $stage)
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="stages[]" value="{{ $stage->id }}"
+                        id="stage{{ $stage->id }}">
+                      <label class="form-check-label small" for="stage{{ $stage->id }}">
+                        {{ $stage->code }}
+                      </label>
+                    </div>
+                  @endforeach
+                </div>
+              </div>
+
+              <div class="col-12 mt-2">
+                <button class="btn btn-primary w-100">Simpan Mapel</button>
+              </div>
             </form>
+
+
             <table class="table table-hover">
               <thead class="bg-light">
                 <tr>
                   <th>Kode</th>
                   <th>Nama Mapel</th>
                   <th>Kelompok</th>
-                  <th>Aksi</th>
+                  <th class="text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach ($subjects as $s)
                   <tr>
                     <td><span class="badge bg-secondary">{{ $s->code }}</span></td>
-                    <td>{{ $s->name }}</td>
+                    <td>
+                      {{ $s->name }}
+                      <br>
+                      @foreach ($s->stages as $stage)
+                        <span class="badge bg-light text-dark border"
+                          style="font-size: 0.6rem;">{{ $stage->code }}</span>
+                      @endforeach
+                    </td>
                     <td>{{ $s->group }}</td>
                     <td>
-                      <form action="{{ route('master.subjects.destroy', $s->id) }}" method="POST"
-                        onsubmit="return confirm('Hapus?')">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i></button>
-                      </form>
-                      <a href="{{ route('master.syllabus.index', $s->id) }}" class="btn btn-sm btn-info">Materi</a>
+                      <div class="d-flex gap-1 justify-content-center">
+                        <form action="{{ route('master.subjects.destroy', $s->id) }}" method="POST">
+                          @csrf 
+                          @method('DELETE')
+                          <button type="button" class="btn btn-sm btn-light text-danger btn-delete" data-text="Hapus Mapel ini?"><i class="bi bi-trash"></i></button>
+                        </form>
+                        <a href="{{ route('master.syllabus.index', $s->id) }}" class="btn btn-sm btn-info">Materi</a>
+                      </div>
                     </td>
                   </tr>
                 @endforeach
@@ -458,5 +497,14 @@
         });
       });
     });
+
+    // Auto-Activate Tab from Session
+    @if(session('active_tab'))
+      var triggerEl = document.querySelector('button[data-bs-target="#{{ session('active_tab') }}"]');
+      if(triggerEl) {
+        var tab = new bootstrap.Tab(triggerEl);
+        tab.show();
+      }
+    @endif
   </script>
 @endpush

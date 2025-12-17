@@ -165,4 +165,5 @@ Route::prefix('academic/grading')->name('grading.')->group(function () {
 	Route::get('/homeroom/{classroom}', [HomeroomGradingController::class, 'show'])->name('homeroom.show');
 	Route::post('/homeroom/update', [HomeroomGradingController::class, 'update'])->name('homeroom.update');
 	Route::get('/homeroom/print/{studentId}/{classroomId}', [HomeroomGradingController::class, 'print'])->name('homeroom.print');
+	Route::get('/homeroom/preview/{studentId}/{classroomId}', [HomeroomGradingController::class, 'preview'])->name('homeroom.preview');
 });

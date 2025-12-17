@@ -23,4 +23,10 @@ class Subject extends Model
     {
         return $this->hasMany(Course::class);
     }
+
+    // Relasi Many-to-Many ke Stage melalui tabel pivot stage_subject
+    public function stages()
+    {
+        return $this->belongsToMany(Stage::class, 'stage_subject');
+    }
 }

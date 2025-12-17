@@ -49,62 +49,72 @@
                 <table class="table table-hover align-middle mb-0">
                   <thead class="bg-light">
                     <tr>
-                      <th class="ps-4">Mata Pelajaran</th>
-                      <th width="35%">Guru Pengampu</th>
-                      <th width="15%">KKM</th>
-                      <th width="10%">Simpan</th>
+                      <th width="5%" class="text-center">Status</th>
+                      <th class="ps-3">Mata Pelajaran</th>
+                      <th width="30%">Guru Pengampu</th>
+                      <th width="10%">KKM</th>
+                      <th width="10%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     @php $currentGroup = ''; @endphp
 
                     @foreach ($subjects as $subject)
-                      {{-- Grouping Header (Kelompok A, B, dll) --}}
                       @if ($currentGroup != $subject->group)
                         @php $currentGroup = $subject->group; @endphp
                         <tr class="table-secondary">
-                          <td colspan="4" class="fw-bold ps-4 small text-uppercase">Kelompok {{ $currentGroup }}</td>
+                          <td colspan="5" class="fw-bold ps-4 small text-uppercase">Kelompok {{ $currentGroup }}</td>
                         </tr>
                       @endif
 
-                      {{-- Ambil Data Existing jika ada --}}
                       @php
-                        $course = $courses->get($subject->id);
+                        $courseData = $courses->get($subject->id);
+                        $isActive = $courseData ? true : false; // Cek apakah sudah ada di DB
                       @endphp
 
-                      <tr>
-                        {{-- Form per baris --}}
+                      <tr class="{{ $isActive ? '' : 'bg-light opacity-75' }}">
                         <form action="{{ route('grading.plotting.update') }}" method="POST">
                           @csrf
                           <input type="hidden" name="classroom_id" value="{{ $selectedClassroom->id }}">
                           <input type="hidden" name="subject_id" value="{{ $subject->id }}">
 
-                          <td class="ps-4">
+                          <td class="align-middle text-center">
+                            <div class="form-check form-switch d-inline-block">
+                              <input class="form-check-input" type="checkbox" name="is_active" value="1"
+                                {{ $isActive ? 'checked' : '' }} onchange="this.form.submit()">
+                            </div>
+                          </td>
+
+                          <td class="ps-3 align-middle">
                             <div class="fw-bold text-dark">{{ $subject->name }}</div>
                             <small class="text-muted">{{ $subject->code }}</small>
                           </td>
 
-                          <td>
-                            <select name="teacher_id" class="form-select form-select-sm">
+                          <td class="align-middle">
+                            <select name="teacher_id" class="form-select form-select-sm"
+                              {{ !$isActive ? 'disabled' : '' }}>
                               <option value="">-- Pilih Guru --</option>
                               @foreach ($teachers as $teacher)
                                 <option value="{{ $teacher->id }}"
-                                  {{ $course?->teacher_id == $teacher->id ? 'selected' : '' }}>
-                                  {{ $teacher->name }} {{ $teacher->title }}
+                                  {{ $courseData?->teacher_id == $teacher->id ? 'selected' : '' }}>
+                                  {{ $teacher->name }}
                                 </option>
                               @endforeach
                             </select>
                           </td>
 
-                          <td>
+                          <td class="align-middle">
                             <input type="number" name="kkm" class="form-control form-control-sm text-center"
-                              value="{{ $course?->kkm ?? 70 }}" min="0" max="100">
+                              value="{{ $courseData?->kkm ?? 75 }}" min="0" max="100"
+                              {{ !$isActive ? 'disabled' : '' }}>
                           </td>
 
-                          <td>
-                            <button type="submit" class="btn btn-sm btn-primary">
-                              <i class="bi bi-check-lg"></i>
-                            </button>
+                          <td class="align-middle">
+                            @if ($isActive)
+                              <button type="submit" class="btn btn-sm btn-primary" title="Simpan Perubahan">
+                                <i class="bi bi-save"></i>
+                              </button>
+                            @endif
                           </td>
                         </form>
                       </tr>

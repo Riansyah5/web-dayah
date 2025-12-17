@@ -99,4 +99,26 @@ class HomeroomGradingController extends Controller
         return $pdf->stream('Rapor_' . $student->name . '.pdf');
     
     }
+
+    public function preview($studentId, $classroomId)
+    {
+        $student = Student::findOrFail($studentId);
+        $classroom = Classroom::findOrFail($classroomId);
+        
+        // Ambil Data Nilai (Sama dengan method print)
+        $courses = Course::with(['subject', 'grades' => function($q) use ($studentId) {
+            $q->where('student_id', $studentId);
+        }])->where('classroom_id', $classroomId)
+           ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+           ->orderBy('subjects.group')
+           ->select('courses.*')
+           ->get();
+
+        // Ambil Data Absensi
+        $reportCard = ReportCard::where('student_id', $studentId)
+                        ->where('classroom_id', $classroomId)
+                        ->first();
+
+        return view('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
+    }
 }

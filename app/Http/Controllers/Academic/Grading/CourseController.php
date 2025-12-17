@@ -19,7 +19,7 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $activeYear = AcademicYear::where('is_active', true)->first();
-        
+
         // Ambil list kelas untuk sidebar/dropdown selector
         $classrooms = Classroom::with('level')
             ->where('academic_year_id', $activeYear?->id)
@@ -35,9 +35,14 @@ class CourseController extends Controller
         // Jika user sudah memilih kelas (via parameter URL ?classroom_id=1)
         if ($request->filled('classroom_id')) {
             $selectedClassroom = Classroom::findOrFail($request->classroom_id);
-            
-            // Ambil Master Mapel & Guru untuk Dropdown
-            $subjects = Subject::orderBy('group')->orderBy('name')->get();
+
+            // Ambil data jenjang dari kelas yang dipilih (Misal: Kelas 7A -> Jenjang SMP)
+            $stageId = $selectedClassroom->level->stage_id;
+            // Cari Mapel yang HANYA terhubung dengan jenjang tersebut
+            $subjects = Subject::whereHas('stages', function ($query) use ($stageId) {
+                $query->where('stages.id', $stageId);
+            })->orderBy('group')->orderBy('name')->get();
+
             $teachers = Teacher::orderBy('name')->get();
 
             // Ambil data plotting yang sudah tersimpan (jika ada)
@@ -45,7 +50,12 @@ class CourseController extends Controller
         }
 
         return view('academic.grading.plotting.index', compact(
-            'classrooms', 'selectedClassroom', 'subjects', 'teachers', 'courses', 'activeYear'
+            'classrooms',
+            'selectedClassroom',
+            'subjects',
+            'teachers',
+            'courses',
+            'activeYear'
         ));
     }
 
@@ -54,25 +64,39 @@ class CourseController extends Controller
      */
     public function update(Request $request)
     {
-        // Validasi
         $request->validate([
             'classroom_id' => 'required',
             'subject_id' => 'required',
-            'teacher_id' => 'nullable', // Boleh kosong jika belum ada guru
-            'kkm' => 'required|numeric|min:0|max:100'
+            'is_active' => 'nullable', // Checkbox (1 atau null)
+            'teacher_id' => 'nullable',
+            'kkm' => 'nullable|numeric'
         ]);
 
-        Course::updateOrCreate(
-            [
-                'classroom_id' => $request->classroom_id,
-                'subject_id' => $request->subject_id,
-            ],
-            [
-                'teacher_id' => $request->teacher_id,
-                'kkm' => $request->kkm
-            ]
-        );
+        // LOGIKA BARU:
 
-        return back()->with('success', 'Data KBM berhasil disimpan.');
+        if ($request->has('is_active')) {
+            // KASUS 1: Mapel Dipilih (Aktif) -> Simpan/Update
+            Course::updateOrCreate(
+                [
+                    'classroom_id' => $request->classroom_id,
+                    'subject_id' => $request->subject_id,
+                ],
+                [
+                    'teacher_id' => $request->teacher_id,
+                    'kkm' => $request->kkm ?? 75 // Default KKM jika kosong
+                ]
+            );
+            $message = 'Mapel diaktifkan untuk kelas ini.';
+        } else {
+            // KASUS 2: Mapel Tidak Dipilih -> Hapus dari Plotting
+            // Artinya kelas ini TIDAK belajar mapel tersebut
+            Course::where('classroom_id', $request->classroom_id)
+                ->where('subject_id', $request->subject_id)
+                ->delete();
+
+            $message = 'Mapel dinonaktifkan (dihapus) dari kelas ini.';
+        }
+
+        return back()->with('success', $message);
     }
 }

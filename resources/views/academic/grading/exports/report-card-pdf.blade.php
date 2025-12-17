@@ -157,11 +157,30 @@
     <p style="font-style: italic;">{{ $reportCard->notes ?? 'Tetap semangat dan tingkatkan prestasimu.' }}</p>
   </div>
 
-  <div style="border: 1px solid #000; padding: 10px; margin-bottom: 20px;">
+  {{-- LOGIKA: Tampilkan Keputusan HANYA jika Semester Genap --}}
+  @if ($classroom->academicYear->semester == 'Genap')
+    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 20px;">
+      <strong>Keputusan:</strong><br>
+      Berdasarkan hasil pencapaian kompetensi, peserta didik ditetapkan:<br>
+
+      <h3 class="text-center">
+        {{-- Jika kelas akhir (misal kelas 12), teksnya LULUS / TIDAK LULUS --}}
+        {{-- Tapi jika kelas biasa, teksnya NAIK / TINGGAL --}}
+
+        @if ($reportCard->status == 'Lulus' || $reportCard->status == 'Tidak Lulus')
+          {{ strtoupper($reportCard->status) }}
+        @else
+          {{ strtoupper($reportCard->status) }} KE KELAS {{ $classroom->level->next_level ?? '...' }}
+        @endif
+      </h3>
+    </div>
+  @endif
+
+  {{-- <div style="border: 1px solid #000; padding: 10px; margin-bottom: 20px;">
     <strong>Keputusan:</strong><br>
     Berdasarkan hasil pencapaian kompetensi, peserta didik ditetapkan:<br>
     <h3 class="text-center">{{ strtoupper($reportCard->status ?? 'NAIK KELAS') }}</h3>
-  </div>
+  </div> --}}
 
   <table class="table no-border footer">
     <tr>

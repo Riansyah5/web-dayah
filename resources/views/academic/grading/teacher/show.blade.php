@@ -105,7 +105,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success w-100">Proses Import</button>
+                    <button type="button" class="btn btn-success w-100" id="btn-import">Proses Import</button>
                 </div>
             </form>
         </div>
@@ -113,4 +113,23 @@
 </div>
 @endsection
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('btn-import').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Import Nilai?',
+            text: "Pastikan format file sesuai template. Data lama mungkin akan tertimpa.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Import!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.closest('form').submit();
+            }
+        });
+    });
+</script>
 @endpush
