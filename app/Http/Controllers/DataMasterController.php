@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subject;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Models\{Stage, Level, Major, AcademicYear};
 
@@ -14,7 +16,11 @@ class DataMasterController extends Controller
         $majors = Major::all();
         $academicYears = AcademicYear::orderBy('name', 'desc')->get();
 
-        return view('admin.master_data.index', compact('stages', 'levels', 'majors', 'academicYears'));
+        $subjects = Subject::orderBy('group')->orderBy('name')->get();
+        $teachers = Teacher::orderBy('name')->get();
+
+
+        return view('admin.master_data.index', compact('stages', 'levels', 'majors', 'academicYears', 'subjects', 'teachers'));
     }
 
     // --- GENERIC STORE FUNCTION (Untuk ringkas) ---
@@ -99,5 +105,28 @@ class DataMasterController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return back()->with('error', 'Gagal hapus! Tahun ajaran ini memiliki data kelas/siswa.');
         }
+    }
+
+    // Tambahkan Method Store & Destroy
+    public function storeSubject(Request $r)
+    {
+        Subject::create($r->all());
+        return back()->with('success', 'Mapel ditambah');
+    }
+    public function destroySubject(Subject $s)
+    {
+        $s->delete();
+        return back()->with('success', 'Mapel dihapus');
+    }
+
+    public function storeTeacher(Request $r)
+    {
+        Teacher::create($r->all());
+        return back()->with('success', 'Guru ditambah');
+    }
+    public function destroyTeacher(Teacher $t)
+    {
+        $t->delete();
+        return back()->with('success', 'Guru dihapus');
     }
 }

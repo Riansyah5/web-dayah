@@ -9,13 +9,19 @@ use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ViolationController;
+use App\Http\Controllers\DataMasterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
-use App\Http\Controllers\DataMasterController;
-use App\Http\Controllers\ClassroomController;
-use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\Academic\Grading\CourseController;
+use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
+use App\Http\Controllers\Academic\Grading\TeacherGradingController;
+use App\Http\Controllers\Academic\SyllabusController;
+
 
 
 // Guest (Belum Login)
@@ -91,7 +97,6 @@ Route::get('/permissions/{id}/print', [PermissionController::class, 'print'])->n
 Route::get('/students/{student}/permissions', [PermissionController::class, 'history'])->name('students.permissions');
 Route::get('/students/{student}/permissions/pdf', [PermissionController::class, 'pdf'])->name('permissions.pdf');
 
-use App\Http\Controllers\ViolationController;
 
 // Route untuk melihat riwayat dan download PDF (gabung di index)
 Route::get('violations/dashboard', [ViolationController::class, 'indexAll'])->name('violations.dashboard');
@@ -112,6 +117,18 @@ Route::prefix('admin/master-data')->name('master.')->group(function () {
 	Route::delete('/levels/{level}', [DataMasterController::class, 'destroyLevel'])->name('levels.destroy');
 	Route::delete('/majors/{major}', [DataMasterController::class, 'destroyMajor'])->name('majors.destroy');
 	Route::delete('/academic-years/{academicYear}', [DataMasterController::class, 'destroyAcademicYear'])->name('academic-years.destroy');
+
+	Route::post('/subjects', [DataMasterController::class, 'storeSubject'])->name('subjects.store');
+	Route::delete('/subjects/{subject}', [DataMasterController::class, 'destroySubject'])->name('subjects.destroy');
+
+	Route::post('/teachers', [DataMasterController::class, 'storeTeacher'])->name('teachers.store');
+	Route::delete('/teachers/{teacher}', [DataMasterController::class, 'destroyTeacher'])->name('teachers.destroy');
+
+	Route::prefix('academic/syllabus')->name('syllabus.')->group(function () {
+		// URL: academic/syllabus/1 (dimana 1 adalah ID Mapel)
+		Route::get('/{subject}', [SyllabusController::class, 'index'])->name('index');
+		Route::post('/{subject}', [SyllabusController::class, 'store'])->name('store');
+	});
 });
 
 // Group Akademik Kelas
@@ -122,6 +139,30 @@ Route::put('academic/classrooms/{classroom}/move/{studentId}', [ClassroomControl
 
 
 Route::prefix('academic/promotion')->name('promotion.')->group(function () {
-    Route::get('/', [PromotionController::class, 'index'])->name('index');
-    Route::post('/process', [PromotionController::class, 'process'])->name('process');
+	Route::get('/', [PromotionController::class, 'index'])->name('index');
+	Route::post('/process', [PromotionController::class, 'process'])->name('process');
+});
+
+// Group Modul Rapor / Grading
+Route::prefix('academic/grading')->name('grading.')->group(function () {
+
+	// 1. Plotting Mapel & Guru (KBM)
+	Route::get('/plotting', [CourseController::class, 'index'])->name('plotting.index');
+	Route::post('/plotting/update', [CourseController::class, 'update'])->name('plotting.update');
+
+	// Nanti disini kita tambah route Import Excel, Input Nilai, dll.
+	// 2. Input Nilai (Guru)
+	Route::get('/teacher', [TeacherGradingController::class, 'index'])->name('teacher.index');
+	Route::get('/teacher/{course}', [TeacherGradingController::class, 'show'])->name('teacher.show');
+	Route::post('/teacher/{course}', [TeacherGradingController::class, 'update'])->name('teacher.update');
+
+	// Excel Features
+	Route::get('/teacher/{course}/export', [TeacherGradingController::class, 'exportExcel'])->name('teacher.export');
+	Route::post('/teacher/{course}/import', [TeacherGradingController::class, 'importExcel'])->name('teacher.import');
+
+	// 3. Wali Kelas (Leger & Cetak)
+	Route::get('/homeroom', [HomeroomGradingController::class, 'index'])->name('homeroom.index');
+	Route::get('/homeroom/{classroom}', [HomeroomGradingController::class, 'show'])->name('homeroom.show');
+	Route::post('/homeroom/update', [HomeroomGradingController::class, 'update'])->name('homeroom.update');
+	Route::get('/homeroom/print/{studentId}/{classroomId}', [HomeroomGradingController::class, 'print'])->name('homeroom.print');
 });

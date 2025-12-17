@@ -20,6 +20,10 @@
               data-bs-target="#tab-majors">Jurusan</button></li>
           <li class="nav-item"><button class="nav-link py-3 fw-bold text-primary" data-bs-toggle="tab"
               data-bs-target="#tab-years">Tahun Ajaran</button></li>
+          <li class="nav-item"><button class="nav-link py-3" data-bs-toggle="tab" data-bs-target="#tab-teachers">Data
+              Guru</button></li>
+          <li class="nav-item"><button class="nav-link py-3" data-bs-toggle="tab" data-bs-target="#tab-subjects">Mata
+              Pelajaran</button></li>
         </ul>
       </div>
       <div class="card-body p-4">
@@ -52,7 +56,8 @@
                     <td class="text-end">
                       <form action="{{ route('master.stages.destroy', $s->id) }}" method="POST">
                         @csrf @method('DELETE')
-                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" data-text="Hapus Jenjang ini?"><i class="bi bi-trash"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete"
+                          data-text="Hapus Jenjang ini?"><i class="bi bi-trash"></i></button>
                       </form>
                     </td>
                   </tr>
@@ -97,7 +102,8 @@
                     <td class="text-end">
                       <form action="{{ route('master.levels.destroy', $l->id) }}" method="POST">
                         @csrf @method('DELETE')
-                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" data-text="Hapus Tingkat ini?"><i class="bi bi-trash"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete"
+                          data-text="Hapus Tingkat ini?"><i class="bi bi-trash"></i></button>
                       </form>
                     </td>
                   </tr>
@@ -109,8 +115,10 @@
           <div class="tab-pane fade" id="tab-majors">
             <form action="{{ route('master.majors.store') }}" method="POST" class="row g-2 mb-4 bg-light p-3 rounded">
               @csrf
-              <div class="col-md-6"><input name="name" class="form-control" placeholder="Nama Jurusan" required></div>
-              <div class="col-md-3"><input name="code" class="form-control" placeholder="Kode (IPA)" required></div>
+              <div class="col-md-6"><input name="name" class="form-control" placeholder="Nama Jurusan" required>
+              </div>
+              <div class="col-md-3"><input name="code" class="form-control" placeholder="Kode (IPA)" required>
+              </div>
               <div class="col-md-3"><button class="btn btn-primary w-100"><i class="bi bi-plus-lg me-1"></i>
                   Simpan</button></div>
             </form>
@@ -131,7 +139,8 @@
                     <td class="text-end">
                       <form action="{{ route('master.majors.destroy', $m->id) }}" method="POST">
                         @csrf @method('DELETE')
-                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" data-text="Hapus Jurusan ini?"><i class="bi bi-trash"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete"
+                          data-text="Hapus Jurusan ini?"><i class="bi bi-trash"></i></button>
                       </form>
                     </td>
                   </tr>
@@ -187,9 +196,96 @@
                         {{-- Hanya boleh hapus jika tidak aktif --}}
                         <form action="{{ route('master.academic-years.destroy', $y->id) }}" method="POST">
                           @csrf @method('DELETE')
-                          <button type="button" class="btn btn-sm btn-light text-danger btn-delete" data-text="Hapus Tahun Ajaran ini? Data kelas terkait mungkin akan error jika tidak ditangani."><i class="bi bi-trash"></i></button>
+                          <button type="button" class="btn btn-sm btn-light text-danger btn-delete"
+                            data-text="Hapus Tahun Ajaran ini? Data kelas terkait mungkin akan error jika tidak ditangani."><i
+                              class="bi bi-trash"></i></button>
                         </form>
                       @endif
+                    </td>
+                  </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tab-pane fade" id="tab-teachers">
+            <form action="{{ route('master.teachers.store') }}" method="POST"
+              class="row g-2 mb-4 bg-light p-3 rounded">
+              @csrf
+              <div class="col-md-5"><input name="name" class="form-control" placeholder="Nama Lengkap" required>
+              </div>
+              <div class="col-md-3"><input name="title" class="form-control" placeholder="Gelar (S.Pd)"></div>
+              <div class="col-md-2"><input name="nip" class="form-control" placeholder="NIP/NIY"></div>
+              <div class="col-md-2"><button class="btn btn-primary w-100">Simpan</button></div>
+            </form>
+            <table class="table table-hover">
+              <thead class="bg-light">
+                <tr>
+                  <th>Nama Guru</th>
+                  <th>NIP</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach ($teachers as $t)
+                  <tr>
+                    <td>{{ $t->name }} {{ $t->title }}</td>
+                    <td>{{ $t->nip ?? '-' }}</td>
+                    <td><span class="badge bg-success">Aktif</span></td>
+                    <td>
+                      <form action="{{ route('master.teachers.destroy', $t->id) }}" method="POST"
+                        onsubmit="return confirm('Hapus?')">
+                        @csrf @method('DELETE')
+                        <button class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i></button>
+                      </form>
+                    </td>
+                  </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tab-pane fade" id="tab-subjects">
+            <form action="{{ route('master.subjects.store') }}" method="POST"
+              class="row g-2 mb-4 bg-light p-3 rounded">
+              @csrf
+              <div class="col-md-4"><input name="name" class="form-control" placeholder="Nama Mapel (Fiqih)"
+                  required></div>
+              <div class="col-md-2"><input name="code" class="form-control" placeholder="Kode (FQH)" required>
+              </div>
+              <div class="col-md-4">
+                <select name="group" class="form-select">
+                  <option value="A">Kelompok A (Wajib/Umum)</option>
+                  <option value="B">Kelompok B (Seni/Olahraga)</option>
+                  <option value="Diniyah">Kelompok Diniyah (Pondok)</option>
+                  <option value="Mulok">Muatan Lokal</option>
+                </select>
+              </div>
+              <div class="col-md-2"><button class="btn btn-primary w-100">Simpan</button></div>
+            </form>
+            <table class="table table-hover">
+              <thead class="bg-light">
+                <tr>
+                  <th>Kode</th>
+                  <th>Nama Mapel</th>
+                  <th>Kelompok</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach ($subjects as $s)
+                  <tr>
+                    <td><span class="badge bg-secondary">{{ $s->code }}</span></td>
+                    <td>{{ $s->name }}</td>
+                    <td>{{ $s->group }}</td>
+                    <td>
+                      <form action="{{ route('master.subjects.destroy', $s->id) }}" method="POST"
+                        onsubmit="return confirm('Hapus?')">
+                        @csrf @method('DELETE')
+                        <button class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i></button>
+                      </form>
+                      <a href="{{ route('master.syllabus.index', $s->id) }}" class="btn btn-sm btn-info">Materi</a>
                     </td>
                   </tr>
                 @endforeach
