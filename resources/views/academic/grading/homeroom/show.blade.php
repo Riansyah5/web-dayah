@@ -8,6 +8,9 @@
   <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
+        <h2><span class="badge bg-primary bg-opacity-10 text-primary"><a href="{{ route('grading.homeroom.index') }}" class="text-decoration-none text-muted small">
+          <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+        </a></span></h2>
         <h4 class="fw-bold mb-1">Leger & Rapor: {{ $classroom->name }}</h4>
         <small class="text-muted">Tahun Ajaran: {{ $classroom->academicYear->name }}
           ({{ $classroom->academicYear->semester }})</small>

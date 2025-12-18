@@ -13,112 +13,131 @@ use App\Models\ReportCard; // Pastikan model ini ada
 
 class HomeroomGradingController extends Controller
 {
-    // Halaman List Kelas (Pilih Kelas)
-    public function index()
-    {
-        $classrooms = Classroom::with(['academicYear', 'level', 'major'])
-            ->orderBy('academic_year_id', 'desc')
-            ->orderBy('level_id')
-            ->get();
+  // Halaman List Kelas (Pilih Kelas)
+  public function index()
+  {
+    // Ambil Tahun Aktif
+    $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
 
-        return view('academic.homeroom.index', compact('classrooms'));
+    // 1. Ambil Kelas Aktif -> Grouping by Level Name (Misal: "Kelas 7", "Kelas 8")
+    $activeClasses = \App\Models\Classroom::with(['level', 'academicYear'])
+      ->withCount('students')
+      ->where('academic_year_id', $activeYear->id)
+      ->orderBy('level_id') // Urutkan biar level 7 paling atas
+      ->orderBy('name')
+      ->get()
+      ->groupBy(function ($item) {
+        return $item->level->name; // Key Grouping: "Kelas 7"
+      });
+
+    // 2. Ambil Riwayat -> Grouping by Tahun Ajaran + Semester
+    $historyClasses = \App\Models\Classroom::with(['level', 'academicYear'])
+      ->withCount('students')
+      ->where('academic_year_id', '!=', $activeYear->id)
+      ->orderByDesc('academic_year_id') // Tahun terbaru paling atas
+      ->get()
+      ->groupBy(function ($item) {
+        // Key Grouping: "2023/2024 - Ganjil"
+        return $item->academicYear->name . ' (' . $item->academicYear->semester . ')';
+      });
+
+    return view('academic.grading.homeroom.index', compact('activeClasses', 'historyClasses', 'activeYear'));
+  }
+
+  // Halaman Detail Leger (Show)
+  public function show(Classroom $classroom)
+  {
+    $classroom->load(['students']);
+
+    $students = $classroom->students->sortBy('name');
+
+    // Ambil courses secara manual karena relasi di model Classroom tidak ditemukan
+    $courses = Course::with('subject')->where('classroom_id', $classroom->id)->get();
+
+    // Ambil data grades secara manual (grouped by student_id)
+    $grades = Grade::whereIn('student_id', $students->pluck('id'))
+      ->get()
+      ->groupBy('student_id');
+
+    // Ambil data report cards secara manual (keyed by student_id)
+    $reportCards = ReportCard::whereIn('student_id', $students->pluck('id'))
+      ->where('classroom_id', $classroom->id)
+      ->get()
+      ->keyBy('student_id');
+
+    return view('academic.grading.homeroom.show', compact('classroom', 'students', 'courses', 'grades', 'reportCards'));
+  }
+
+  // Simpan Data Leger (Absensi & Catatan)
+  public function update(Request $request)
+  {
+    $data = $request->report;
+    $classroomId = $request->classroom_id;
+
+    foreach ($data as $studentId => $reportData) {
+      // Simpan data rapor (Sakit, Izin, Alpha, Catatan, Status)
+      // Asumsi model ReportCard ada dan memiliki relasi ke Student
+      ReportCard::updateOrCreate(
+        [
+          'student_id' => $studentId,
+          'classroom_id' => $classroomId,
+        ],
+        [
+          'sick' => $reportData['sick'] ?? 0,
+          'permission' => $reportData['permission'] ?? 0,
+          'absent' => $reportData['absent'] ?? 0,
+          'notes' => $reportData['notes'],
+          'status' => $reportData['status'],
+        ]
+      );
     }
 
-    // Halaman Detail Leger (Show)
-    public function show(Classroom $classroom)
-    {
-        $classroom->load(['students']);
-        
-        $students = $classroom->students->sortBy('name');
-        
-        // Ambil courses secara manual karena relasi di model Classroom tidak ditemukan
-        $courses = Course::with('subject')->where('classroom_id', $classroom->id)->get();
+    return back()->with('success', 'Data Leger berhasil disimpan.');
+  }
 
-        // Ambil data grades secara manual (grouped by student_id)
-        $grades = Grade::whereIn('student_id', $students->pluck('id'))
-            ->get()
-            ->groupBy('student_id');
+  public function print($studentId, $classroomId)
+  {
+    $student = Student::findOrFail($studentId);
+    $classroom = Classroom::findOrFail($classroomId);
 
-        // Ambil data report cards secara manual (keyed by student_id)
-        $reportCards = ReportCard::whereIn('student_id', $students->pluck('id'))
-            ->where('classroom_id', $classroom->id)
-            ->get()
-            ->keyBy('student_id');
+    // Ambil Data Nilai
+    $courses = Course::with(['subject', 'grades' => function ($q) use ($studentId) {
+      $q->where('student_id', $studentId);
+    }])->where('classroom_id', $classroomId)
+      ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+      ->orderBy('subjects.group')
+      ->select('courses.*')
+      ->get();
 
-        return view('academic.homeroom.show', compact('classroom', 'students', 'courses', 'grades', 'reportCards'));
-    }
+    // Ambil Data Absensi
+    $reportCard = ReportCard::where('student_id', $studentId)
+      ->where('classroom_id', $classroomId)
+      ->first();
 
-    // Simpan Data Leger (Absensi & Catatan)
-    public function update(Request $request)
-    {
-        $data = $request->report;
-        $classroomId = $request->classroom_id;
+    $pdf = Pdf::loadView('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
 
-        foreach ($data as $studentId => $reportData) {
-            // Simpan data rapor (Sakit, Izin, Alpha, Catatan, Status)
-            // Asumsi model ReportCard ada dan memiliki relasi ke Student
-            ReportCard::updateOrCreate(
-                [
-                    'student_id' => $studentId,
-                    'classroom_id' => $classroomId,
-                ],
-                [
-                    'sick' => $reportData['sick'] ?? 0,
-                    'permission' => $reportData['permission'] ?? 0,
-                    'absent' => $reportData['absent'] ?? 0,
-                    'notes' => $reportData['notes'],
-                    'status' => $reportData['status'],
-                ]
-            );
-        }
+    return $pdf->stream('Rapor_' . $student->name . '.pdf');
+  }
 
-        return back()->with('success', 'Data Leger berhasil disimpan.');
-    }
+  public function preview($studentId, $classroomId)
+  {
+    $student = Student::findOrFail($studentId);
+    $classroom = Classroom::findOrFail($classroomId);
 
-    public function print($studentId, $classroomId)
-    {
-        $student = Student::findOrFail($studentId);
-        $classroom = Classroom::findOrFail($classroomId);
-        
-        // Ambil Data Nilai
-        $courses = Course::with(['subject', 'grades' => function($q) use ($studentId) {
-            $q->where('student_id', $studentId);
-        }])->where('classroom_id', $classroomId)
-           ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-           ->orderBy('subjects.group')
-           ->select('courses.*')
-           ->get();
+    // Ambil Data Nilai (Sama dengan method print)
+    $courses = Course::with(['subject', 'grades' => function ($q) use ($studentId) {
+      $q->where('student_id', $studentId);
+    }])->where('classroom_id', $classroomId)
+      ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+      ->orderBy('subjects.group')
+      ->select('courses.*')
+      ->get();
 
-        // Ambil Data Absensi
-        $reportCard = ReportCard::where('student_id', $studentId)
-                        ->where('classroom_id', $classroomId)
-                        ->first();
+    // Ambil Data Absensi
+    $reportCard = ReportCard::where('student_id', $studentId)
+      ->where('classroom_id', $classroomId)
+      ->first();
 
-        $pdf = Pdf::loadView('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
-        
-        return $pdf->stream('Rapor_' . $student->name . '.pdf');
-    
-    }
-
-    public function preview($studentId, $classroomId)
-    {
-        $student = Student::findOrFail($studentId);
-        $classroom = Classroom::findOrFail($classroomId);
-        
-        // Ambil Data Nilai (Sama dengan method print)
-        $courses = Course::with(['subject', 'grades' => function($q) use ($studentId) {
-            $q->where('student_id', $studentId);
-        }])->where('classroom_id', $classroomId)
-           ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-           ->orderBy('subjects.group')
-           ->select('courses.*')
-           ->get();
-
-        // Ambil Data Absensi
-        $reportCard = ReportCard::where('student_id', $studentId)
-                        ->where('classroom_id', $classroomId)
-                        ->first();
-
-        return view('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
-    }
+    return view('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
+  }
 }

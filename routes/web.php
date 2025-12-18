@@ -17,10 +17,12 @@ use App\Http\Controllers\DataMasterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
-use App\Http\Controllers\Academic\Grading\CourseController;
-use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
-use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\SyllabusController;
+use App\Http\Controllers\Academic\Grading\CourseController;
+use App\Http\Controllers\Academic\Grading\TeacherGradingController;
+use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
+use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+use App\Http\Controllers\Academic\Report\StudentHistoryController;
 
 
 
@@ -64,6 +66,7 @@ Route::get('/students/rooms', [StudentController::class, 'rooms'])->name('studen
 Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
 Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
 Route::get('/students/template', [StudentController::class, 'downloadTemplate'])->name('students.template');
+Route::get('/student/{student}/history', [StudentHistoryController::class, 'show'])->name('student.history');
 Route::resource('/students', StudentController::class);
 
 
@@ -146,6 +149,8 @@ Route::prefix('academic/promotion')->name('promotion.')->group(function () {
 // Group Modul Rapor / Grading
 Route::prefix('academic/grading')->name('grading.')->group(function () {
 
+	// DASHBOARD UTAMA (INDEX)
+	// Route::get('/', [GradingDashboardController::class, 'index'])->name('dashboard');
 	// 1. Plotting Mapel & Guru (KBM)
 	Route::get('/plotting', [CourseController::class, 'index'])->name('plotting.index');
 	Route::post('/plotting/update', [CourseController::class, 'update'])->name('plotting.update');

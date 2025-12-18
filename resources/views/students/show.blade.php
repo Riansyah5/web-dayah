@@ -189,6 +189,11 @@
             </div>
           </div>
           <div class="col-md-auto mt-3 mt-md-0 d-flex gap-2 justify-content-center">
+            {{-- tombol riwayat rapor --}}
+            <a href="{{ route('student.history', $student->id) }}"
+              class="btn btn-danger text-white rounded-3 shadow-sm px-3 ms-2">
+              <i class="bi bi-journal-text me-2"></i>Riwayat Rapor
+            </a>
             {{-- tombol riwayat pelanggaran --}}
             <a href="{{ route('violations.index', $student->id) }}"
               class="btn btn-danger text-white rounded-3 shadow-sm px-3 ms-2">
