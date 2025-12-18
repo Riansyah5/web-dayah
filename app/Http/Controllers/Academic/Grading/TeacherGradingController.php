@@ -15,13 +15,15 @@ class TeacherGradingController extends Controller
     // Halaman Dashboard Guru (Daftar Mapel yang diajar)
     public function index()
     {
-        // TODO: Nanti difilter berdasarkan Login Guru: ->where('teacher_id', auth()->user()->teacher_id)
-        // Sekarang tampilkan semua dulu untuk testing Admin
-        $courses = Course::with(['classroom', 'subject', 'teacher'])
-            ->orderBy('classroom_id')
+        // Ambil data (Nanti tambahkan ->where('teacher_id', ...) jika login guru sudah aktif)
+        $allCourses = Course::with(['classroom', 'subject', 'classroom.students'])
+            ->withCount('grades') // Hitung jumlah nilai masuk
             ->get();
 
-        return view('academic.grading.teacher.index', compact('courses'));
+        // Grouping berdasarkan ID Kelas agar datanya menyatu
+        $groupedCourses = $allCourses->groupBy('classroom_id');
+
+        return view('academic.grading.teacher.index', compact('groupedCourses'));
     }
 
     // Halaman Input Nilai (Web View)
@@ -29,7 +31,7 @@ class TeacherGradingController extends Controller
     {
         // Load data siswa di kelas ini beserta nilai mereka (jika ada)
         $course->load(['classroom.students', 'grades']);
-        
+
         // Mapping nilai biar mudah dipanggil di view: grades[student_id]
         $grades = $course->grades->keyBy('student_id');
 
