@@ -498,9 +498,12 @@
       });
     });
 
-    // Auto-Activate Tab from Session
-    @if(session('active_tab'))
-      var triggerEl = document.querySelector('button[data-bs-target="#{{ session('active_tab') }}"]');
+    // Auto-Activate Tab from Session or Query Param
+    @php
+      $activeTab = session('active_tab') ?? request('active_tab');
+    @endphp
+    @if($activeTab)
+      var triggerEl = document.querySelector('button[data-bs-target="#{{ $activeTab }}"]');
       if(triggerEl) {
         var tab = new bootstrap.Tab(triggerEl);
         tab.show();

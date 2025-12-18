@@ -3,6 +3,11 @@
 @push('link')
 @endpush
 @push('styles')
+<style>
+input, select {
+  cursor: pointer;
+}
+</style>
 @endpush
 @section('content')
   <div class="container py-4">
@@ -52,8 +57,7 @@
                       <th width="5%" class="text-center">Status</th>
                       <th class="ps-3">Mata Pelajaran</th>
                       <th width="30%">Guru Pengampu</th>
-                      <th width="10%">KKM</th>
-                      <th width="10%">Aksi</th>
+                      <th width="15%">KKM</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -63,7 +67,7 @@
                       @if ($currentGroup != $subject->group)
                         @php $currentGroup = $subject->group; @endphp
                         <tr class="table-secondary">
-                          <td colspan="5" class="fw-bold ps-4 small text-uppercase">Kelompok {{ $currentGroup }}</td>
+                          <td colspan="4" class="fw-bold ps-4 small text-uppercase">Kelompok {{ $currentGroup }}</td>
                         </tr>
                       @endif
 
@@ -92,7 +96,7 @@
 
                           <td class="align-middle">
                             <select name="teacher_id" class="form-select form-select-sm"
-                              {{ !$isActive ? 'disabled' : '' }}>
+                              {{ !$isActive ? 'disabled' : '' }} onchange="this.form.submit()">
                               <option value="">-- Pilih Guru --</option>
                               @foreach ($teachers as $teacher)
                                 <option value="{{ $teacher->id }}"
@@ -106,15 +110,7 @@
                           <td class="align-middle">
                             <input type="number" name="kkm" class="form-control form-control-sm text-center"
                               value="{{ $courseData?->kkm ?? 75 }}" min="0" max="100"
-                              {{ !$isActive ? 'disabled' : '' }}>
-                          </td>
-
-                          <td class="align-middle">
-                            @if ($isActive)
-                              <button type="submit" class="btn btn-sm btn-primary" title="Simpan Perubahan">
-                                <i class="bi bi-save"></i>
-                              </button>
-                            @endif
+                              {{ !$isActive ? 'disabled' : '' }} onchange="this.form.submit()">
                           </td>
                         </form>
                       </tr>

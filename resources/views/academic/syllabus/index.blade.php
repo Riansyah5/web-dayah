@@ -8,6 +8,8 @@
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
+        <h3><span class="badge bg-primary bg-opacity-10 text-primary"><a href="{{ route('master.index', ['active_tab' => 'tab-subjects']) }}" class="text-muted small text-decoration-none"><i
+            class="bi bi-arrow-left"></i> Kembali</a></span></h3>
         <h4 class="fw-bold mb-0">Atur Materi: {{ $subject->name }}</h4>
         <small class="text-muted">Kode: {{ $subject->code }} | Kelompok: {{ $subject->group }}</small>
       </div>
@@ -61,4 +63,17 @@
   </div>
 @endsection
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @endif
+  </script>
 @endpush

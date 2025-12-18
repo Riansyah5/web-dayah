@@ -15,12 +15,15 @@ class TeacherGradingController extends Controller
     // Halaman Dashboard Guru (Daftar Mapel yang diajar)
     public function index()
     {
-        // Ambil data (Nanti tambahkan ->where('teacher_id', ...) jika login guru sudah aktif)
-        $allCourses = Course::with(['classroom', 'subject', 'classroom.students'])
-            ->withCount('grades') // Hitung jumlah nilai masuk
+        // 1. Ambil data Course (Jadwal Mengajar)
+        // Kita load 'grades' (hanya kolom penting) untuk menghitung manual di PHP
+        // agar akurat hanya menghitung siswa yang SAAT INI ada di kelas tersebut.
+        $allCourses = Course::with(['classroom', 'subject', 'classroom.students', 'grades:id,course_id,student_id'])
+            ->orderBy('classroom_id')
+            ->orderBy('subject_id')
             ->get();
 
-        // Grouping berdasarkan ID Kelas agar datanya menyatu
+        // 2. Grouping berdasarkan ID Kelas agar tampilannya rapi per kelas
         $groupedCourses = $allCourses->groupBy('classroom_id');
 
         return view('academic.grading.teacher.index', compact('groupedCourses'));
@@ -41,25 +44,39 @@ class TeacherGradingController extends Controller
     // Simpan Nilai via WEB
     public function update(Request $request, Course $course)
     {
-        $data = $request->grades; // Array [student_id => [harian, uts, uas]]
+        $data = $request->grades; // Array input dari form
 
         foreach ($data as $studentId => $scores) {
-            $harian = (float) ($scores['harian'] ?? 0);
-            $uts = (float) ($scores['uts'] ?? 0);
-            $uas = (float) ($scores['uas'] ?? 0);
+            // 1. Cek apakah semua input kosong/null
+            $harian = $scores['harian'];
+            $uts    = $scores['uts'];
+            $uas    = $scores['uas'];
 
-            $grade = Grade::updateOrCreate(
-                ['course_id' => $course->id, 'student_id' => $studentId],
-                [
-                    'score_harian' => $harian,
-                    'score_uts' => $uts,
-                    'score_uas' => $uas,
-                ]
-            );
-            $grade->calculateFinal();
+            // Logic: Jika semua kolom kosong, dianggap "Belum Dinilai" / "Hapus Nilai"
+            if ($harian === null && $uts === null && $uas === null) {
+
+                // Hapus data grade jika ada (agar progress bar turun)
+                Grade::where('course_id', $course->id)
+                    ->where('student_id', $studentId)
+                    ->delete();
+            } else {
+                // 2. Jika ada salah satu yang diisi, Simpan/Update
+                // Kita gunakan (float) untuk memastikan tersimpan angka, tapi null tetap null jika kosong
+                $grade = Grade::updateOrCreate(
+                    ['course_id' => $course->id, 'student_id' => $studentId],
+                    [
+                        'score_harian' => $harian ?? 0,
+                        'score_uts'    => $uts ?? 0,
+                        'score_uas'    => $uas ?? 0,
+                    ]
+                );
+
+                // Hitung nilai akhir hanya jika data disimpan
+                $grade->calculateFinal();
+            }
         }
 
-        return back()->with('success', 'Nilai berhasil disimpan.');
+        return back()->with('success', 'Data nilai berhasil diperbarui.');
     }
 
     // Download Template Excel

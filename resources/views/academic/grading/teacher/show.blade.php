@@ -53,18 +53,18 @@
                     <td class="p-2">
                       <input type="number" step="0.01" name="grades[{{ $student->id }}][harian]"
                         class="form-control text-center bg-light border-0 score-input" data-student="{{ $student->id }}"
-                        data-type="harian" value="{{ $grade->score_harian ?? 0 }}">
+                        data-type="harian" value="{{ $grade->score_harian ?? '' }}">
 
                     </td>
                     <td class="p-2">
                       <input type="number" step="0.01" name="grades[{{ $student->id }}][uts]"
                         class="form-control text-center bg-light border-0 score-input" data-student="{{ $student->id }}"
-                        data-type="uts" value="{{ $grade->score_uts ?? 0 }}">
+                        data-type="uts" value="{{ $grade->score_uts ?? '' }}">
                     </td>
                     <td class="p-2">
                       <input type="number" step="0.01" name="grades[{{ $student->id }}][uas]"
                         class="form-control text-center bg-light border-0 score-input" data-student="{{ $student->id }}"
-                        data-type="uas" value="{{ $grade->score_uas ?? 0 }}">
+                        data-type="uas" value="{{ $grade->score_uas ?? '' }}">
                     </td>
                     <td class="text-center fw-bold text-primary">
                       <span id="final-{{ $student->id }}">
