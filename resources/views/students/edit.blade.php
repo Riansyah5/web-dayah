@@ -347,15 +347,9 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <div class="form-floating">
-                      <select name="education_level" class="form-select" id="level">
-                        <option value="MTS"
-                          {{ old('education_level', $student->education_level) == 'MTS' ? 'selected' : '' }}>MTS / SMP
-                        </option>
-                        <option value="MA"
-                          {{ old('education_level', $student->education_level) == 'MA' ? 'selected' : '' }}>MA / SMA
-                        </option>
-                        <option value="Madin"
-                          {{ old('education_level', $student->education_level) == 'Madin' ? 'selected' : '' }}>Madin Saja
+                      <select name="education_level" class="form-select" id="level" disabled>
+                        <option value="{{ $student->education_level }}"
+                          {{ old('education_level', $student->education_level) ? 'selected' : '' }}>{{ $student->education_level }}
                         </option>
                       </select>
                       <label for="level">Jenjang Pendidikan</label>
@@ -364,21 +358,21 @@
                   <div class="col-md-6">
                     <div class="form-floating">
                       <input type="text" name="class_group" class="form-control"
-                        value="{{ old('class_group', $student->class_group) }}">
+                        value="{{ old('class_group', $student->class_group) }}" disabled>
                       <label>Rombel / Kelas</label>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-floating">
                       <input type="text" name="dormitory" class="form-control"
-                        value="{{ old('dormitory', $student->dormitory) }}">
+                        value="{{ old('dormitory', $student->dormitory) }}" disabled>
                       <label>Gedung Asrama</label>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-floating">
                       <input type="text" name="room" class="form-control"
-                        value="{{ old('room', $student->room) }}">
+                        value="{{ old('room', $student->room) }}" disabled>
                       <label>Nama Kamar</label>
                     </div>
                   </div>

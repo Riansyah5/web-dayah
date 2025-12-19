@@ -23,6 +23,7 @@ use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
+use App\Http\Controllers\Academic\Report\ReportSettingController;
 
 
 
@@ -171,4 +172,11 @@ Route::prefix('academic/grading')->name('grading.')->group(function () {
 	Route::post('/homeroom/update', [HomeroomGradingController::class, 'update'])->name('homeroom.update');
 	Route::get('/homeroom/print/{studentId}/{classroomId}', [HomeroomGradingController::class, 'print'])->name('homeroom.print');
 	Route::get('/homeroom/preview/{studentId}/{classroomId}', [HomeroomGradingController::class, 'preview'])->name('homeroom.preview');
+});
+
+
+// Group Modul Pengaturan Rapor
+Route::prefix('academic/report/settings')->name('report.settings.')->group(function () {
+	Route::get('/report/settings', [ReportSettingController::class, 'index'])->name('index');
+	Route::post('/report/settings', [ReportSettingController::class, 'store'])->name('store');
 });

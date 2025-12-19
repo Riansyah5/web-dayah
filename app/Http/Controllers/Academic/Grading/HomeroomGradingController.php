@@ -95,8 +95,13 @@ class HomeroomGradingController extends Controller
     return back()->with('success', 'Data Leger berhasil disimpan.');
   }
 
+  // File: app/Http/Controllers/Academic/Grading/HomeroomController.php
+
   public function print($studentId, $classroomId)
   {
+    $isPdf = true; // Set true untuk generate PDF
+
+    // Ambil Data Student dan Classroom
     $student = Student::findOrFail($studentId);
     $classroom = Classroom::findOrFail($classroomId);
 
@@ -114,17 +119,53 @@ class HomeroomGradingController extends Controller
       ->where('classroom_id', $classroomId)
       ->first();
 
-    $pdf = Pdf::loadView('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
+    // --- Setting Rapor dari Database ---
+    $classroom = Classroom::with('level.stage')->findOrFail($classroomId);
+
+    // --- LOGIC BARU: AMBIL SETTING DARI DB ---
+    
+    // 1. Cari jenjang kelas ini (SD/SMP/SMA?)
+    $stageId = $classroom->level->stage_id;
+    $academicYearId = $classroom->academic_year_id;
+
+    // 2. Ambil setting rapor yang sesuai
+    $setting = \App\Models\ReportSetting::where('academic_year_id', $academicYearId)
+                ->where('stage_id', $stageId)
+                ->first();
+
+    // 3. Fallback (Jaga-jaga jika admin lupa setting, biar gak error)
+    $reportDate = $setting ? $setting->report_date->translatedFormat('d F Y') : now()->translatedFormat('d F Y');
+    $reportCity = $setting ? $setting->city : 'Kota Santri';
+    $headmaster = $setting ? $setting->headmaster_name : '..........................';
+    $headmasterNip = $setting ? $setting->headmaster_nip : '-';
+
+    // 4. Kirim ke View PDF
+    $pdf = Pdf::loadView('academic.grading.exports.report-card-pdf', compact(
+        'student', 
+        'classroom', 
+        'courses', 
+        'reportCard',
+        'reportDate', 
+        'reportCity', // Variable baru
+        'headmaster', 
+        'headmasterNip',
+        'isPdf'
+    ));
+
+    // Set ukuran kertas F4 atau A4
+    $pdf->setPaper('A4', 'portrait');
 
     return $pdf->stream('Rapor_' . $student->name . '.pdf');
   }
 
   public function preview($studentId, $classroomId)
   {
+    $isPdf = false;
+
     $student = Student::findOrFail($studentId);
     $classroom = Classroom::findOrFail($classroomId);
 
-    // Ambil Data Nilai (Sama dengan method print)
+    // Ambil Data Nilai
     $courses = Course::with(['subject', 'grades' => function ($q) use ($studentId) {
       $q->where('student_id', $studentId);
     }])->where('classroom_id', $classroomId)
@@ -138,6 +179,39 @@ class HomeroomGradingController extends Controller
       ->where('classroom_id', $classroomId)
       ->first();
 
-    return view('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard'));
+    // --- Setting Rapor dari Database ---
+    $classroom = Classroom::with('level.stage')->findOrFail($classroomId);
+
+    // --- LOGIC BARU: AMBIL SETTING DARI DB ---
+    
+    // 1. Cari jenjang kelas ini (SD/SMP/SMA?)
+    $stageId = $classroom->level->stage_id;
+    $academicYearId = $classroom->academic_year_id;
+
+    // 2. Ambil setting rapor yang sesuai
+    $setting = \App\Models\ReportSetting::where('academic_year_id', $academicYearId)
+                ->where('stage_id', $stageId)
+                ->first();
+
+    // 3. Fallback (Jaga-jaga jika admin lupa setting, biar gak error)
+    $reportDate = $setting ? $setting->report_date->translatedFormat('d F Y') : now()->translatedFormat('d F Y');
+    $reportCity = $setting ? $setting->city : 'Kota Santri';
+    $headmaster = $setting ? $setting->headmaster_name : '..........................';
+    $headmasterNip = $setting ? $setting->headmaster_nip : '-';
+
+    // 4. Kirim ke View PDF
+    $pdf = Pdf::loadView('academic.grading.exports.report-card-pdf', compact(
+        'student', 
+        'classroom', 
+        'courses', 
+        'reportCard',
+        'reportDate', 
+        'reportCity', // Variable baru
+        'headmaster', 
+        'headmasterNip',
+        'isPdf'
+    ));
+
+    return view('academic.grading.exports.report-card-pdf', compact('student', 'classroom', 'courses', 'reportCard', 'reportDate', 'reportCity', 'headmaster', 'headmasterNip', 'isPdf'));
   }
 }

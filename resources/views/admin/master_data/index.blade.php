@@ -266,10 +266,11 @@
               <div class="col-md-3">
                 <label class="small text-muted mb-1">Kelompok</label>
                 <select name="group" class="form-select">
-                  <option value="A">Kelompok A (Wajib)</option>
-                  <option value="B">Kelompok B (Seni/OR)</option>
-                  <option value="Diniyah">Diniyah (Pondok)</option>
-                  <option value="Mulok">Mulok</option>
+                  <option value="Umum">Kelompok A (Umum)</option>
+                  <option value="Seni">Kelompok B (Seni/OR)</option>
+                  <option value="Syar'i">Diniyah (Pondok)</option>
+                  <option value="Mulok/Ekstrakurikuler">Mulok/Ekstrakurikuler</option>
+                  <option value="Lainnya">Lainnya</option>
                 </select>
               </div>
 

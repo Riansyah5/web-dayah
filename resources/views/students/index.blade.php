@@ -88,6 +88,11 @@
       font-size: 0.875rem;
       margin-top: 1rem;
     }
+
+    /* Fix SweetAlert z-index over Bootstrap Modal */
+    .swal2-container {
+      z-index: 2000 !important;
+    }
   </style>
 @endpush
 
@@ -128,9 +133,9 @@
               <i class="bi bi-file-earmark-spreadsheet me-2"></i>Import
             </button>
 
-            <a href="{{ route('students.create') }}" class="btn btn-primary rounded-3 px-4 shadow-sm">
+            <button type="button" class="btn btn-primary rounded-3 px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#checkNisnModal">
               <i class="bi bi-plus-lg me-2"></i>Tambah
-            </a>
+            </button>
           </div>
         </div>
 
@@ -202,7 +207,8 @@
                             {{ $initial }}
                           </div> --}}
                           <div>
-                            <div class="fw-bold text-dark student-name"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
+                            <div class="fw-bold text-dark student-name"><a
+                                href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
                             <div class="small text-muted">
                               {{ $student->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}
                             </div>
@@ -254,10 +260,12 @@
                             class="btn btn-sm btn-light text-warning border" title="Edit">
                             <i class="bi bi-pencil-square"></i>
                           </a>
-                          <form action="{{ route('students.destroy', $student->id) }}" method="post" class="d-inline">
+                          <form action="{{ route('students.destroy', $student->id) }}" method="post"
+                            class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-light text-danger border delete-btn rounded-start-0" title="Hapus">
+                            <button type="submit"
+                              class="btn btn-sm btn-light text-danger border delete-btn rounded-start-0" title="Hapus">
                               <i class="bi bi-trash"></i>
                             </button>
                           </form>
@@ -278,6 +286,31 @@
         </div>
       </div>
     </div>
+
+    {{-- Modal Cek NISN --}}
+    <div class="modal fade" id="checkNisnModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold">Cek Ketersediaan NISN</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <form id="checkNisnForm">
+              <div class="mb-3">
+                <label for="checkNisnInput" class="form-label fw-semibold">Masukkan NISN</label>
+                <input type="text" class="form-control form-control-lg" id="checkNisnInput" required placeholder="Nomor Induk Siswa Nasional">
+                <div class="form-text text-muted">Sistem akan mengecek apakah NISN sudah terdaftar.</div>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Cek & Lanjut</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     {{-- Import Modal --}}
     <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -350,6 +383,17 @@
   <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
 
   <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @endif
+
     $(document).ready(function() {
       // Inisialisasi DataTable
       var table = $('#myTable').DataTable({
@@ -407,6 +451,30 @@
       // 4. Konek Custom Page Length
       $('#customLengthChange').on('change', function() {
         table.page.len(this.value).draw();
+      });
+
+      // Script Check NISN
+      $('#checkNisnModal').on('shown.bs.modal', function () {
+        $('#checkNisnInput').focus();
+      });
+
+      $('#checkNisnForm').on('submit', function(e) {
+        e.preventDefault();
+        var nisn = $('#checkNisnInput').val().trim();
+        // Ambil daftar NISN dari data students yang ada di view (Client-side check)
+        var existingNisns = @json($students->pluck('nisn')->filter()->values());
+
+        if (existingNisns.includes(nisn)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Data Sudah Ada',
+            text: 'NISN ' + nisn + ' sudah terdaftar dalam sistem.',
+            confirmButtonColor: '#d33'
+          });
+        } else {
+          // Redirect ke halaman create dengan membawa parameter NISN
+          window.location.href = "{{ route('students.create') }}?nisn=" + encodeURIComponent(nisn);
+        }
       });
     });
 

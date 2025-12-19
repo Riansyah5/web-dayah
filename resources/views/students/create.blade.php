@@ -161,7 +161,7 @@
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="nisn" class="form-control" id="nisn" placeholder="NISN"
-                          value="{{ old('nisn') }}">
+                          value="{{ old('nisn', request('nisn')) }}">
                         <label for="nisn">NISN</label>
                       </div>
                     </div>
@@ -331,7 +331,7 @@
                   <div class="row g-3">
                     <div class="col-md-6">
                       <div class="form-floating">
-                        <select name="education_level" class="form-select" id="level">
+                        <select name="education_level" class="form-select" id="level" disabled>
                           <option value="MTS">MTS / SMP</option>
                           <option value="MA">MA / SMA</option>
                           <option value="Madin">Madin Saja</option>
@@ -342,22 +342,22 @@
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="class_group" class="form-control" placeholder="Misal: 1A"
-                          value="{{ old('class_group') }}">
+                          value="{{ old('class_group') }}" disabled>
                         <label>Rombel / Kelas</label>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="dormitory" class="form-control" placeholder="Nama Asrama"
-                          value="{{ old('dormitory') }}">
+                          value="{{ old('dormitory') }}" disabled>
                         <label>Gedung Asrama</label>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="room" class="form-control" placeholder="Nomor Kamar"
-                          value="{{ old('room') }}">
-                        <label>Nomor Kamar</label>
+                          value="{{ old('room') }}" disabled>
+                        <label>Nama Kamar</label>
                       </div>
                     </div>
                     <div class="col-md-6">

@@ -55,6 +55,7 @@
               <ul class="pc-submenu">
                 <li class="pc-item"><a class="pc-link" href="{{ route('grading.plotting.index') }}">Mapel & Guru</a></li>
                 <li class="pc-item"><a class="pc-link" href="{{ route('grading.teacher.index') }}">Input Nilai</a></li>
+                <li class="pc-item"><a class="pc-link" href="{{ route('report.settings.index') }}">Pengaturan Rapor</a></li>
                 <li class="pc-item"><a class="pc-link" href="{{ route('grading.homeroom.index') }}">Leger & Cetak</a></li>
               </ul>
             </li>
