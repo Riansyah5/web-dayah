@@ -114,7 +114,7 @@
                         <td class="ps-5">
                           <div class="fw-bold text-dark subject-name">{{ $course->subject->name }}</div>
                           <small class="text-muted" style="font-size: 0.75rem;">
-                            {{ $course->subject->code }} <span class="mx-1">&bull;</span> Kelompok
+                            {{ $course->subject->code }} <span class="mx-1">&bull;</span> Muatan
                             {{ $course->subject->group }}
                           </small>
                         </td>

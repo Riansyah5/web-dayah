@@ -8,7 +8,7 @@
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-        <a href="{{ route('grading.teacher.index') }}" class="text-muted small text-decoration-none"><i
+        <a href="{{ route('grading.teacher.index') }}" class="btn btn-sm btn-outline-secondary text-decoration-none rounded"><i
             class="bi bi-arrow-left"></i> Kembali</a>
         <h4 class="fw-bold mt-1 mb-0">{{ $course->subject->name }} - {{ $course->classroom->name }}</h4>
         <small class="text-muted">Guru: {{ $course->teacher->name ?? '-' }} | </small>

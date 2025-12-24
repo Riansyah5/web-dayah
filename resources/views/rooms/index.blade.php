@@ -9,8 +9,9 @@
     <div class="row justify-content-center">
       <div class="card">
         <div class="card-header d-flex justify-content-between">
-          <h4>Data Kamar Santri</h4>
-          <a href="{{ route('rooms.create') }}" class="btn btn-primary btn-sm">Tambah Kamar</a>
+          <h2><i class="bi bi-house-gear-fill"></i> Data Kamar Santri</h2>
+          <a href="{{ route('rooms.create') }}" class="btn btn-primary btn-sm rounded p-2"><i class="bi bi-plus-circle"></i>
+            Tambah Kamar</a>
         </div>
         <div class="card-body">
           @if (session('success'))
@@ -36,7 +37,8 @@
                   </td>
                   <td>{{ $room->capacity }} Orang</td>
                   <td>{{ $room->warden->nama ?? 'Belum Ditentukan' }}</td>
-                  <td><a href="#" class="btn btn-sm btn-warning">Edit</a></td>
+                  <td><a href="#" class="btn btn-sm btn-warning rounded"><i class="bi bi-pencil-square"></i>
+                      Edit</a></td>
                 </tr>
               @empty
                 <tr>
@@ -52,4 +54,18 @@
   </div>
 @endsection
 @push('scripts')
+  {{-- sweetAlert2 --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @endif
+  </script>
 @endpush

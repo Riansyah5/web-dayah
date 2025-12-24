@@ -75,7 +75,7 @@
               </div>
 
               <div class="d-flex justify-content-end gap-2">
-                <a href="{{ route('permissions.index') }}" class="btn btn-light">Batal</a>
+                <a href="{{ route('permissions.index') }}" class="btn btn-outline-danger">Batal</a>
                 <button type="submit" class="btn btn-primary px-4">Simpan & Setujui</button>
               </div>
             </form>

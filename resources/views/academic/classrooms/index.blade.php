@@ -34,7 +34,7 @@
           <div class="card h-100 border-0 shadow-sm rounded-4">
             <div class="card-body">
               <div class="d-flex justify-content-between mb-2">
-                <span class="badge bg-dark">{{ $c->level->stage->code ?? '' }}</span>
+                <span class="badge bg-secondary">{{ $c->level->stage->code ?? '' }}</span>
                 <div class="dropdown">
                   <button class="btn btn-link btn-sm text-dark p-0" data-bs-toggle="dropdown"><i
                       class="bi bi-three-dots-vertical"></i></button>

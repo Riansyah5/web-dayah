@@ -147,9 +147,11 @@
           </ol>
         </nav>
       </div>
-      <a href="{{ route('students.index') }}" class="btn btn-light border text-muted shadow-sm rounded-3">
-        <i class="bi bi-arrow-left me-2"></i>Kembali
-      </a>
+      <div class="d-flex justify-content-between align-items-center">
+        <a href="{{ route('students.index') }}" class="btn btn-outline-secondary text-mute shadow-sm rounded-3">
+          <i class="bi bi-arrow-left me-2"></i>Kembali
+        </a>
+      </div>
     </div>
 
     <div class="card profile-header rounded-4 mb-4 shadow-sm position-relative overflow-hidden">
@@ -188,24 +190,24 @@
               {{ $student->created_at->translatedFormat('d F Y') }}
             </div>
           </div>
-          <div class="col-md-auto mt-3 mt-md-0 d-flex gap-2 justify-content-center">
+          <div class="col-md-auto mt-3 mt-md-3 d-flex flex-wrap gap-2 justify-content-center">
             {{-- tombol riwayat rapor --}}
             <a href="{{ route('student.history', $student->id) }}"
-              class="btn btn-danger text-white rounded-3 shadow-sm px-3 ms-2">
-              <i class="bi bi-journal-text me-2"></i>Riwayat Rapor
+              class="btn btn-success text-white rounded-3 shadow-sm px-3 ms-2">
+              <i class="bi bi-journal-text me-2"></i>Rapor
             </a>
             {{-- tombol riwayat pelanggaran --}}
             <a href="{{ route('violations.index', $student->id) }}"
-              class="btn btn-danger text-white rounded-3 shadow-sm px-3 ms-2">
+              class="btn btn-danger text-white rounded-3 shadow-sm px-3">
               <i class="bi bi-journal-text me-2"></i>Pelanggaran
             </a>
             {{-- tombol riwayat izin --}}
             <a href="{{ route('students.permissions', $student->id) }}"
-              class="btn btn-info text-white rounded-3 shadow-sm px-3 ms-2">
+              class="btn btn-info text-white rounded-3 shadow-sm px-3">
               <i class="bi bi-journal-text me-2"></i>Riwayat Izin
             </a>
             {{-- tombol pindah kamar --}}
-            <button class="btn btn-primary text-white rounded-3 shadow-sm px-3 ms-2" data-bs-toggle="modal"
+            <button class="btn btn-primary text-white rounded-3 shadow-sm px-3" data-bs-toggle="modal"
               data-bs-target="#moveRoomModal">
               <i class="bi bi-arrow-left-right me-2"></i>Pindah Kamar
             </button>
@@ -385,10 +387,9 @@
           </div>
         </div>
 
-        <div class="card card-section bg-primary text-white"
-          style="background: linear-gradient(45deg, #4f46e5, #6366f1);">
+        <div class="card card-section bg-secondary text-white">
           <div class="card-body">
-            <h6 class="fw-bold border-bottom border-white pb-2 mb-3 border-opacity-25">
+            <h6 class="fw-bold border-bottom border-white pb-2 mb-3 border-opacity-25 text-white">
               <i class="bi bi-building me-2"></i>Lokasi Asrama
             </h6>
             <div class="row">

@@ -59,8 +59,14 @@
 
                     {{-- Kepala Sekolah --}}
                     <td>
-                      <input type="text" name="settings[{{ $stage->id }}][headmaster_name]" class="form-control"
-                        value="{{ $set->headmaster_name ?? '' }}" placeholder="Nama Lengkap & Gelar" required>
+                      <select name="settings[{{ $stage->id }}][headmaster_name]" class="form-select" required>
+                        <option value="">-- Pilih Kepala Sekolah --</option>
+                        @foreach ($employees as $employee)
+                          <option value="{{ $employee->nama }}" @selected(old('settings.' . $stage->id . '.headmaster_name', $set->headmaster_name ?? '') == $employee->nama)>
+                            {{ $employee->nama }}
+                          </option>
+                        @endforeach
+                      </select>
                     </td>
 
                     {{-- NIP --}}
@@ -82,4 +88,17 @@
   </div>
 @endsection
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @endif
+  </script>
 @endpush

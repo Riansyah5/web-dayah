@@ -7,9 +7,7 @@
 @push('styles')
   <style>
     /* Sedikit kustomisasi agar terlihat lebih modern */
-    body {
-      background-color: #f8f9fa;
-    }
+    
 
     .card-header {
       background-color: #0d6efd;

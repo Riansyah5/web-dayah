@@ -8,7 +8,12 @@
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="card col-md-6 mx-auto">
-        <div class="card-header">Buat Kamar Baru</div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h2 class="d-inline"><i class="bi bi-house-add-fill"></i> Buat Kamar Baru</h2>
+          <a href="{{ route('rooms.index') }}" class="btn btn-secondary border text-white shadow-sm rounded-3">
+            <i class="bi bi-arrow-left me-2"></i>Kembali
+          </a>
+        </div>
         <div class="card-body">
           <form action="{{ route('rooms.store') }}" method="POST">
             @csrf
@@ -46,7 +51,7 @@
               </select>
             </div>
             <button type="submit" class="btn btn-success">Simpan Kamar</button>
-            <a href="{{ route('rooms.index') }}" class="btn btn-secondary">Batal</a>
+            <a href="{{ route('rooms.index') }}" class="btn btn-danger">Batal</a>
           </form>
         </div>
       </div>

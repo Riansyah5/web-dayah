@@ -6,9 +6,17 @@
 @endpush
 @section('content')
   <div class="container py-4">
-    <a href="{{ route('students.show', $student->id) }}" class="btn btn-light border text-muted shadow-sm rounded-3 mb-2">
+    <a href="{{ route('students.show', $student->id) }}" class="btn btn-outline-secondary text-mute shadow-sm rounded-3 mb-2">
         <i class="bi bi-arrow-left me-2"></i>Kembali
       </a>
+        <a href="{{ route('student.biodata.print', $student->id) }}" target="_blank"
+          class="btn btn-light text-primary shadow-sm fw-bold ms-2 mb-2">
+          <i class="bi bi-printer me-2"></i> Cetak Biodata
+        </a>
+        <a href="{{ route('student.biodata.show', $student->id) }}" target="_blank"
+          class="btn btn-light text-primary shadow-sm fw-bold ms-2 mb-2">
+          <i class="bi bi-eye me-2"></i> lihat Biodata
+        </a>
     <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white overflow-hidden position-relative">
       <div class="position-absolute top-0 end-0 p-3 opacity-25">
         <i class="bi bi-mortarboard-fill display-1"></i>
@@ -22,7 +30,7 @@
           </div>
           <div class="ms-4">
             <h6 class="text-white-50 text-uppercase letter-spacing-1 mb-1">Portofolio Akademik</h6>
-            <h2 class="fw-bold mb-1">{{ $student->name }}</h2>
+            <h2 class="fw-bold mb-1 text-white">{{ $student->name }}</h2>
             <p class="mb-0 opacity-75"><i class="bi bi-upc-scan me-2"></i>NIS: {{ $student->nis }}</p>
           </div>
         </div>

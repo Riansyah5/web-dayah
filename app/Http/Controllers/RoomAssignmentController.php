@@ -74,6 +74,6 @@ class RoomAssignmentController extends Controller
             );
         }
 
-        return redirect()->route('students.index')->with('success', "$countSelected Santri berhasil ditempatkan di kamar!");
+        return redirect()->route('students.rooms')->with('success', "$countSelected Santri berhasil ditempatkan di kamar!");
     }
 }

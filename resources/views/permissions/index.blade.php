@@ -21,7 +21,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="mb-0 text-white">Sedang Di Luar</h6>
-                <h1 class="fw-bold mb-0">{{ $activePermissions->count() }}</h1>
+                <h1 class="fw-bold mb-0 text-white">{{ $activePermissions->count() }}</h1>
               </div>
               <i class="bi bi-box-arrow-right fs-1 opacity-75"></i>
             </div>
@@ -82,21 +82,27 @@
                       </td>
                       <td>
                         @if (now()->gt($perm->end_date))
-                          <span class="text-danger fw-bold">Telat {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
+                          <span class="text-danger fw-bold">Telat
+                            {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
                         @else
-                          <span class="text-success">Sisa {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
+                          <span class="text-success">Sisa
+                            {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
                         @endif
                       </td>
                       <td class="text-end pe-4">
                         <a href="{{ route('permissions.print', $perm->id) }}" target="_blank"
-                          class="btn btn-sm btn-outline-secondary me-1" title="Cetak Surat">
+                          class="btn btn-sm btn-outline-secondary me-1" title="Lihat dan Cetak Surat">
                           <i class="bi bi-printer"></i>
+                        </a>
+                        <a href="{{ route('permissions.downloadpdf', $perm->id) }}" target="_blank"
+                          class="btn btn-sm btn-outline-warning me-1" title="Download PDF Surat Izin">
+                          <i class="bi bi-download"></i>
                         </a>
                         <form action="{{ route('permissions.return', $perm->id) }}" method="POST" class="d-inline">
                           @csrf
                           @method('PUT')
-                          <button type="submit" class="btn btn-sm btn-success text-white"
-                            onclick="return confirm('Konfirmasi santri sudah kembali?')">
+                          <button type="submit" class="btn btn-sm btn-success text-white btn-return"
+                            data-name="{{ $perm->student->name }}">
                             <i class="bi bi-check-lg me-1"></i> Kembali
                           </button>
                         </form>
@@ -162,4 +168,42 @@
   </div>
 @endsection
 @push('scripts')
+  {{-- sweetAlert2 --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @endif
+
+    // SweetAlert Konfirmasi Kembali
+    document.querySelectorAll('.btn-return').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        const name = this.getAttribute('data-name');
+
+        Swal.fire({
+          title: 'Konfirmasi Kembali',
+          html: `Apakah santri <strong>${name}</strong> sudah kembali ke asrama?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#198754',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, Sudah',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+  </script>
 @endpush

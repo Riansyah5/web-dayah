@@ -68,6 +68,8 @@ Route::post('/students/import', [StudentController::class, 'import'])->name('stu
 Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
 Route::get('/students/template', [StudentController::class, 'downloadTemplate'])->name('students.template');
 Route::get('/student/{student}/history', [StudentHistoryController::class, 'show'])->name('student.history');
+Route::get('/student/{student}/biodata', [StudentHistoryController::class, 'printBiodata'])->name('student.biodata.print');
+Route::get('/student/{student}/biodatashow', [StudentHistoryController::class, 'showBiodata'])->name('student.biodata.show');
 Route::resource('/students', StudentController::class);
 
 
@@ -98,6 +100,7 @@ Route::post('assignments', [RoomAssignmentController::class, 'store'])->name('as
 Route::resource('/permissions', PermissionController::class);
 Route::put('/permissions/{id}/return', [PermissionController::class, 'markAsReturned'])->name('permissions.return');
 Route::get('/permissions/{id}/print', [PermissionController::class, 'print'])->name('permissions.print');
+Route::get('/permissions/{id}/downloadpdf', [PermissionController::class, 'downloadPdf'])->name('permissions.downloadpdf');
 Route::get('/students/{student}/permissions', [PermissionController::class, 'history'])->name('students.permissions');
 Route::get('/students/{student}/permissions/pdf', [PermissionController::class, 'pdf'])->name('permissions.pdf');
 

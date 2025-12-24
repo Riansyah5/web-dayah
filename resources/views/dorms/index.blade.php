@@ -8,8 +8,9 @@
       <div class="col-md-8">
         <div class="card">
           <div class="card-header d-flex justify-content-between">
-            <h4>Daftar Gedung Asrama</h4>
-            <a href="{{ route('dorms.create') }}" class="btn btn-primary btn-sm">Tambah Gedung</a>
+            <h2><i class="bi bi-hospital"></i> Daftar Gedung Asrama</h2>
+            <a href="{{ route('dorms.create') }}" class="btn btn-primary btn-sm rounded p-2"><i
+                class="bi bi-plus-circle"></i> Tambah Gedung</a>
           </div>
           <div class="card-body">
             @if (session('success'))
@@ -41,4 +42,18 @@
   </div>
 @endsection
 @push('scripts')
+  {{-- sweetAlert2 --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @endif
+  </script>
 @endpush

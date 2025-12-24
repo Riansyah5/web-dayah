@@ -84,8 +84,9 @@ class PermissionController extends Controller
     // Fungsi Cetak Surat
     public function print($id)
     {
+        $isPdf = false;
         $permission = Permission::with(['student'])->findOrFail($id);
-        return view('permissions.print', compact('permission'));
+        return view('permissions.print', compact('permission', 'isPdf'));
     }
 
     public function history(Student $student)
@@ -104,6 +105,8 @@ class PermissionController extends Controller
 
     public function pdf(Request $request, Student $student)
     {
+
+        // Ambil data izin, urutkan dari yang terbaru
         $query = $student->permissions()->orderBy('start_date', 'desc');
 
         // Filter berdasarkan periode
@@ -131,5 +134,14 @@ class PermissionController extends Controller
         ])
         ->setPaper('A4', 'portrait')
         ->download($fileName);
+    }
+    public function downloadPdf($id)
+    {
+        $isPdf = true;
+        $permission = Permission::with(['student'])->findOrFail($id);
+        $pdf = Pdf::loadView('permissions.print', compact('permission', 'isPdf'));
+        $fileName = 'Surat_Izin_' . $permission->student->name . '.pdf';
+
+        return $pdf->setPaper('A4', 'portrait')->download($fileName);
     }
 }

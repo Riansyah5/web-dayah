@@ -87,7 +87,7 @@ class HomeroomGradingController extends Controller
           'permission' => $reportData['permission'] ?? 0,
           'absent' => $reportData['absent'] ?? 0,
           'notes' => $reportData['notes'],
-          'status' => $reportData['status'],
+          'status' => $reportData['status'] ?? "-",
         ]
       );
     }

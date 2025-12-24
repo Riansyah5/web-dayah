@@ -18,9 +18,9 @@ input, select {
 
     <div class="row">
       <div class="col-md-3 mb-3">
-        <div class="card border-0 shadow-sm rounded-4">
+        <div class="card border-0 shadow-sm rounded">
           <div class="card-header bg-white fw-bold py-3">Pilih Kelas</div>
-          <div class="list-group list-group-flush rounded-bottom-4">
+          <div class="list-group list-group-flush rounded-bottom">
             @forelse($classrooms as $cls)
               <a href="{{ route('grading.plotting.index', ['classroom_id' => $cls->id]) }}"
                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ $selectedClassroom?->id == $cls->id ? 'active fw-bold' : '' }}">
@@ -45,8 +45,8 @@ input, select {
                 <small class="text-muted">{{ $activeYear->name ?? '' }}</small>
               </div>
               {{-- Tombol Import Excel nanti ditaruh disini --}}
-              <button class="btn btn-sm btn-success disabled" title="Fitur akan datang"><i
-                  class="bi bi-file-earmark-excel me-1"></i> Import Excel</button>
+              {{-- <button class="btn btn-sm btn-success disabled" title="Fitur akan datang"><i
+                  class="bi bi-file-earmark-excel me-1"></i> Import Excel</button> --}}
             </div>
 
             <div class="card-body p-0">
@@ -67,7 +67,7 @@ input, select {
                       @if ($currentGroup != $subject->group)
                         @php $currentGroup = $subject->group; @endphp
                         <tr class="table-secondary">
-                          <td colspan="4" class="fw-bold ps-4 small text-uppercase">Kelompok {{ $currentGroup }}</td>
+                          <td colspan="4" class="fw-bold ps-4 small text-uppercase">Muatan {{ $currentGroup }}</td>
                         </tr>
                       @endif
 
@@ -128,7 +128,7 @@ input, select {
           </div>
         @else
           {{-- State Kosong (Belum pilih kelas) --}}
-          <div class="card border-0 shadow-sm rounded-4 py-5 text-center">
+          <div class="card border-0 shadow-sm rounded py-5 text-center">
             <div class="card-body">
               <img src="https://cdn-icons-png.flaticon.com/512/10302/10302224.png" width="80" class="opacity-50 mb-3">
               <h5 class="fw-bold text-muted">Pilih Kelas Terlebih Dahulu</h5>

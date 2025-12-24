@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Academic\Report;
 
-use App\Http\Controllers\Controller;
-use App\Models\AcademicYear;
 use App\Models\Stage;
-use App\Models\ReportSetting;
+use App\Models\Pegawai;
+use App\Models\AcademicYear;
 use Illuminate\Http\Request;
+use App\Models\ReportSetting;
+use App\Http\Controllers\Controller;
 
 class ReportSettingController extends Controller
 {
@@ -17,13 +18,17 @@ class ReportSettingController extends Controller
         
         // Ambil semua jenjang (SD, SMP, SMA)
         $stages = Stage::orderBy('id')->get();
+
+        // Ambil semua data pegawai
+        $employees = Pegawai::orderBy('nama')->get();
+
         
         // Ambil settingan yang sudah tersimpan (jika ada)
         $settings = ReportSetting::where('academic_year_id', $activeYear->id)
                     ->get()
                     ->keyBy('stage_id'); // Biar mudah dipanggil: $settings[1]
 
-        return view('academic.report.settings.index', compact('activeYear', 'stages', 'settings'));
+        return view('academic.report.settings.index', compact('activeYear', 'stages', 'settings', 'employees'));
     }
 
     public function store(Request $request)
