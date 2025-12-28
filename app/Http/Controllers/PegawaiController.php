@@ -52,7 +52,7 @@ class PegawaiController extends Controller
         ]);
 
         Pegawai::create($request->all());
-        return redirect()->route('pegawai.index');
+        return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan.');
     }
 
     /**
@@ -111,6 +111,12 @@ class PegawaiController extends Controller
      */
     public function destroy(Pegawai $pegawai)
     {
-        //
+        // Hapus akun user yang terkait jika ada
+        if ($pegawai->user) {
+            $pegawai->user->delete();
+        }
+
+        $pegawai->delete();
+        return redirect()->route('pegawai.index')->with('success', 'Data pegawai dan akun terkait berhasil dihapus.');
     }
 }

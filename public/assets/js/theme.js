@@ -214,9 +214,9 @@ function layout_change(layout) {
   dark_flag = isDark;
 
   // Update logo images based on the layout
-  const logoPaths = isDark ? '../assets/images/logo-white.svg' : '../assets/images/logo-dark.svg';
+  const logoPaths = isDark ? '../assets/images/logo_dayah.png' : '../assets/images/logo_dayah.png';
 
-  const landingLogoPath = isDark ? 'assets/images/logo-white.svg' : 'assets/images/logo-dark.svg';
+  const landingLogoPath = isDark ? 'assets/images/logo_dayah.png' : 'assets/images/logo_dayah.png';
 
   const logoSelectors = [
     '.pc-sidebar .m-header .logo-lg',

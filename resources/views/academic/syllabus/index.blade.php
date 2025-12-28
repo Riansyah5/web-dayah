@@ -8,8 +8,8 @@
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-        <h3><span class="badge bg-primary bg-opacity-10 text-primary"><a href="{{ route('master.index', ['active_tab' => 'tab-subjects']) }}" class="text-muted small text-decoration-none"><i
-            class="bi bi-arrow-left"></i> Kembali</a></span></h3>
+        <h3><a href="{{ route('master.index', ['active_tab' => 'tab-subjects']) }}" class="btn btn-outline-secondary btn-sm rounded text-decoration-none"><i
+            class="bi bi-arrow-left"></i> Kembali</a></h3>
         <h4 class="fw-bold mb-0">Atur Materi: {{ $subject->name }}</h4>
         <small class="text-muted">Kode: {{ $subject->code }} | Kelompok: {{ $subject->group }}</small>
       </div>

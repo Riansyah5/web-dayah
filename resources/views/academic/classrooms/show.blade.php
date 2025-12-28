@@ -8,13 +8,13 @@
 @section('content')
   <div class="container py-4">
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white overflow-hidden position-relative">
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-info text-white overflow-hidden position-relative">
       <i class="bi bi-people-fill position-absolute bottom-0 end-0 mb-n3 me-4 opacity-10" style="font-size: 8rem;"></i>
 
       <div class="card-body p-4 position-relative z-1">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <a href="{{ route('classrooms.index') }}"
-            class="btn btn-sm btn-light bg-white bg-opacity-25 text-white border-0 rounded-pill px-3">
+            class="btn btn-sm btn-light bg-secondary bg-opacity-55 text-white border-0 rounded-pill px-3">
             <i class="bi bi-arrow-left me-1"></i> Kembali
           </a>
           <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill">
@@ -22,7 +22,7 @@
           </span>
         </div>
 
-        <div class="row align-items-end">
+        <div class="row align-items-end" style="padding-right: 120px;">
           <div class="col-md-8">
             <h5 class="text-white-50 mb-1">
               {{ $classroom->level->stage->code }} &bull; {{ $classroom->level->name }}
@@ -30,18 +30,18 @@
                 &bull; {{ $classroom->major->name }}
               @endif
             </h5>
-            <h1 class="fw-bold mb-0 display-5">{{ $classroom->name }}</h1>
+            <h1 class="fw-bold mb-0 display-5 text-white">{{ $classroom->name }}</h1>
             <p class="mb-0 mt-2 opacity-75"><i class="bi bi-person-badge me-2"></i>Wali Kelas:
               {{ $classroom->homeroom_teacher ?? 'Belum ditentukan' }}</p>
           </div>
-          <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            <div class="d-inline-block text-center bg-white bg-opacity-10 rounded-3 p-3">
-              <h2 class="fw-bold mb-0">{{ $classroom->students->count() }}</h2>
-              <small class="text-white-50">Total Siswa</small>
+          <div class="col-md-4 text-md-end mt-3 mt-md-0 ">
+            <div class="d-inline-block text-center bg-white bg-opacity-50 rounded-3 p-3">
+              <h2 class="fw-bold mb-0 text-muted">{{ $classroom->students->count() }}</h2>
+              <small class="text-muted">Total Siswa</small>
             </div>
-            <div class="d-inline-block text-center bg-white bg-opacity-10 rounded-3 p-3 ms-2">
-              <h2 class="fw-bold mb-0">{{ $classroom->capacity }}</h2>
-              <small class="text-white-50">Kapasitas</small>
+            <div class="d-inline-block text-center bg-white bg-opacity-50 rounded-3 p-3 ms-2">
+              <h2 class="fw-bold mb-0 text-muted">{{ $classroom->capacity }}</h2>
+              <small class="text-muted">Kapasitas</small>
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@
                   <tr>
                     <td class="ps-4 text-muted">{{ $index + 1 }}</td>
                     <td>
-                      <div class="fw-bold text-dark">{{ $student->name }}</div>
+                      <div class="fw-bold text-dark"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
                     </td>
                     <td class="text-muted small">{{ $student->nis }}</td>
                     <td>
@@ -207,13 +207,30 @@
     }
 
     // Notifikasi Sukses
-    @if (session('success'))
+    {{--   @if (session('success'))
       Swal.fire({
         icon: 'success',
         title: 'Berhasil',
         text: '{{ session('success') }}',
         timer: 2000,
         showConfirmButton: false
+      }); --}}
+    @if (session('success'))
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1800,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      Toast.fire({
+        icon: 'success',
+        title: "{{ session('success') }}"
       });
     @endif
 

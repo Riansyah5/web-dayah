@@ -5,7 +5,8 @@
   <title>Rapor Siswa</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      /*font-family: Arial, sans-serif;*/
+      font-family: Cambria;
       font-size: 11pt;
       line-height: 1.3;
     }
@@ -163,7 +164,7 @@
     <table width="100%">
       <tr>
         <td width="15%" align="center">
-          <img src="{{ $logoDayah }}" width="70">
+          <img src="{{ $logoKemenag }}" width="70">
         </td>
         <td width="70%" align="center">
           <h2>KEMENTERIAN AGAMA</h2>
@@ -172,7 +173,7 @@
           <p>Jl. Line Pipa, Desa Alue Liem, Kec. Blang Mangat, Kota Lhokseumawe</p>
         </td>
         <td width="15%" align="center">
-          <img src="{{ $logoKemenag }}" width="70">
+          <img src="{{ $logoDayah }}" width="70">
         </td>
       </tr>
     </table>
@@ -187,7 +188,7 @@
     </tr>
     <tr>
       <td>NIS / NISN</td>
-      <td>: {{ $student->nis }}</td>
+      <td>: {{ $student->nis }} / {{ $student->nisn }}</td>
       <td>Tahun Pelajaran</td>
       <td>: {{ $classroom->academicYear->name }}</td>
     </tr>

@@ -9,9 +9,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <a href="{{ route('grading.homeroom.index') }}"
-              class="text-decoration-none btn btn-outline-secondary btn-sm rounded mb-2">
-              <i class="bi bi-arrow-left"></i> Kembali
-            </a>
+          class="text-decoration-none btn btn-outline-secondary btn-sm rounded mb-2">
+          <i class="bi bi-arrow-left"></i> Kembali
+        </a>
         <h4 class="fw-bold mb-1">Leger & Rapor: {{ $classroom->name }}</h4>
         <small class="text-muted">Tahun Ajaran: {{ $classroom->academicYear->name }}
           ({{ $classroom->academicYear->semester }})</small>
@@ -42,16 +42,16 @@
                   @endforeach
 
                   <th colspan="3">Ketidakhadiran</th>
-                  <th rowspan="2" style="min-width:150px;">Catatan Wali Kelas</th>
+                  <th rowspan="2" style="min-width:200px;">Catatan Wali Kelas</th>
                   @if ($classroom->academicYear->semester == 'Genap')
                     <th rowspan="2" style="min-width:120px;">Keputusan</th>
                   @endif
                   <th rowspan="2">Aksi</th>
                 </tr>
                 <tr>
-                  <th width="50" class="text-success">S</th>
-                  <th width="50" class="text-primary">I</th>
-                  <th width="50" class="text-danger">A</th>
+                  <th style="min-width:70px;" class="text-success">S</th>
+                  <th style="min-width:70px;" class="text-primary">I</th>
+                  <th style="min-width:70px;" class="text-danger">A</th>
                 </tr>
               </thead>
               <tbody>
@@ -80,17 +80,17 @@
 
                     {{-- Input Absensi --}}
                     <td><input type="number" name="report[{{ $student->id }}][sick]" value="{{ $report->sick ?? 0 }}"
-                        class="form-control form-control-sm text-center border-0 bg-light p-0" size="4"></td>
+                        class="form-control form-control-sm text-center border-1 bg-light p-0" size="4"></td>
                     <td><input type="number" name="report[{{ $student->id }}][permission]"
                         value="{{ $report->permission ?? 0 }}"
-                        class="form-control form-control-sm text-center border-0 bg-light p-0"></td>
+                        class="form-control form-control-sm text-center border-1 bg-light p-0"></td>
                     <td><input type="number" name="report[{{ $student->id }}][absent]"
                         value="{{ $report->absent ?? 0 }}"
-                        class="form-control form-control-sm text-center border-0 bg-light p-0"></td>
+                        class="form-control form-control-sm text-center border-1 bg-light p-0"></td>
 
                     {{-- Catatan --}}
                     <td>
-                      <textarea name="report[{{ $student->id }}][notes]" class="form-control form-control-sm border-0 bg-light"
+                      <textarea name="report[{{ $student->id }}][notes]" class="form-control form-control-sm border-1 bg-light"
                         rows="1">{{ $report->notes ?? '' }}</textarea>
                     </td>
 
@@ -111,12 +111,12 @@
                     <td class="text-center">
                       <div class="btn-group btn-group-sm" role="group">
                         <a href="{{ route('grading.homeroom.preview', ['studentId' => $student->id, 'classroomId' => $classroom->id]) }}"
-                          target="_blank" class="btn btn-outline-info" title="Lihat Rapor">
-                          <i class="bi bi-eye"></i>
+                          target="_blank" class="btn btn-outline-danger" title="Print Rapor">
+                          <i class="bi bi-printer"></i>
                         </a>
                         <a href="{{ route('grading.homeroom.print', ['studentId' => $student->id, 'classroomId' => $classroom->id]) }}"
-                          target="_blank" class="btn btn-outline-dark" title="Cetak PDF">
-                          <i class="bi bi-printer"></i>
+                          target="_blank" class="btn btn-outline-success" title="Download Rapor PDF">
+                          <i class="bi bi-download"></i>
                         </a>
                       </div>
                     </td>

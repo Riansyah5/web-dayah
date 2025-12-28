@@ -18,7 +18,7 @@
             <div class="alert alert-success">{{ session('success') }}</div>
           @endif
 
-          <table class="table table-striped">
+          <table class="table">
             <thead>
               <tr>
                 <th>Nama Kamar</th>
@@ -29,20 +29,30 @@
               </tr>
             </thead>
             <tbody>
-              @forelse($rooms as $room)
+              @php
+                $groupedRooms = $rooms->groupBy(function($item) {
+                    return $item->dorm->name ?? 'Tanpa Gedung';
+                });
+              @endphp
+              @forelse($groupedRooms as $dormName => $group)
                 <tr>
-                  <td>{{ $room->name }}</td>
+                  <td colspan="5" class="fw-bold"><span class="btn btn-info btn-sm rounded"><i class="bi bi-houses-fill me-2"></i>{{ $dormName }}</span></td>
+                </tr>
+                @foreach($group as $room)
+                <tr>
+                  <td>{{ $loop->iteration }}. {{ $room->name }}</td>
                   <td>
                     <span class="badge bg-secondary">{{ $room->dorm->name ?? 'Tanpa Gedung' }}</span>
                   </td>
                   <td>{{ $room->capacity }} Orang</td>
                   <td>{{ $room->warden->nama ?? 'Belum Ditentukan' }}</td>
-                  <td><a href="#" class="btn btn-sm btn-warning rounded"><i class="bi bi-pencil-square"></i>
+                  <td><a href="#" class="btn btn-sm btn-success rounded"><i class="bi bi-pencil-square"></i>
                       Edit</a></td>
                 </tr>
+                @endforeach
               @empty
                 <tr>
-                  <td colspan="4" class="text-center">Belum ada data kamar.</td>
+                  <td colspan="5" class="text-center">Belum ada data kamar.</td>
                 </tr>
               @endforelse
             </tbody>

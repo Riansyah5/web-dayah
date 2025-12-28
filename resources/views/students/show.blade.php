@@ -421,7 +421,7 @@
               <div class="col-md-6">
                 <div class="info-label">Tempat, Tanggal Lahir</div>
                 <div class="info-value">
-                  {{ $student->birth_place }}, {{ $student->birth_date->translatedFormat('d F Y') }}
+                  {{ $student->birth_place }}, {{ $student->birth_date->locale('id')->translatedFormat('d F Y') }}
                   <span class="text-muted small">({{ $student->birth_date->age }} Tahun)</span>
                 </div>
               </div>

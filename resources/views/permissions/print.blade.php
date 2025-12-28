@@ -136,7 +136,7 @@
             <tr>
                 <td class="label">NIS / Asrama</td>
                 <td class="colon">:</td>
-                <td>{{ $permission->student->nis }} / {{ $permission->student->room ?? '-' }}</td>
+                <td>{{ $permission->student->nis }} / {{ $permission->student->dormitory ?? '-' }} (Kamar {{ $permission->student->room ?? '-' }})</td>
             </tr>
             <tr>
                 <td class="label">Keperluan</td>

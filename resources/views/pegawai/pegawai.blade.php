@@ -171,8 +171,8 @@
                       <td>
                         @php
                           $statusClass = match ($pegawai->status_pegawai) {
-                              'PNS', 'Tetap' => 'bg-success',
-                              'Honorer', 'Kontrak' => 'bg-warning text-dark',
+                              'PNS', 'TETAP' => 'bg-success',
+                              'Honorer', 'Kontrak', 'TRAINING' => 'bg-warning text-dark',
                               default => 'bg-secondary',
                           };
                         @endphp
@@ -187,7 +187,7 @@
                             <i class="bi bi-pencil-square"></i>
                           </a>
                           <button type="button" class="btn btn-action btn-light text-danger delete-btn"
-                            title="Hapus" onclick="confirmDelete(event, '{{ route('pegawai.destroy', $pegawai->id) }}')">
+                            title="Hapus" onclick="confirmDelete(event, '{{ $pegawai->id }}')">
                             <i class="bi bi-trash"></i>
                           </button>
                         </div>
@@ -233,11 +233,8 @@
 
   <script>
     // Custom Delete Confirmation Function
-    function confirmDelete(e, url) { // Note: Ini hanya contoh, sesuaikan dengan logic delete Anda (form submit atau link)
+    function confirmDelete(e, id) {
       e.preventDefault();
-      // Jika link GET: window.location.href = url;
-      // Jika Form Delete (Standard Laravel):
-      // document.getElementById('delete-form-' + id).submit();
 
       Swal.fire({
         title: 'Apakah Anda yakin?',
@@ -253,10 +250,7 @@
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          // Cari form delete terdekat atau redirect
-          // window.location.href = url; // Gunakan ini jika delete pakai GET
-          // Atau submit form logic di sini jika pakai DELETE method
-          alert('Silakan sesuaikan logic submit form delete di script ini sesuai route Anda');
+          document.getElementById('delete-form-' + id).submit();
         }
       });
     }
@@ -270,24 +264,24 @@
         ],
         buttons: [{
             extend: 'pageLength',
-            className: 'btn btn-outline-success btn-sm',
+            className: 'btn btn-outline-success btn-sm mt-2',
             text: '<i class="bi bi-list-ul me-1"></i> Tampilkan'
           },
           {
             extend: 'copyHtml5',
             text: '<i class="bi bi-clipboard me-1"></i> Copy',
-            className: 'btn btn-outline-success btn-sm'
+            className: 'btn btn-outline-success btn-sm mt-2'
           },
           {
             extend: 'excelHtml5',
             text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel',
-            className: 'btn btn-outline-success btn-sm',
+            className: 'btn btn-outline-success btn-sm mt-2',
             title: 'Data Pegawai'
           },
           {
             extend: 'pdfHtml5',
             text: '<i class="bi bi-file-earmark-pdf me-1"></i> PDF',
-            className: 'btn btn-outline-danger btn-sm',
+            className: 'btn btn-outline-danger btn-sm mt-2',
             orientation: 'landscape',
             pageSize: 'LEGAL',
             title: 'Data Pegawai'
@@ -295,13 +289,13 @@
           {
             extend: 'colvis',
             text: '<i class="bi bi-eye me-1"></i> Tampilan Kolom',
-            className: 'btn btn-outline-primary btn-sm'
+            className: 'btn btn-outline-primary btn-sm mt-2'
           }
         ],
         responsive: true,
         language: {
           search: "_INPUT_",
-          searchPlaceholder: "Cari data pegawai...",
+          searchPlaceholder: "Cari data pegawai........",
           lengthMenu: "Tampilkan _MENU_ data",
           info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ pegawai",
           paginate: {
@@ -325,7 +319,7 @@
       });
 
       // SweetAlert Success Notification
-      @if (session('success'))
+      /* @if (session('success'))
         const Toast = Swal.mixin({
           toast: true,
           position: 'top-end',
@@ -341,6 +335,16 @@
         Toast.fire({
           icon: 'success',
           title: '{{ session('success') }}'
+        });
+      @endif */
+      @if (session('success'))
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: '{{ session('success') }}',
+          timer: 1800,
+          timerProgressBar: true,
+          showConfirmButton: false
         });
       @endif
     });

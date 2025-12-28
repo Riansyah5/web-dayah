@@ -115,7 +115,7 @@
 
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-bold text-dark">Registrasi Santri Baru</h4>
-            <a href="{{ route('students.index') }}" class="btn btn-light border text-muted">
+            <a href="{{ route('students.index') }}" class="btn btn-outline-secondary">
               <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
           </div>

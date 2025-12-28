@@ -147,7 +147,14 @@ class ClassroomController extends Controller
             'student_ids'   => 'required|array|min:1',
             'student_ids.*' => 'exists:students,id',
         ]);
+        // cek kapasitas kelas
+        $currentCount = $classroom->students()->count();
+        $addCount = count($request->student_ids);
 
+        if ($currentCount + $addCount > $classroom->capacity) {
+            return back()->with('error', 'Gagal! Jumlah siswa melebihi kapasitas kelas. Sisa slot: ' . ($classroom->capacity - $currentCount));
+        }
+        // -------------------
         $now = now();
         $data = [];
 
@@ -163,8 +170,14 @@ class ClassroomController extends Controller
 
         DB::table('classroom_student')->insert($data);
 
+        $classroom->load('level.stage');
+        $educationLevel = $classroom->level->stage->code ?? null;
+
         Student::whereIn('id', $request->student_ids)
-            ->update(['class_group' => $classroom->name]);
+            ->update([
+                'class_group'     => $classroom->name,
+                'education_level' => $educationLevel,
+            ]);
 
         return back()->with('success', count($request->student_ids) . ' siswa ditambahkan');
     }

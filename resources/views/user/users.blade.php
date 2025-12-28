@@ -157,7 +157,15 @@
               </thead>
               <tbody id="userTableBody">
                 @foreach ($users as $user)
-                  <tr class="user-row" data-role="{{ $user->role }}" data-status="{{ $user->status }}">
+                  @php
+                    $isSuperAdmin = $user->username === 'superadmin';
+                    $super = $isSuperAdmin && Auth::user()->username !== 'superadmin';
+                    if ($isSuperAdmin && Auth::user()->username !== 'superadmin') {
+                        continue;
+                    }
+                  @endphp
+                  <tr class="user-row" data-role="{{ $user->role }}"
+                    data-status="{{ $user->status }}" >
                     <td class="ps-4">
                       <div class="d-flex align-items-center">
                         <img src="https://ui-avatars.com/api/?name={{ $user->name }}&background=random" alt="Avatar"
@@ -175,7 +183,7 @@
                         <div class="form-check form-switch">
                           <input class="form-check-input status-toggle" type="checkbox" role="switch"
                             id="statusSwitch{{ $user->id }}" data-user-id="{{ $user->id }}"
-                            {{ $user->status == 'Aktif' ? 'checked' : '' }}>
+                            {{ $user->status == 'Aktif' ? 'checked' : '' }} {{ $isSuperAdmin ? 'disabled' : '' }}>
                           <label class="form-check-label status-label"
                             for="statusSwitch{{ $user->id }}">{{ ucfirst($user->status) }}</label>
                         </div>
@@ -186,14 +194,18 @@
                     <td class="text-muted">{{ $user->updated_by }}</td>
                     <td class="text-end pe-4">
                       <div class="btn-group btn-group-sm" role="group" aria-label="User Actions">
-                        <a href="{{ route('user.edit', $user->id) }}" class="btn btn-outline-warning" title="Edit">
+                        <a href="{{ $isSuperAdmin ? '#' : route('user.edit', $user->id) }}"
+                          class="btn btn-outline-warning" title="Edit">
                           <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button type="button" class="btn btn-outline-danger delete-btn" data-id="{{ $user->id }}" title="Hapus">
+                        <button type="button"
+                          class="btn btn-outline-danger delete-btn {{ $isSuperAdmin ? 'disabled' : '' }}"
+                          data-id="{{ $user->id }}" title="Hapus" {{ $isSuperAdmin ? 'disabled' : '' }}>
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
-                      <form id="delete-form-{{ $user->id }}" action="{{ route('user.destroy', $user->id) }}" method="POST" class="d-none">
+                      <form id="delete-form-{{ $user->id }}" action="{{ route('user.destroy', $user->id) }}"
+                        method="POST" class="d-none">
                         @csrf @method('DELETE')
                       </form>
                     </td>
@@ -274,8 +286,10 @@
       <script>
         Swal.fire({
           icon: 'success',
-          title: 'Berhasil!',
+          title: 'Berhasil',
           text: '{{ session('success') }}',
+          timer: 2000,
+          showConfirmButton: false
         });
       </script>
     @endif

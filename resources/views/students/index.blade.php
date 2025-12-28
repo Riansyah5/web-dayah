@@ -207,8 +207,7 @@
                             {{ $initial }}
                           </div> --}}
                           <div>
-                            <div class="fw-bold text-dark student-name"><a
-                                href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
+                            <div class="fw-bold text-dark student-name"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
                             <div class="small text-muted">
                               {{ $student->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}
                             </div>
@@ -391,6 +390,13 @@
         text: '{{ session('success') }}',
         timer: 2000,
         showConfirmButton: false
+      });
+    @elseif (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        html: '{{ session('error') }}',
+        showConfirmButton: true
       });
     @endif
 

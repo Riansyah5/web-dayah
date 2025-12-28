@@ -16,7 +16,7 @@ return new class extends Migration
         $table->ulid('id')->primary();
         $table->string('name'); // Matematika
         $table->string('code')->unique(); // MTK
-        $table->enum('group', ['A', 'B', 'C', 'Diniyah', 'Mulok'])->default('A'); 
+        $table->enum('group', ['Umum', 'Syari', 'Mulok', 'Lainnya'])->default('Umum'); 
         $table->timestamps();
     });
 

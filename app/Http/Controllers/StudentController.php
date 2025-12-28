@@ -7,6 +7,7 @@ use App\Models\RoomHistory;
 use Illuminate\Http\Request;
 use App\Imports\StudentImport;
 use App\Exports\StudentsExport;
+use App\Exports\StudentTemplateExport;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -184,7 +185,7 @@ class StudentController extends Controller
 
         $student->update($validatedData);
 
-        return redirect()->route('students.index')->with('success', 'Data Santri berhasil diperbarui.');
+        return redirect()->route('students.show', $student->id)->with('success', 'Data Santri berhasil diperbarui.');
     }
 
     /**
@@ -209,7 +210,7 @@ class StudentController extends Controller
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             // Bisa redirect kembali dengan pesan error spesifik jika mau
-            return redirect()->back()->with('error', 'Gagal Impor. Cek baris: ' . $failures[0]->row() . '. Error: ' . $failures[0]->errors()[0]);
+            return redirect()->back()->with('error', 'Gagal Impor. Cek baris: ' .$failures[0]->row() .'. Error: ' . $failures[0]->errors()[0]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan format Excel. Pastikan gunakan Template.');
         }
@@ -226,17 +227,7 @@ class StudentController extends Controller
 
     public function downloadTemplate()
     {
-        // Cara sederhana download template tanpa buat file fisik
-        // Kita buat file excel on-the-fly berisi header saja
-        $headers = ['nis', 'nisn', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'nama_ayah', 'nama_ibu', 'desa', 'kecamatan', 'kabupaten'];
-
-        return response()->streamDownload(function () use ($headers) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $headers);
-            // Contoh Data Dummy (Opsional)
-            fputcsv($file, ['12345', '00123', 'Ahmad Santri', 'L', 'Surabaya', '2010-05-20', 'Budi', 'Siti', 'Sukolilo', 'Sukolilo', 'Surabaya']);
-            fclose($file);
-        }, 'template_import_santri.csv');
+        return Excel::download(new StudentTemplateExport, 'template_import_santri.xlsx');
     }
     // ----------------------------------------------------------------------
     // fitur kamar dan pindah kamar santri

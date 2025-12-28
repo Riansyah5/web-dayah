@@ -74,11 +74,11 @@
                         <span class="badge bg-warning text-dark">{{ ucfirst($perm->type) }}</span>
                       </td>
                       <td>
-                        <small class="text-muted">{{ $perm->user->name ?? '-' }}</small>
+                        <strong>{{ $perm->user->name ?? '-' }}</strong>
                       </td>
-                      <td>{{ $perm->start_date->format('d M H:i') }}</td>
+                      <td>{{ $perm->start_date->locale('id')->translatedFormat('d M H:i') }}</td>
                       <td>
-                        <div class="fw-bold text-danger">{{ $perm->end_date->format('d M H:i') }}</div>
+                        <div class="fw-bold text-danger">{{ $perm->end_date->locale('id')->translatedFormat('d M H:i') }}</div>
                       </td>
                       <td>
                         @if (now()->gt($perm->end_date))
@@ -142,7 +142,7 @@
                     <tr>
                       <td class="ps-4 fw-medium">{{ $perm->student->name }}</td>
                       <td>{{ ucfirst($perm->type) }}</td>
-                      <td><small class="text-muted">{{ $perm->user->name ?? '-' }}</small></td>
+                      <td><strong>{{ $perm->user->name ?? '-' }}</strong></td>
                       <td>{{ Str::limit($perm->reason, 30) }}</td>
                       <td>{{ $perm->start_date->format('d/m/y H:i') }}</td>
                       <td>{{ $perm->returned_at ? $perm->returned_at->format('d/m/y H:i') : '-' }}</td>

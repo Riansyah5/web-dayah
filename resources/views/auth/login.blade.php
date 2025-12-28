@@ -15,7 +15,7 @@
   <meta name="author" content="codedthemes" />
 
   <!-- [Favicon] icon -->
-  <link rel="icon" href="{{ asset('assets/images/favicon.svg') }}') }}" type="image/x-icon" />
+  <link rel="icon" href="{{ asset('assets/images/logo_dayah.png') }}" type="image/x-icon" />
   <!-- [Google Font] Family -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
     id="main-font-link" />
@@ -52,22 +52,22 @@
         <div class="card my-5">
           <div class="card-body">
             <a href="#" class="d-flex justify-content-center">
-              <img src="{{ asset('assets/images/logo-dark.svg') }}" alt="image" class="img-fluid brand-logo" />
+              <img src="{{ asset('assets/images/logo_dayah.png') }}" alt="image" class="img-fluid brand-logo" style="width: 20%;"/>
             </a>
             <div class="row">
               <div class="d-flex justify-content-center">
                 <div class="auth-header">
-                  <h2 class="text-secondary mt-5"><b>Hi, Welcome Back</b></h2>
-                  <p class="f-16 mt-2">Enter your credentials to continue</p>
+                  <h2 class="text-secondary mt-5"><b>السلام عليكم ورحمة الله وبركاته</b></h2>
+                  {{-- <p class="f-16 mt-2">Enter your credentials to continue</p> --}}
                 </div>
               </div>
             </div>
-            <div class="d-grid">
+            {{-- <div class="d-grid">
               <button type="button" class="btn mt-2 bg-light-primary bg-light text-muted">
                 <img src="{{ asset('assets/images/authentication/google-icon.svg') }}" alt="image" />Sign In With
                 Google
               </button>
-            </div>
+            </div> --}}
             <div class="saprator mt-3">
               <span>or</span>
             </div>
@@ -84,7 +84,7 @@
               </div>
               <div class="d-flex mt-1 justify-content-between">
                 <div class="form-check">
-                  <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" name="remember" checked="" />
+                  <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" name="remember" />
                   <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
                 </div>
                 <h5 class="text-secondary">Forgot Password?</h5>

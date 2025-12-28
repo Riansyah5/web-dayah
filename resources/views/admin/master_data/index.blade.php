@@ -96,7 +96,17 @@
               <tbody>
                 @foreach ($levels as $l)
                   <tr>
-                    <td><span class="badge bg-dark">{{ $l->stage->code }}</span></td>
+                    <td>
+                      @php
+                        $badgeColor = match ($l->stage->code) {
+                            'SD', 'MI', 'ULA' => 'bg-primary', // biru
+                            'SMP', 'MTS', 'WUSTHA' => 'bg-success', // hijau
+                            'SMA', 'MA', 'ULYA' => 'bg-warning text-dark', // kuning
+                            default => 'bg-primary', // Biru (Default)
+                        };
+                      @endphp
+                      <span class="badge {{ $badgeColor }}">{{ $l->stage->code }}</span>
+                    </td>
                     <td>{{ $l->name }}</td>
                     <td>{{ $l->alias }}</td>
                     <td class="text-end">
@@ -267,8 +277,8 @@
                 <label class="small text-muted mb-1">Kelompok</label>
                 <select name="group" class="form-select">
                   <option value="Umum">Muatan Umum</option>
-                  <option value="Syar'i">Muatan Syar'i</option>
-                  <option value="Mulok/Ekstrakurikuler">Mulok/Ekstrakurikuler</option>
+                  <option value="Syari">Muatan Syar'i</option>
+                  <option value="Mulok">Mulok/Ekstrakurikuler</option>
                   <option value="Lainnya">Lainnya</option>
                 </select>
               </div>
@@ -311,8 +321,13 @@
                       {{ $s->name }}
                       <br>
                       @foreach ($s->stages as $stage)
-                        <span class="badge bg-light text-dark border"
+                        @if ($stage->code == 'WUSTHA')
+                        <span class="badge bg-success text-white border"
                           style="font-size: 0.6rem;">{{ $stage->code }}</span>
+                        @elseif ($stage->code == 'ULYA')
+                          <span class="badge bg-warning text-dark border"
+                          style="font-size: 0.6rem;">{{ $stage->code }}</span>
+                        @endif
                       @endforeach
                     </td>
                     <td>{{ $s->group }}</td>

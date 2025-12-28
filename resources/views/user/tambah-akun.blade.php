@@ -123,9 +123,12 @@
                             <div class="mb-3">
                                 
                                 <input type="hidden" id="nama" name="name" class="form-control" value="{{ $pegawai->nama }}">
-                                <input type="hidden" id="updated_by" name="updated_by" class="form-control" value="{{ $pegawai->nama }}">
+                                <input type="hidden" id="updated_by" name="updated_by" class="form-control" value="{{ Auth::user()->name }}">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" name="username" class="form-control" id="username" placeholder="masukkan username" value="{{ old('username') }}">
+                                <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" id="username" placeholder="masukkan username" value="{{ old('username') }}">
+                                @error('username')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">

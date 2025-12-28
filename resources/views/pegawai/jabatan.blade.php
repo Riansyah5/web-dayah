@@ -289,6 +289,10 @@
         if (!rowToEdit) return;
 
         const id = rowToEdit.getAttribute('data-id');
+				if (!id) {
+					console.error('ID jabatan tidak ditemukan pada baris.');
+					return;
+				}
         const newNamaJabatan = editNamaJabatanInput.value.trim();
         const newKeterangan = editKeteranganInput.value.trim();
 
@@ -298,7 +302,7 @@
         }
 
         // Kirim data update ke server Laravel menggunakan fetch API
-        fetch(`/jabatans/${id}`, {
+        fetch(`/jabatan/${id}`, {
             method: 'PUT', // atau 'PATCH'
             headers: {
               'Content-Type': 'application/json',
@@ -385,4 +389,4 @@
       updateRowNumbers();
     });
   </script>
-@endpush {{-- Mengakhiri penambahan skrip --}}
+@endpush

@@ -8,11 +8,11 @@
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-        <a href="{{ route('grading.teacher.index') }}" class="btn btn-sm btn-outline-secondary text-decoration-none rounded"><i
-            class="bi bi-arrow-left"></i> Kembali</a>
+        <a href="{{ route('grading.teacher.index') }}"
+          class="btn btn-sm btn-outline-secondary text-decoration-none rounded"><i class="bi bi-arrow-left"></i> Kembali</a>
         <h4 class="fw-bold mt-1 mb-0">{{ $course->subject->name }} - {{ $course->classroom->name }}</h4>
         <small class="text-muted">Guru: {{ $course->teacher->name ?? '-' }} | </small>
-        <h3><span class="badge bg-warning">KKM: {{ $course->kkm }}</span></h3>
+        <h3><span class="badge bg-warning text-dark">KKM: {{ $course->kkm }}</span></h3>
       </div>
       <div class="d-flex gap-2">
         <a href="{{ route('grading.teacher.export', $course->id) }}" class="btn btn-success text-white shadow-sm">
@@ -52,18 +52,18 @@
                     </td>
                     <td class="p-2">
                       <input type="number" step="0.01" name="grades[{{ $student->id }}][harian]"
-                        class="form-control text-center bg-light border-0 score-input" data-student="{{ $student->id }}"
+                        class="form-control text-center bg-light border-1 score-input" data-student="{{ $student->id }}"
                         data-type="harian" value="{{ $grade->score_harian ?? '' }}">
 
                     </td>
                     <td class="p-2">
                       <input type="number" step="0.01" name="grades[{{ $student->id }}][uts]"
-                        class="form-control text-center bg-light border-0 score-input" data-student="{{ $student->id }}"
+                        class="form-control text-center bg-light border-1 score-input" data-student="{{ $student->id }}"
                         data-type="uts" value="{{ $grade->score_uts ?? '' }}">
                     </td>
                     <td class="p-2">
                       <input type="number" step="0.01" name="grades[{{ $student->id }}][uas]"
-                        class="form-control text-center bg-light border-0 score-input" data-student="{{ $student->id }}"
+                        class="form-control text-center bg-light border-1 score-input" data-student="{{ $student->id }}"
                         data-type="uas" value="{{ $grade->score_uas ?? '' }}">
                     </td>
                     <td class="text-center fw-bold text-primary">
@@ -121,6 +121,28 @@
   </div>
 @endsection
 @push('scripts')
+  {{-- sweetAlert --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @elseif (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        html: '{{ session('error') }}',
+        showConfirmButton: true
+      });
+    @endif
+  </script>
   <script>
     document.querySelectorAll('.score-input').forEach(input => {
       input.addEventListener('input', calculateFinal);

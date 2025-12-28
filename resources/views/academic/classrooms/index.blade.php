@@ -19,7 +19,8 @@
           <select name="stage_id" class="form-select" onchange="this.form.submit()">
             <option value="">Semua Jenjang</option>
             @foreach ($stages as $s)
-              <option value="{{ $s->id }}" {{ request('stage_id') == $s->id ? 'selected' : '' }}>{{ $s->code }}
+              <option value="{{ $s->id }}" {{ request('stage_id') == $s->id ? 'selected' : '' }}>
+                {{ $s->code }}
               </option>
             @endforeach
           </select>
@@ -28,13 +29,29 @@
       </div>
     </div>
 
-    <div class="row g-4">
-      @foreach ($classrooms as $c)
+    @php
+      $groupedClassrooms = $classrooms->groupBy(function ($item) {
+          return $item->level->name ?? 'Lainnya';
+      });
+    @endphp
+
+    @foreach ($groupedClassrooms as $levelName => $classroomsInLevel)
+      <h4 class="fw-bold mt-4 mb-3 text-secondary border-bottom pb-2"><i class="bi bi-layers-fill me-2"></i>{{ $levelName }}</h4>
+      <div class="row g-4">
+        @foreach ($classroomsInLevel as $c)
         <div class="col-md-4 col-lg-3">
           <div class="card h-100 border-0 shadow-sm rounded-4">
             <div class="card-body">
               <div class="d-flex justify-content-between mb-2">
-                <span class="badge bg-secondary">{{ $c->level->stage->code ?? '' }}</span>
+                @php
+                  $badgeColor = match ($c->level->stage->code) {
+                      'SD', 'MI', 'ULA' => 'bg-primary', // biru
+                      'SMP', 'MTS', 'WUSTHA' => 'bg-success', // hijau
+                      'SMA', 'MA', 'ULYA' => 'bg-warning text-dark', // kuning
+                      default => 'bg-primary', // Biru (Default)
+                  };
+                @endphp
+                <span class="badge {{ $badgeColor }}">{{ $c->level->stage->code ?? '' }}</span>
                 <div class="dropdown">
                   <button class="btn btn-link btn-sm text-dark p-0" data-bs-toggle="dropdown"><i
                       class="bi bi-three-dots-vertical"></i></button>
@@ -59,8 +76,9 @@
             </div>
           </div>
         </div>
-      @endforeach
-    </div>
+        @endforeach
+      </div>
+    @endforeach
   </div>
 
   <div class="modal fade" id="createModal" tabindex="-1">

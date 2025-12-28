@@ -35,11 +35,13 @@ class UserController extends Controller
         // validasi request
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:20',
+            'username' => 'required|string|max:20|unique:users,username',
             'password' => 'required',
             'role' => 'required|in:Admin,Guru',
             'status' => 'required|in:Aktif,Nonaktif',
             'updated_by' => 'required|string',
+        ], [
+            'username.unique' => 'Username sudah terdaftar, silakan gunakan username lain.',
         ]);
 
         DB::transaction(function () use ($request, $pegawai) {
@@ -58,9 +60,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        return view('user.account-setting', compact('user'));
     }
 
     /**
@@ -68,6 +70,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        if ($user->username === 'superadmin') {
+            return abort(403, 'Super Admin tidak dapat dimodifikasi');
+        }
+
         return view('user.edit-akun', compact('user'));
     }
 
@@ -76,17 +82,23 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if ($user->username === 'superadmin') {
+            return abort(403, 'Super Admin tidak dapat dimodifikasi');
+        }
         // validasi request
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:20',
+            'username' => 'required|string|max:20|unique:users,username,' . $user->id,
             'password' => 'nullable',
             'role' => 'required|in:Admin,Guru',
+            'email' => 'nullable',
             'status' => 'required|in:Aktif,Nonaktif',
             'updated_by' => 'required|string',
+        ], [
+            'username.unique' => 'Username sudah terdaftar, silakan gunakan username lain.',
         ]);
         // ambil data request kecuali password
-        $data = $request->except('password');
+        $data = $request->except(['password', 'source']);
 
         // jika password diisi maka di hash
         if ($request->password) {
@@ -95,7 +107,11 @@ class UserController extends Controller
 
         // update user
         $user->update($data);
-        
+
+        if ($request->source == 'profile') {
+            return back()->with('success', 'Profil berhasil diperbarui!');
+        }
+
         // Mengarahkan kembali ke halaman daftar pengguna dengan pesan sukses.
         // Ini lebih andal daripada menggunakan back().
         return redirect()->route('user.index')->with('success', 'Akun berhasil diperbarui!');
@@ -106,21 +122,31 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // DB::transaction(function () use ($user) {
-        //     // Cari pegawai yang terkait dengan user ini dan set user_id menjadi null.
-        //     // Ini untuk melepaskan foreign key constraint.
-        //     if ($user->pegawai) {
-        //         $user->pegawai->update(['user_id' => null]);
-        //     }
-        //     // Setelah relasi dilepaskan, baru hapus user.
-        //     $user->delete();
-        // });
-        $user->delete();
+        if ($user->username === 'superadmin') {
+            return abort(403, 'Super Admin tidak dapat dimodifikasi');
+        }
+
+        DB::transaction(function () use ($user) {
+            // Cari pegawai yang terkait dengan user ini dan set user_id menjadi null.
+            // Ini untuk melepaskan foreign key constraint.
+            if ($user->pegawai) {
+                $user->pegawai->update(['user_id' => null]);
+            }
+            // Setelah relasi dilepaskan, baru hapus user.
+            $user->delete();
+        });
         return redirect()->route('user.index')->with('success', 'Akun berhasil dihapus!');
     }
 
     public function updateStatus(Request $request, User $user)
     {
+        if ($user->username === 'superadmin') {
+            return response()->json([
+                'message' => 'Status Super Admin tidak dapat diubah'
+            ], 403);
+        }
+
+        // Validasi request
         $validator = Validator::make($request->all(), [
             'status' => 'required|in:Aktif,Nonaktif',
         ]);

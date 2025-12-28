@@ -36,6 +36,7 @@
     </li> --}}
       </ul>
     </div>
+
     <!-- [Mobile Media Block end] -->
     <div class="ms-auto">
       <ul class="list-unstyled">
@@ -89,8 +90,8 @@
             </div>
           </div>
         </li>
-        <li class="pc-h-item d-none d-lg-inline-flex align-items-center">
-          <span class="navbar-text text-muted ms-3 border px-2 rounded">
+        <li class="pc-h-item d-inline-flex align-items-center">
+          <span class="navbar-text text-muted ms-3 border bg-warning bg-opacity-50 px-2 rounded">
             TA: {{ $globalActiveYear->name ?? 'Belum diset' }}
             ({{ $globalActiveYear->semester ?? '-' }})
           </span>
@@ -106,9 +107,9 @@
           <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
             <div class="dropdown-header">
               <h4>
-                {{-- {{ Auth::user()->name }} --}}
+                {{ Auth::user()->name }}
               </h4>
-              {{-- <p class="text-muted">{{ Auth::user()->role }}</p> --}}
+              <p class="text-muted">{{ Auth::user()->role }}</p>
               <hr />
               <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 280px)">
                 <div class="upgradeplan-block bg-light-warning rounded">

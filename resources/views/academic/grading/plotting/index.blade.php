@@ -76,16 +76,13 @@ input, select {
                         $isActive = $courseData ? true : false; // Cek apakah sudah ada di DB
                       @endphp
 
-                      <tr class="{{ $isActive ? '' : 'bg-light opacity-75' }}">
-                        <form action="{{ route('grading.plotting.update') }}" method="POST">
-                          @csrf
-                          <input type="hidden" name="classroom_id" value="{{ $selectedClassroom->id }}">
-                          <input type="hidden" name="subject_id" value="{{ $subject->id }}">
-
+                      <tr class="plotting-row {{ $isActive ? '' : 'bg-light opacity-75' }}" 
+                          data-classroom-id="{{ $selectedClassroom->id }}" 
+                          data-subject-id="{{ $subject->id }}">
                           <td class="align-middle text-center">
                             <div class="form-check form-switch d-inline-block">
-                              <input class="form-check-input" type="checkbox" name="is_active" value="1"
-                                {{ $isActive ? 'checked' : '' }} onchange="this.form.submit()">
+                              <input class="form-check-input plotting-active" type="checkbox" name="is_active" value="1"
+                                {{ $isActive ? 'checked' : '' }}>
                             </div>
                           </td>
 
@@ -95,8 +92,8 @@ input, select {
                           </td>
 
                           <td class="align-middle">
-                            <select name="teacher_id" class="form-select form-select-sm"
-                              {{ !$isActive ? 'disabled' : '' }} onchange="this.form.submit()">
+                            <select name="teacher_id" class="form-select form-select-sm plotting-input"
+                              {{ !$isActive ? 'disabled' : '' }}>
                               <option value="">-- Pilih Guru --</option>
                               @foreach ($teachers as $teacher)
                                 <option value="{{ $teacher->id }}"
@@ -108,11 +105,10 @@ input, select {
                           </td>
 
                           <td class="align-middle">
-                            <input type="number" name="kkm" class="form-control form-control-sm text-center"
+                            <input type="number" name="kkm" class="form-control form-control-sm text-center plotting-input"
                               value="{{ $courseData?->kkm ?? 75 }}" min="0" max="100"
-                              {{ !$isActive ? 'disabled' : '' }} onchange="this.form.submit()">
+                              {{ !$isActive ? 'disabled' : '' }}>
                           </td>
-                        </form>
                       </tr>
                     @endforeach
                   </tbody>
@@ -142,4 +138,67 @@ input, select {
   </div>
 @endsection
 @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const updateUrl = "{{ route('grading.plotting.update') }}";
+
+    // Fungsi Toast Sederhana (Menggunakan SweetAlert jika ada, atau console)
+    const showToast = (icon, title) => {
+        if (typeof Swal !== 'undefined') {
+            Swal.mixin({
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
+            }).fire({ icon: icon, title: title });
+        }
+    };
+
+    // Handler untuk semua input di dalam row
+    const handleUpdate = async (row) => {
+        const classroomId = row.dataset.classroomId;
+        const subjectId = row.dataset.subjectId;
+        const isActiveInput = row.querySelector('.plotting-active');
+        const teacherInput = row.querySelector('select[name="teacher_id"]');
+        const kkmInput = row.querySelector('input[name="kkm"]');
+
+        const isActive = isActiveInput.checked;
+
+        // Update UI State (Disable/Enable inputs)
+        if (isActive) {
+            row.classList.remove('bg-light', 'opacity-75');
+            teacherInput.disabled = false;
+            kkmInput.disabled = false;
+        } else {
+            row.classList.add('bg-light', 'opacity-75');
+            teacherInput.disabled = true;
+            kkmInput.disabled = true;
+        }
+
+        // Prepare Data
+        const payload = {
+            classroom_id: classroomId,
+            subject_id: subjectId,
+            is_active: isActive ? 1 : 0,
+            teacher_id: teacherInput.value,
+            kkm: kkmInput.value
+        };
+
+        try {
+            const res = await fetch(updateUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(res.ok) showToast('success', 'Disimpan');
+            else showToast('error', 'Gagal menyimpan');
+        } catch (e) { console.error(e); }
+    };
+
+    // Attach Event Listeners
+    document.querySelectorAll('.plotting-active, .plotting-input').forEach(el => {
+        el.addEventListener('change', function() {
+            handleUpdate(this.closest('.plotting-row'));
+        });
+    });
+});
+</script>
 @endpush

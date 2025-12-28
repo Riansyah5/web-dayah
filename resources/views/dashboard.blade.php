@@ -187,9 +187,6 @@
     </div>
 
     <div class="row">
-
-
-
       <div class="col-xl-3 col-md-6 mb-3">
         <div class="card card-berry card-purple-gradient p-4 ">
           <div style="position: relative; z-index: 2;">
@@ -197,7 +194,7 @@
               <div>
                 <div class="text-muted card-head-text">Pegawai</div>
                 <div class="d-flex align-items-center">
-                  <div class="card-main-number text-white" data-target="{{ $total }}">0</div>
+                  <div class="card-main-number text-white" data-target="{{ $totalPegawai }}">0</div>
                   <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
                 </div>
               </div>
@@ -206,21 +203,21 @@
               </div>
             </div>
             <div class="gender-row">
-              <span class="gender-badge text-white"><i class="fas fa-mars text-white"></i> 350 Laki-laki</span>
-              <span class="gender-badge text-white"><i class="fas fa-venus text-white"></i> 400 Perempuan</span>
+              <span class="gender-badge text-white"><i class="fas fa-mars text-success"></i> {{ $pegawaiLaki }} Laki-laki</span>
+              <span class="gender-badge text-white"><i class="fas fa-venus text-danger"></i> {{ $pegawaiPerempuan }} Perempuan</span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="col-xl-3 col-md-6 mb-3">
-        <div class="card card-berry card-purple-gradient p-4 ">
+        <div class="card card-berry bg-warning bg-opacity-75 p-4 ">
           <div style="position: relative; z-index: 2;">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <div class="text-white-50 card-head-text">Total Santri</div>
+                <div class="text-muted card-head-text">Total Santri</div>
                 <div class="d-flex align-items-center">
-                  <div class="card-main-number" data-target="1250">0</div>
+                  <div class="card-main-number text-dark" data-target="{{ $totalSantri }}">0</div>
                   <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
                 </div>
               </div>
@@ -230,8 +227,8 @@
             </div>
 
             <div class="gender-row">
-              <span class="gender-badge"><i class="fas fa-mars"></i> 600 Laki-laki</span>
-              <span class="gender-badge"><i class="fas fa-venus"></i> 650 Perempuan</span>
+              <span class="gender-badge"><i class="fas fa-mars text-primary"></i> {{ $santriLaki }} Laki-laki</span>
+              <span class="gender-badge"><i class="fas fa-venus text-danger"></i> {{ $santriPerempuan }} Perempuan</span>
             </div>
           </div>
         </div>
@@ -241,19 +238,19 @@
         <div class="card card-berry p-4 ">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="text-muted card-head-text">Santri SMP</div>
+              <div class="text-muted card-head-text">Santri Wustha</div>
               <div class="d-flex align-items-center">
-                <div class="card-main-number text-dark" data-target="750">0</div>
+                <div class="card-main-number text-dark" data-target="{{ $santriSMP }}">0</div>
                 <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
               </div>
             </div>
-            <div class="icon-wrapper bg-light-secondary">
+            <div class="icon-wrapper bg-light-success">
               <i class="fas fa-book-reader"></i>
             </div>
           </div>
           <div class="gender-row">
-            <span class="gender-badge text-muted"><i class="fas fa-mars text-primary"></i> 350 Laki-laki</span>
-            <span class="gender-badge text-muted"><i class="fas fa-venus text-danger"></i> 400 Perempuan</span>
+            <span class="gender-badge text-muted"><i class="fas fa-mars text-primary"></i> {{ $santriSMPlaki }} Laki-laki</span>
+            <span class="gender-badge text-muted"><i class="fas fa-venus text-danger"></i> {{ $santriSMPperempuan }} Perempuan</span>
           </div>
         </div>
       </div>
@@ -262,19 +259,19 @@
         <div class="card card-berry p-4 ">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="text-muted card-head-text">Santri SMA</div>
+              <div class="text-muted card-head-text">Santri Ulya</div>
               <div class="d-flex align-items-center">
-                <div class="card-main-number text-dark" data-target="500">0</div>
+                <div class="card-main-number text-dark" data-target="{{ $santriSMA }}">0</div>
                 <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
               </div>
             </div>
-            <div class="icon-wrapper bg-light-orange">
+            <div class="icon-wrapper bg-light-warning">
               <i class="fas fa-graduation-cap"></i>
             </div>
           </div>
           <div class="gender-row">
-            <span class="gender-badge text-muted"><i class="fas fa-mars text-primary"></i> 250 Laki-laki</span>
-            <span class="gender-badge text-muted"><i class="fas fa-venus text-danger"></i> 250 Perempuan</span>
+            <span class="gender-badge text-muted"><i class="fas fa-mars text-primary"></i> {{ $santriSMAlaki }} Laki-laki</span>
+            <span class="gender-badge text-muted"><i class="fas fa-venus text-danger"></i> {{ $santriSMAperempuan }} Perempuan</span>
           </div>
         </div>
       </div>
@@ -438,7 +435,7 @@
 
     // 2. Pie Chart (Unit)
     var optionsPie = {
-      series: [750, 500],
+      series: [{{ $santriSMP }}, {{ $santriSMA }}],
       labels: ['SMP', 'SMA'],
       chart: {
         type: 'donut',

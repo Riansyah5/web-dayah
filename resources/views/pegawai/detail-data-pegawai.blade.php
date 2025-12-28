@@ -272,6 +272,9 @@
         icon: 'success',
         title: 'Berhasil!',
         text: '{{ session('success') }}',
+        timer: 1800,
+        timerProgressBar: true,
+        showConfirmButton: false
       });
     </script>
   @endif
@@ -295,11 +298,11 @@
 
       // 1. Fungsi Generate PDF
       pdfBtn.addEventListener('click', function() {
-        const nameEl = document.querySelector('.profile-card h4');
+        const nameEl = document.querySelector('.profile-card h2');
         const employeeName = nameEl ? nameEl.textContent.trim() : 'Pegawai';
         const opt = {
           margin: 0.2,
-          filename: `detail-pegawai-${employeeName.replace(/, /g, '_').replace(/\./g, '')}.pdf`,
+          filename: `detail-pegawai-${employeeName.replace(/\s+/g, '_')}.pdf`,
           image: {
             type: 'jpeg',
             quality: 0.98

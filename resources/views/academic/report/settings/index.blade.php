@@ -84,6 +84,7 @@
       <div class="card-footer bg-white py-3 text-muted small">
         <i class="bi bi-info-circle me-1"></i> Data ini akan muncul otomatis di bagian tanda tangan (footer) PDF Rapor.
       </div>
+      
     </div>
   </div>
 @endsection

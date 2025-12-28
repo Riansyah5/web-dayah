@@ -113,15 +113,28 @@ class DataMasterController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required|unique:subjects,code',
+            'code' => 'required',
             'group' => 'required',
             'stages' => 'required|array' // Wajib pilih minimal 1 jenjang
         ]);
 
-        // 1. Simpan Mapel
-        $subject = Subject::create($request->only(['name', 'code', 'group']));
+        $subject = Subject::where('code', $request->code)->first();
 
-        // 2. Hubungkan ke Jenjang yang dipilih
+        if ($subject) {
+            // Cek apakah jenjang yang dipilih sudah ada di mapel ini
+            $existingStageIds = $subject->stages()->pluck('stages.id')->toArray();
+            $hasDuplicate = !empty(array_intersect($existingStageIds, $request->stages));
+
+            if ($hasDuplicate) {
+                return back()->with('error', "Gagal! Mapel dengan kode {$request->code} sudah ada untuk jenjang tersebut.")->with('active_tab', 'tab-subjects');
+            }
+
+            $subject->stages()->attach($request->stages);
+            return back()->with('success', 'Mapel yang sama ditambahkan jenjang baru.')->with('active_tab', 'tab-subjects');
+        }
+
+        // Jika belum ada, buat baru
+        $subject = Subject::create($request->only(['name', 'code', 'group']));
         $subject->stages()->sync($request->stages);
 
         return back()->with('success', 'Mapel berhasil ditambah dan dihubungkan ke jenjang.')->with('active_tab', 'tab-subjects');
