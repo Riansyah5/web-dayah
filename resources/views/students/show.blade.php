@@ -456,7 +456,14 @@
                   <h6 class="fw-bold text-muted mb-3"><i class="bi bi-gender-male me-1"></i> Ayah</h6>
                   <div class="mb-2">
                     <div class="info-label">Nama Lengkap</div>
-                    <div class="info-value">{{ $student->father_name ?? '-' }}</div>
+                    <div class="info-value">
+                      {{ $student->father_name ?? '-' }}
+                      @if ($student->father_status == 'alive')
+                        <span class="badge bg-success ms-1" style="font-size: 0.7em;">Hidup</span>
+                      @elseif ($student->father_status == 'deceased')
+                        <span class="badge bg-secondary ms-1" style="font-size: 0.7em;">Almarhum</span>
+                      @endif
+                    </div>
                   </div>
                   <div class="mb-2">
                     <div class="info-label">Pekerjaan</div>
@@ -480,7 +487,14 @@
                   <h6 class="fw-bold text-muted mb-3"><i class="bi bi-gender-female me-1"></i> Ibu</h6>
                   <div class="mb-2">
                     <div class="info-label">Nama Lengkap</div>
-                    <div class="info-value">{{ $student->mother_name ?? '-' }}</div>
+                    <div class="info-value">
+                      {{ $student->mother_name ?? '-' }}
+                      @if ($student->mother_status == 'alive')
+                        <span class="badge bg-success ms-1" style="font-size: 0.7em;">Hidup</span>
+                      @elseif ($student->mother_status == 'deceased')
+                        <span class="badge bg-secondary ms-1" style="font-size: 0.7em;">Almarhum</span>
+                      @endif
+                    </div>
                   </div>
                   <div class="mb-2">
                     <div class="info-label">Pekerjaan</div>
@@ -609,4 +623,26 @@
 @endsection
 
 @push('scripts')
+  {{-- sweetAlert --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @elseif (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        html: '{{ session('error') }}',
+        showConfirmButton: true
+      });
+    @endif
+  </script>
 @endpush

@@ -18,13 +18,13 @@ class SuperAdminSeeder extends Seeder
     {
         DB::table('users')->insert([
             'id' => (string) Str::ulid(),
-            'name' => 'Rian',
+            'name' => 'Super Admin',
             'username' => 'superadmin',
-            'email' => null,
+            'email' => 'superadmin@gmail.com',
             'password' => Hash::make('super@admin'),
             'role' => 'Admin',
             'status' => 'Aktif',
-            'updated_by' => null,
+            'updated_by' => 'Rian',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);

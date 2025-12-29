@@ -56,6 +56,7 @@ class StudentController extends Controller
             'province' => 'nullable|string|max:255',
 
             // --- Father ---
+            'father_status' => 'nullable|in:alive,deceased',
             'father_name' => 'nullable|string|max:255',
             'father_nik' => 'nullable|string|max:255',
             'father_occupation' => 'nullable|string|max:255',
@@ -64,6 +65,7 @@ class StudentController extends Controller
             'father_phone' => 'nullable|string|max:20',
 
             // --- Mother ---
+            'mother_status' => 'nullable|in:alive,deceased',
             'mother_name' => 'nullable|string|max:255',
             'mother_nik' => 'nullable|string|max:255',
             'mother_occupation' => 'nullable|string|max:255',
@@ -148,6 +150,7 @@ class StudentController extends Controller
             'province' => 'nullable|string|max:255',
 
             // --- Father ---
+            'father_status' => 'required|in:alive,deceased',
             'father_name' => 'nullable|string|max:255',
             'father_nik' => 'nullable|string|max:255',
             'father_occupation' => 'nullable|string|max:255',
@@ -156,6 +159,7 @@ class StudentController extends Controller
             'father_phone' => 'nullable|string|max:20',
 
             // --- Mother ---
+            'mother_status' => 'required|in:alive,deceased',
             'mother_name' => 'nullable|string|max:255',
             'mother_nik' => 'nullable|string|max:255',
             'mother_occupation' => 'nullable|string|max:255',

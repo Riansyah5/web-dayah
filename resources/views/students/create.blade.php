@@ -272,11 +272,20 @@
                         data-bs-parent="#parentsAccordion">
                         <div class="accordion-body">
                           <div class="row g-2">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
+                              <div class="form-floating">
+                                <select name="father_status" class="form-select" id="father_status">
+                                  <option value="alive">Hidup</option>
+                                  <option value="deceased">Meninggal</option>
+                                </select>
+                                <label for="father_status">Status Ayah</label>
+                              </div>
+                            </div>
+                            <div class="col-md-5">
                               <input type="text" name="father_name" class="form-control mb-2" placeholder="Nama Ayah"
                                 value="{{ old('father_name') }}">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                               <input type="text" name="father_phone" class="form-control mb-2"
                                 placeholder="No. HP/WA Ayah" value="{{ old('father_phone') }}">
                             </div>
@@ -303,11 +312,20 @@
                       <div id="collapseMother" class="accordion-collapse collapse" data-bs-parent="#parentsAccordion">
                         <div class="accordion-body">
                           <div class="row g-2">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
+                              <div class="form-floating">
+                                <select name="mother_status" class="form-select" id="mother_status">
+                                  <option value="alive">Hidup</option>
+                                  <option value="deceased">Meninggal</option>
+                                </select>
+                                <label for="mother_status">Status Ibu</label>
+                              </div>
+                            </div>
+                            <div class="col-md-5">
                               <input type="text" name="mother_name" class="form-control mb-2" placeholder="Nama Ibu"
                                 value="{{ old('mother_name') }}">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                               <input type="text" name="mother_phone" class="form-control mb-2"
                                 placeholder="No. HP/WA Ibu" value="{{ old('mother_phone') }}">
                             </div>
