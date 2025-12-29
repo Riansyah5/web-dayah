@@ -43,6 +43,13 @@
             <span class="pc-mtext">Santri</span>
           </a>
         </li>
+        {{-- kalender akademik --}}
+        <li class="pc-item">
+          <a class="pc-link" href="{{ route('calendar.index') }}">
+            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+            <span class="pc-mtext">Kalender Akademik</span>
+          </a>
+        </li>
 
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-book"></i></span><span

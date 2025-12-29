@@ -24,7 +24,7 @@ use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
-
+use App\Http\Controllers\Academic\AcademicCalendarController;
 
 
 // Guest (Belum Login)
@@ -157,13 +157,23 @@ Route::middleware('auth')->group(function () {
 			Route::get('/homeroom/preview/{studentId}/{classroomId}', [HomeroomGradingController::class, 'preview'])->name('homeroom.preview');
 		});
 
-
 		// Group Modul Pengaturan Rapor
 		Route::prefix('academic/report')->name('report.settings.')->group(function () {
 			Route::get('/settings', [ReportSettingController::class, 'index'])->name('index');
 			Route::post('/settings', [ReportSettingController::class, 'store'])->name('store');
 		});
+		
+		// Group Modul Kalender Akademik
+		Route::get('/academic/calendar/agenda', [AcademicCalendarController::class, 'agenda'])->name('calendar.agenda');
+		Route::get('/academic/calendar/feed', [AcademicCalendarController::class, 'feed'])->name('calendar.feed');
+		Route::get('/academic/calendar', [AcademicCalendarController::class, 'index'])->name('calendar.index');
+		Route::post('/academic/calendar', [AcademicCalendarController::class, 'store'])->name('calendar.store');
+		Route::delete('/academic/calendar/{calendar}', [AcademicCalendarController::class, 'destroy'])->name('calendar.destroy');
+
 	});
+
+
+
 
 	// KHUSUS GURU
 	Route::middleware('role:Guru')->group(function () {
