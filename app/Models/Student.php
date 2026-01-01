@@ -69,4 +69,30 @@ class Student extends Model
     {
         return $this->belongsToMany(Classroom::class, 'classroom_student')->withTimestamps();
     }
+
+    // 1. RELASI KE TABEL DETAIL MUTASI
+    public function exitDetail()
+    {
+        return $this->hasOne(StudentExit::class);
+    }
+
+    // 2. SCOPE (Filter Cepat)
+    
+    // Cara pakai: Student::active()->get();
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    // Cara pakai: Student::alumni()->get();
+    public function scopeAlumni($query)
+    {
+        return $query->whereIn('status', ['graduated', 'moved', 'suspended']);
+    }
+    
+    // Cara pakai: Student::graduated()->get();
+    public function scopeGraduated($query)
+    {
+        return $query->where('status', 'graduated');
+    }
 }

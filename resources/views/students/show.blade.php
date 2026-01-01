@@ -191,6 +191,7 @@
             </div>
           </div>
           <div class="col-md-auto mt-3 mt-md-3 d-flex flex-wrap gap-2 justify-content-center">
+            
             {{-- tombol riwayat rapor --}}
             <a href="{{ route('student.history', $student->id) }}"
               class="btn btn-success text-white rounded-3 shadow-sm px-3 ms-2">
@@ -228,11 +229,27 @@
     <div class="row g-4">
       <div class="col-lg-4">
         <div class="card card-section mb-4">
-          <div class="card-body">
-            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold text-dark">
               <i class="bi bi-info-circle me-2 text-primary"></i>Status Akademik
             </h6>
-
+            @if ($student->status == 'active')
+              <button type="button" class="btn btn-warning btn-sm text-dark fw-bold rounded" data-bs-toggle="modal"
+                data-bs-target="#modalMutasi">
+                <i class="bi bi-box-arrow-right me-2"></i> Mutasi
+              </button>
+            @else
+              <div class="alert alert-secondary d-inline-block py-1 px-3 mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Status: <strong>{{ strtoupper($student->status) }}</strong>
+                @if ($student->exitDetail)
+                  <small
+                    class="ms-2 text-muted">({{ $student->exitDetail->exit_date->translatedFormat('d M Y') }})</small>
+                @endif
+              </div>
+            @endif
+          </div>
+          <div class="card-body">
             <div class="mb-3">
               <div class="info-label">Status Santri</div>
               @php
@@ -620,6 +637,78 @@
     </div>
   </div>
 
+  <div class="modal fade" id="modalMutasi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header bg-warning bg-opacity-10">
+          <h5 class="modal-title fw-bold text-dark">Proses Mutasi Santri</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <form action="{{ route('students.exit.store', $student->id) }}" method="POST">
+          @csrf
+          <div class="modal-body p-4">
+            <div class="alert alert-info border-0 d-flex align-items-center mb-3">
+              <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+              <div>
+                <small>Tindakan ini akan menonaktifkan santri <strong>{{ $student->name }}</strong> dari sistem absensi
+                  dan kelas aktif.</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-muted">Jenis Mutasi</label>
+              <select name="status" id="statusSelect" class="form-select" required>
+                <option value="">-- Pilih Status Baru --</option>
+                <option value="graduated">Lulus (Graduated)</option>
+                <option value="moved">Pindah Sekolah (Moved)</option>
+                <option value="suspended">Diberhentikan (Suspended)</option>
+                <option value="deceased">Meninggal Dunia</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-muted">Tanggal Efektif</label>
+              <input type="date" name="exit_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-muted">Nomor SK / Surat Pindah / Ijazah</label>
+              <input type="text" name="sk_number" class="form-control" placeholder="Opsional">
+            </div>
+
+            <div class="mb-3 d-none" id="destinationField">
+              <label class="form-label fw-bold small text-muted">Sekolah / Pondok Tujuan</label>
+              <input type="text" name="destination" class="form-control" placeholder="Nama sekolah baru...">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-muted">Alasan / Catatan</label>
+              <textarea name="reason" class="form-control" rows="2"
+                placeholder="Contoh: Mengikuti orang tua pindah tugas..."></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-dark px-4">Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Script Sederhana untuk Show/Hide Sekolah Tujuan
+    document.getElementById('statusSelect').addEventListener('change', function() {
+      var destField = document.getElementById('destinationField');
+      if (this.value === 'moved') {
+        destField.classList.remove('d-none');
+      } else {
+        destField.classList.add('d-none');
+      }
+    });
+  </script>
 @endsection
 
 @push('scripts')

@@ -12,17 +12,20 @@ class AcademicCalendarController extends Controller
 {
     use HijriConverter;
 
-    public function index()
+    public function index(Request $request)
     {
-        $activeYear = AcademicYear::where('is_active', true)->firstOrFail();
+        // 1. Ambil Tahun Aktif (Default)
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->firstOrFail();
 
-        // Ambil data untuk ditampilkan di kalender (JSON format nanti)
-        // Tapi untuk sekarang kita tampilkan tabel list dulu
-        $events = AcademicCalendar::where('academic_year_id', $activeYear->id)
-            ->orderBy('start_date')
-            ->get();
+        // 2. Ambil List Semua Tahun (Untuk Dropdown Filter)
+        $allYears = \App\Models\AcademicYear::orderBy('id', 'desc')->get();
 
-        return view('academic.calendar.index', compact('activeYear', 'events'));
+        // 3. Tentukan Tahun Mana yang Mau Dilihat
+        // Jika user memilih dari dropdown, pakai itu. Jika tidak, pakai yang aktif.
+        $selectedYearId = $request->get('year_id', $activeYear->id);
+        $viewedYear = \App\Models\AcademicYear::findOrFail($selectedYearId);
+
+        return view('academic.calendar.index', compact('activeYear', 'viewedYear', 'allYears'));
     }
 
     public function store(Request $request)
@@ -57,32 +60,29 @@ class AcademicCalendarController extends Controller
         return back()->with('success', 'Agenda dihapus.');
     }
 
+    // Update juga untuk Feed (Agar kalender visualnya berubah)
     public function feed(Request $request)
     {
-        // Ambil tahun ajaran aktif
-        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        // Terima parameter year_id dari request AJAX FullCalendar
+        $yearId = $request->get('year_id');
 
-        if (!$activeYear) {
-            return response()->json([]);
+        // Jika tidak ada parameter, cari yang aktif
+        if (!$yearId) {
+            $active = \App\Models\AcademicYear::where('is_active', true)->first();
+            $yearId = $active->id ?? 0;
         }
 
-        $events = \App\Models\AcademicCalendar::where('academic_year_id', $activeYear->id)
+        $events = \App\Models\AcademicCalendar::where('academic_year_id', $yearId)
             ->get()
             ->map(function ($event) {
-                // Format sesuai standar FullCalendar
+                // ... (Mapping data sama seperti sebelumnya) ...
                 return [
                     'id' => $event->id,
                     'title' => $event->title,
                     'start' => $event->start_date->format('Y-m-d'),
-
-                    // Logika End Date: FullCalendar bersifat "Exclusive" untuk end date.
-                    // Jadi kalau acara tgl 1-2, end date harus diset tgl 3 agar tgl 2 tetap terarsir.
                     'end' => $event->end_date ? $event->end_date->addDay()->format('Y-m-d') : $event->start_date->format('Y-m-d'),
-
-                    'backgroundColor' => $event->color, // Dari Accessor Model yg kita buat di Tahap 1
+                    'backgroundColor' => $event->color,
                     'borderColor' => $event->color,
-
-                    // Data tambahan untuk Modal Detail
                     'extendedProps' => [
                         'hijri' => $event->hijri_date,
                         'category' => ucfirst($event->category),
@@ -99,6 +99,12 @@ class AcademicCalendarController extends Controller
     {
         // 1. Ambil Tahun Ajaran Aktif
         $activeYear = \App\Models\AcademicYear::where('is_active', true)->firstOrFail();
+        // 2. Ambil List Semua Tahun (Untuk Dropdown Filter)
+        $allYears = \App\Models\AcademicYear::orderBy('id', 'desc')->get();
+
+        // Logic Filter Tahun
+        $selectedYearId = $request->get('year_id', $activeYear->id);
+        $viewedYear = \App\Models\AcademicYear::findOrFail($selectedYearId);
 
         // 2. Filter Input (Bulan & Kategori)
         $startMonth = $request->start_month;
@@ -106,18 +112,18 @@ class AcademicCalendarController extends Controller
         $filterCategory = $request->category; // academic, holiday, etc
 
         // 3. Query Data
-        $query = \App\Models\AcademicCalendar::where('academic_year_id', $activeYear->id)
+        $query = \App\Models\AcademicCalendar::where('academic_year_id', $viewedYear->id)
             ->orderBy('start_date', 'asc');
 
         // Filter Range Bulan
         if ($startMonth && $endMonth) {
             if ($startMonth <= $endMonth) {
                 $query->whereMonth('start_date', '>=', $startMonth)
-                      ->whereMonth('start_date', '<=', $endMonth);
+                    ->whereMonth('start_date', '<=', $endMonth);
             } else {
-                $query->where(function($q) use ($startMonth, $endMonth) {
+                $query->where(function ($q) use ($startMonth, $endMonth) {
                     $q->whereMonth('start_date', '>=', $startMonth)
-                      ->orWhereMonth('start_date', '<=', $endMonth);
+                        ->orWhereMonth('start_date', '<=', $endMonth);
                 });
             }
         } elseif ($startMonth) {
@@ -137,6 +143,6 @@ class AcademicCalendarController extends Controller
             return $event->start_date->format('Y-m');
         });
 
-        return view('academic.calendar.agenda', compact('activeYear', 'groupedEvents', 'startMonth', 'endMonth', 'filterCategory'));
+        return view('academic.calendar.agenda', compact('viewedYear', 'groupedEvents', 'startMonth', 'endMonth', 'filterCategory'));
     }
 }

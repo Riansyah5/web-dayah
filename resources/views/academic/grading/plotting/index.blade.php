@@ -119,8 +119,8 @@ input, select {
 
           <div class="alert alert-info mt-3 small border-0 shadow-sm">
             <i class="bi bi-info-circle me-1"></i>
-            <strong>Tips:</strong> Klik tombol centang (<i class="bi bi-check-lg"></i>) di setiap baris untuk menyimpan
-            perubahan Guru/KKM mapel tersebut.
+            <strong>Tips:</strong> Semua perubahan akan disimpan secara otomatis. Pastikan untuk memilih guru dan
+            mengisi nilai KKM mapel tersebut.
           </div>
         @else
           {{-- State Kosong (Belum pilih kelas) --}}

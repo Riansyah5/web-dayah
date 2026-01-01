@@ -33,7 +33,7 @@
             <form action="{{ route('master.stages.store') }}" method="POST" class="row g-2 mb-4 bg-light p-3 rounded">
               @csrf
               <div class="col-md-5"><input name="name" class="form-control"
-                  placeholder="Nama Jenjang (Misal: Madrasah Aliyah)" required></div>
+                  placeholder="Nama Jenjang (Misal: MADRASAH ALIYAH)" required></div>
               <div class="col-md-3"><input name="code" class="form-control" placeholder="Kode (Misal: MA)" required>
               </div>
               <div class="col-md-4"><button class="btn btn-primary w-100"><i class="bi bi-plus-lg me-1"></i>
@@ -64,6 +64,7 @@
                 @endforeach
               </tbody>
             </table>
+            <span class="text-danger"><i>* Pastikan nama jenjang menggunakan huruf Kapital</i></span>
           </div>
 
           <div class="tab-pane fade" id="tab-levels">
@@ -351,125 +352,6 @@
       </div>
     </div>
   </div>
-  {{-- <div class="container py-4">
-    <h4 class="fw-bold mb-4">Data Master Sekolah</h4>
-
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-      <div class="card-header bg-white p-0">
-        <ul class="nav nav-tabs nav-fill" role="tablist">
-          <li class="nav-item"><button class="nav-link active py-3" data-bs-toggle="tab"
-              data-bs-target="#tab-stages">Jenjang (Unit)</button></li>
-          <li class="nav-item"><button class="nav-link py-3" data-bs-toggle="tab" data-bs-target="#tab-levels">Tingkat
-              Kelas</button></li>
-          <li class="nav-item"><button class="nav-link py-3" data-bs-toggle="tab"
-              data-bs-target="#tab-majors">Jurusan</button></li>
-          <li class="nav-item"><button class="nav-link py-3 fw-bold text-primary" data-bs-toggle="tab"
-              data-bs-target="#tab-years">Tahun Ajaran</button></li>
-        </ul>
-      </div>
-      <div class="card-body p-4">
-        <div class="tab-content">
-
-          <div class="tab-pane fade show active" id="tab-stages">
-            <form action="{{ route('master.stages.store') }}" method="POST" class="row g-2 mb-4">
-              @csrf
-              <div class="col-md-5"><input name="name" class="form-control"
-                  placeholder="Nama Jenjang (Misal: Madrasah Aliyah)" required></div>
-              <div class="col-md-3"><input name="code" class="form-control" placeholder="Kode (Misal: MA)" required>
-              </div>
-              <div class="col-md-4"><button class="btn btn-primary w-100">Tambah Jenjang</button></div>
-            </form>
-            <ul class="list-group">
-              @foreach ($stages as $s)
-                <li class="list-group-item d-flex justify-content-between">{{ $s->name }} <span
-                    class="badge bg-secondary">{{ $s->code }}</span></li>
-              @endforeach
-            </ul>
-          </div>
-
-          <div class="tab-pane fade" id="tab-levels">
-            <form action="{{ route('master.levels.store') }}" method="POST" class="row g-2 mb-4">
-              @csrf
-              <div class="col-md-4">
-                <select name="stage_id" class="form-select" required>
-                  <option value="">Pilih Jenjang...</option>
-                  @foreach ($stages as $s)
-                    <option value="{{ $s->id }}">{{ $s->code }}</option>
-                  @endforeach
-                </select>
-              </div>
-              <div class="col-md-4"><input name="name" class="form-control"
-                  placeholder="Nama Tingkat (Misal: Kelas 10)" required></div>
-              <div class="col-md-2"><input name="alias" class="form-control" placeholder="Alias (10)" required></div>
-              <div class="col-md-2"><button class="btn btn-primary w-100">Simpan</button></div>
-            </form>
-            <table class="table table-sm">
-              @foreach ($levels as $l)
-                <tr>
-                  <td>{{ $l->stage->code }}</td>
-                  <td>{{ $l->name }}</td>
-                  <td><span class="badge bg-light text-dark border">{{ $l->alias }}</span></td>
-                </tr>
-              @endforeach
-            </table>
-          </div>
-
-          <div class="tab-pane fade" id="tab-majors">
-            <form action="{{ route('master.majors.store') }}" method="POST" class="row g-2 mb-4">
-              @csrf
-              <div class="col-md-6"><input name="name" class="form-control" placeholder="Nama Jurusan" required></div>
-              <div class="col-md-3"><input name="code" class="form-control" placeholder="Kode (IPA)" required></div>
-              <div class="col-md-3"><button class="btn btn-primary w-100">Simpan</button></div>
-            </form>
-            <ul class="list-group">
-              @foreach ($majors as $m)
-                <li class="list-group-item d-flex justify-content-between">{{ $m->name }} <span
-                    class="badge bg-info">{{ $m->code }}</span></li>
-              @endforeach
-            </ul>
-          </div>
-
-          <div class="tab-pane fade" id="tab-years">
-            <form action="{{ route('master.academic-years.store') }}" method="POST"
-              class="row g-2 mb-4 bg-light p-3 rounded">
-              @csrf
-              <div class="col-md-4"><input name="name" class="form-control" placeholder="2024/2025" required></div>
-              <div class="col-md-3">
-                <select name="semester" class="form-select">
-                  <option>Ganjil</option>
-                  <option>Genap</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <div class="form-check mt-2"><input class="form-check-input" type="checkbox" name="is_active"
-                    id="activeCheck"><label class="form-check-label" for="activeCheck">Set Aktif</label></div>
-              </div>
-              <div class="col-md-2"><button class="btn btn-primary w-100">Buat Baru</button></div>
-            </form>
-            <table class="table align-middle">
-              @foreach ($academicYears as $y)
-                <tr class="{{ $y->is_active ? 'table-success' : '' }}">
-                  <td class="fw-bold">{{ $y->name }}</td>
-                  <td>{{ $y->semester }}</td>
-                  <td>
-                    @if ($y->is_active)
-                      <span class="badge bg-success">AKTIF</span>
-                    @else
-                      <form action="{{ route('master.academic-years.activate', $y->id) }}" method="POST">
-                        @csrf @method('PUT')
-                        <button class="btn btn-sm btn-outline-secondary">Aktifkan</button>
-                      </form>
-                    @endif
-                  </td>
-                </tr>
-              @endforeach
-            </table>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div> --}}
 @endsection
 @push('scripts')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

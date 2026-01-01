@@ -19,7 +19,7 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        $students = Student::all();
+        $students = Student::all()->where('status', 'active');
 
         return view('students.index', compact('students'));
     }
@@ -290,4 +290,5 @@ class StudentController extends Controller
 
         return back()->with('success', 'Santri berhasil dipindahkan.');
     }
+
 }

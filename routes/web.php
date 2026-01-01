@@ -25,6 +25,9 @@ use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
 use App\Http\Controllers\Academic\AcademicCalendarController;
+use App\Http\Controllers\StudentExitController;
+use App\Http\Controllers\Academic\Student\GraduationController;
+use App\Http\Controllers\Academic\Student\AlumniController;
 
 
 // Guest (Belum Login)
@@ -51,6 +54,8 @@ Route::middleware('auth')->group(function () {
 		Route::get('/student/{student}/history', [StudentHistoryController::class, 'show'])->name('student.history');
 		Route::get('/student/{student}/biodata', [StudentHistoryController::class, 'printBiodata'])->name('student.biodata.print');
 		Route::get('/student/{student}/biodatashow', [StudentHistoryController::class, 'showBiodata'])->name('student.biodata.show');
+		// Route untuk proses mutasi (POST)
+		Route::post('/students/{student}/exit', [StudentExitController::class, 'store'])->name('students.exit.store');
 		Route::resource('/students', StudentController::class);
 
 
@@ -162,7 +167,7 @@ Route::middleware('auth')->group(function () {
 			Route::get('/settings', [ReportSettingController::class, 'index'])->name('index');
 			Route::post('/settings', [ReportSettingController::class, 'store'])->name('store');
 		});
-		
+
 		// Group Modul Kalender Akademik
 		Route::get('/academic/calendar/agenda', [AcademicCalendarController::class, 'agenda'])->name('calendar.agenda');
 		Route::get('/academic/calendar/feed', [AcademicCalendarController::class, 'feed'])->name('calendar.feed');
@@ -170,6 +175,14 @@ Route::middleware('auth')->group(function () {
 		Route::post('/academic/calendar', [AcademicCalendarController::class, 'store'])->name('calendar.store');
 		Route::delete('/academic/calendar/{calendar}', [AcademicCalendarController::class, 'destroy'])->name('calendar.destroy');
 
+		// Group Modul Kelulusan Santri
+		Route::prefix('academic/graduation')->name('graduation.')->group(function () {
+			Route::get('/', [GraduationController::class, 'index'])->name('index'); // Pilih Kelas
+			Route::get('/{classroom}', [GraduationController::class, 'create'])->name('create'); // Form Checklist
+			Route::post('/{classroom}', [GraduationController::class, 'store'])->name('store'); // Proses
+		});
+		// Group Modul Alumni
+		Route::get('/academic/alumni', [AlumniController::class, 'index'])->name('alumni.index');
 	});
 
 
@@ -180,7 +193,7 @@ Route::middleware('auth')->group(function () {
 		// // Route untuk assign kamar
 		// Route::get('assignments/create', [RoomAssignmentController::class, 'create'])->name('assignments.create');
 		// Route::post('assignments', [RoomAssignmentController::class, 'store'])->name('assignments.store');
-	
+
 		// // student routes
 		// Route::put('students/{student}/move-room', [StudentController::class, 'moveRoom'])->name('students.moveRoom');
 		// Route::get('/students/rooms', [StudentController::class, 'rooms'])->name('students.rooms');
@@ -191,7 +204,7 @@ Route::middleware('auth')->group(function () {
 		// Route::get('/student/{student}/biodata', [StudentHistoryController::class, 'printBiodata'])->name('student.biodata.print');
 		// Route::get('/student/{student}/biodatashow', [StudentHistoryController::class, 'showBiodata'])->name('student.biodata.show');
 		// Route::resource('/students', StudentController::class);
-	
+
 		// // Group Akademik Kelas
 		// Route::resource('academic/classrooms', ClassroomController::class);
 		// Route::post('academic/classrooms/{classroom}/add', [ClassroomController::class, 'addStudent'])->name('classrooms.addStudent');

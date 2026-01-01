@@ -11,7 +11,7 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
           <h4 class="fw-bold mb-1">Agenda Kegiatan Akademik</h4>
-          <p class="text-muted small">Tahun Ajaran: {{ $activeYear->name }} ({{ $activeYear->semester }})</p>
+          <p class="text-muted small">Tahun Ajaran: {{ $viewedYear->name }} ({{ $viewedYear->semester }})</p>
         </div>
         <div>
           <a href="{{ route('calendar.index') }}" class="btn btn-outline-secondary me-2">
@@ -71,7 +71,7 @@
 
       <div class="d-none d-print-block text-center mb-4 border-bottom pb-3">
         <h3 class="fw-bold mb-0">KALENDER AKADEMIK & KEGIATAN</h3>
-        <h5 class="mb-0">{{ strtoupper($activeYear->name) }} - SEMESTER {{ strtoupper($activeYear->semester) }}</h5>
+        <h5 class="mb-0">{{ strtoupper($viewedYear->name) }} - SEMESTER {{ strtoupper($viewedYear->semester) }}</h5>
       </div>
 
       @if ($groupedEvents->isEmpty())

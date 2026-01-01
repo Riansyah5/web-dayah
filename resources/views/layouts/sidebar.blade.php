@@ -2,17 +2,17 @@
 <nav class="pc-sidebar">
   <div class="navbar-wrapper">
     <div class="m-header">
-      <a href="#" class="b-brand text-primary">
+      <a href="{{ route('dashboard') }}" class="b-brand text-primary">
         <!-- ========   Change your logo from here   ============ -->
         <img src="{{ asset('assets/images/logo-mataqu.svg') }}" alt="" class="logo" />
       </a>
     </div>
     <div class="navbar-content">
       <ul class="pc-navbar">
-        <li class="pc-item pc-caption">
+        {{-- <li class="pc-item pc-caption">
           <label>Dashboard</label>
           <i class="ti ti-dashboard"></i>
-        </li>
+        </li> --}}
         <li class="pc-item">
           <a href="{{ route('dashboard') }}" class="pc-link"><span class="pc-micon"><i
                 class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a>
@@ -32,17 +32,7 @@
             <span class="pc-mtext">Pegawai</span>
           </a>
         </li>
-
-        {{-- <li class="pc-item pc-caption">
-          <label>Santri</label>
-          <i class="ti ti-news"></i>
-        </li> --}}
-        <li class="pc-item">
-          <a class="pc-link" href="{{ route('students.index') }}">
-            <span class="pc-micon"><i class="ti ti-school"></i></span>
-            <span class="pc-mtext">Santri</span>
-          </a>
-        </li>
+        
         {{-- kalender akademik --}}
         <li class="pc-item">
           <a class="pc-link" href="{{ route('calendar.index') }}">
@@ -50,6 +40,22 @@
             <span class="pc-mtext">Kalender Akademik</span>
           </a>
         </li>
+
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-school"></i></span><span
+              class="pc-mtext">Santri</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('students.index') }}">Santri Aktif</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('alumni.index') }}">Alumni</a></li>
+          </ul>
+        </li>
+
+        {{-- <li class="pc-item">
+          <a class="pc-link" href="{{ route('students.index') }}">
+            <span class="pc-micon"><i class="ti ti-school"></i></span>
+            <span class="pc-mtext">Santri</span>
+          </a>
+        </li> --}}
 
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-book"></i></span><span
@@ -69,6 +75,7 @@
                 </li>
               </ul>
             </li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('graduation.index') }}">Kelulusan Massal</a></li>
           </ul>
         </li>
 

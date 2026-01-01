@@ -67,6 +67,10 @@ class PromotionController extends Controller
 
                     // Jika tidak ada level lanjutan (kelas akhir → lulus)
                     if (!$nextLevel) {
+                        foreach ($oldClass->students as $student) {
+                            $student->update(['status' => 'graduated']);
+                            $countStudents++;
+                        }
                         continue;
                     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Academic\Grading;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\AcademicYear;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,10 +16,16 @@ class TeacherGradingController extends Controller
     // Halaman Dashboard Guru (Daftar Mapel yang diajar)
     public function index()
     {
+        // Ambil Tahun Aktif
+        $activeYear = AcademicYear::where('is_active', true)->first();
+
         // 1. Ambil data Course (Jadwal Mengajar)
         // Kita load 'grades' (hanya kolom penting) untuk menghitung manual di PHP
         // agar akurat hanya menghitung siswa yang SAAT INI ada di kelas tersebut.
         $allCourses = Course::with(['classroom', 'subject', 'classroom.students', 'grades:id,course_id,student_id'])
+            ->whereHas('classroom', function ($q) use ($activeYear) {
+                $q->where('academic_year_id', $activeYear?->id);
+            })
             ->orderBy('classroom_id')
             ->orderBy('subject_id')
             ->get();
@@ -93,8 +100,11 @@ class TeacherGradingController extends Controller
             'file' => 'required|mimes:xlsx,xls'
         ]);
 
-        Excel::import(new GradesImport($course->id), $request->file('file'));
-
-        return back()->with('success', 'Nilai berhasil diimport dari Excel.');
+        try {
+            Excel::import(new GradesImport($course->id), $request->file('file'));
+            return back()->with('success', 'Nilai berhasil diimport dari Excel.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal import nilai: ' . $e->getMessage());
+        }
     }
 }

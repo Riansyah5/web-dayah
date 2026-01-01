@@ -107,7 +107,7 @@
                 @endforeach
               </select>
             </div>
-            <div class="mb-2"><label>Nama Kelas</label><input name="name" class="form-control" required></div>
+            <div class="mb-2"><label>Nama Kelas</label><input name="name" class="form-control" required placeholder="Contoh: 1A"></div>
             <div class="mb-2">
               <label>Wali Kelas</label>
               <select name="homeroom_teacher" class="form-select">
