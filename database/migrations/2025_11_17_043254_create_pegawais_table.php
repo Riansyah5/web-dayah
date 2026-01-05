@@ -46,8 +46,9 @@ return new class extends Migration
             $table->string('kabupaten')->nullable();
             $table->string('provinsi')->nullable();
 
-            // Status_pegawai: string (mis: "Tetap", "Kontrak")
-            $table->string('status_pegawai');
+            // Kategori_pegawai: string (mis: "Tetap", "Kontrak")
+            $table->string('kategori_pegawai');
+            $table->enum('status_pegawai', ['Aktif', 'Non-Aktif', 'Cuti', 'Keluar'])->default('Aktif');
 
             // Jabatan: string
             $table->string('jabatan');

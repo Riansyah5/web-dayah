@@ -47,6 +47,7 @@ class PegawaiController extends Controller
             'kabupaten' => 'nullable|string|max:255',
             'provinsi' => 'nullable|string|max:255',
             'status_pegawai' => 'required|string|max:255',
+            'kategori_pegawai' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'terhitung_mulai_tanggal' => 'required|date',
         ]);
@@ -98,6 +99,7 @@ class PegawaiController extends Controller
             'kabupaten' => 'nullable|string|max:255',
             'provinsi' => 'nullable|string|max:255',
             'status_pegawai' => 'required|string|max:255',
+            'kategori_pegawai' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'terhitung_mulai_tanggal' => 'required|date',
         ]);

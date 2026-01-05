@@ -3,7 +3,7 @@
 <!-- [Head] start -->
 
 <head>
-  <title>Login | Berry Dashboard Template</title>
+  <title>Login</title>
   <!-- [Meta] -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
@@ -69,9 +69,9 @@
               </button>
             </div> --}}
             <div class="saprator mt-3">
-              <span>or</span>
+              <span class=""><i class="ti ti-lock-access"></i></span>
             </div>
-            <h5 class="my-4 d-flex justify-content-center">Sign in with Email address</h5>
+            <h5 class="my-4 d-flex justify-content-center">Sign in with Email address / Username</h5>
             <form action="{{ route('login.process') }}" method="POST">
               @csrf
               <div class="form-floating mb-3">
@@ -87,14 +87,18 @@
                   <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" name="remember" />
                   <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
                 </div>
-                <h5 class="text-secondary">Forgot Password?</h5>
+                <h5 class="text-secondary" style="cursor: pointer;"
+                  onclick="Swal.fire({
+                    icon: 'info',
+                    title: 'Lupa Password?',
+                    text: 'Silakan hubungi admin apabila lupa password.'
+                  })">
+                  Forgot Password?</h5>
               </div>
               <div class="d-grid mt-4">
                 <button type="submit" class="btn btn-secondary">Sign In</button>
               </div>
             </form>
-            <hr />
-            <h5 class="d-flex justify-content-center">Don't have an account?</h5>
           </div>
         </div>
       </div>

@@ -12,55 +12,66 @@ class PegawaiSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        // Inisialisasi Faker dengan locale Indonesia
         $faker = Faker::create('id_ID');
 
-        // Jumlah data yang ingin dibuat
-        $limit = 10;
+        $data = [];
 
-        for ($i = 0; $i < $limit; $i++) {
-            // Tentukan jenis kelamin
-            $jenis_kelamin = $faker->randomElement(['Laki-laki', 'Perempuan']);
-            
-            // Tentukan tanggal lahir (usia antara 25-45 tahun)
-            $tanggal_lahir = $faker->dateTimeBetween('-45 years', '-25 years')->format('Y-m-d');
-            
-            // Tentukan status pegawai
-            $status_pegawai = $faker->randomElement(['Tetap', 'Kontrak', 'Honorer']);
+        for ($i = 1; $i <= 50; $i++) {
+            $jenisKelamin = $faker->randomElement(['Laki-laki', 'Perempuan']);
 
-            // Contoh untuk user_id: Anda harus memastikan ada data di tabel 'users' 
-            // atau biarkan null seperti skema
-            $user_id = null; // Biarkan null sesuai skema
-
-            DB::table('pegawais')->insert([
-                'id'                      => Str::ulid(), // Menggunakan ULID
-                'user_id'                 => $user_id,
-                'nik'                     => $faker->unique()->numerify('################'), // 16 digit angka unik
-                'nama'                    => $faker->name($jenis_kelamin == 'Laki-laki' ? 'male' : 'female'),
-                'jenis_kelamin'           => $jenis_kelamin,
-                'tempat_lahir'            => $faker->city,
-                'tanggal_lahir'           => $tanggal_lahir,
-                'status_perkawinan'       => $faker->randomElement(['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati']),
-                'no_kk'                   => $faker->optional()->numerify('################'), // Opsional 16 digit angka
-                'no_hp'                   => $faker->optional()->phoneNumber, // Opsional nomor telepon
-                
-                // Alamat opsional
-                'desa'                    => $faker->optional()->citySuffix,
-                'kecamatan'               => $faker->optional()->streetName,
-                'kabupaten'               => $faker->optional()->city,
-                'provinsi'                => $faker->optional()->state,
-                
-                'status_pegawai'          => $status_pegawai,
-                'jabatan'                 => $faker->jobTitle,
-                'terhitung_mulai_tanggal' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
-                'created_at'              => Carbon::now(),
-                'updated_at'              => Carbon::now(),
-            ]);
+            $data[] = [
+                'id' => (string) Str::ulid(),
+                'user_id' => null, // isi jika ingin relasi ke users
+                'nik' => $faker->unique()->numerify('################'), // 16 digit
+                'nama' => $faker->name($jenisKelamin === 'Laki-laki' ? 'male' : 'female'),
+                'jenis_kelamin' => $jenisKelamin,
+                'tempat_lahir' => $faker->city,
+                'tanggal_lahir' => $faker->dateTimeBetween('-55 years', '-20 years')->format('Y-m-d'),
+                'status_perkawinan' => $faker->randomElement([
+                    'Belum Menikah',
+                    'Menikah',
+                    'Cerai Hidup',
+                    'Cerai Mati',
+                ]),
+                'no_kk' => $faker->boolean(70) ? $faker->numerify('################') : null,
+                'no_hp' => $faker->boolean(85) ? $faker->numerify('08##########') : null,
+                'desa' => $faker->boolean(80) ? $faker->streetName : null,
+                'kecamatan' => $faker->boolean(80) ? $faker->citySuffix : null,
+                'kabupaten' => $faker->boolean(80) ? $faker->city : null,
+                'provinsi' => $faker->randomElement([
+                    'Jawa Barat',
+                    'Jawa Tengah',
+                    'Jawa Timur',
+                    'DKI Jakarta',
+                    'Banten',
+                ]),
+                'kategori_pegawai' => $faker->randomElement([
+                    'TETAP',
+                    'KONTRAK',
+                    'HONORER',
+                ]),
+                'status_pegawai' => $faker->randomElement([
+                    'Aktif',
+                    'Cuti',
+                    'Non-aktif',
+                    'Keluar'
+                ]),
+                'jabatan' => $faker->randomElement([
+                    'Staff Administrasi',
+                    'Operator',
+                    'Supervisor',
+                    'Kepala Seksi',
+                    'Analis',
+                ]),
+                'terhitung_mulai_tanggal' => $faker->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
         }
+
+        DB::table('pegawais')->insert($data);
     }
 }

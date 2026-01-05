@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalPegawai = Pegawai::count();
+        $totalPegawai = Pegawai::where('status_pegawai', 'Aktif')->count();
         $pegawaiLaki = Pegawai::where('jenis_kelamin', 'Laki-laki')->count();
         $pegawaiPerempuan = Pegawai::where('jenis_kelamin', 'Perempuan')->count();
         $totalSantri = Student::count();

@@ -71,7 +71,8 @@
               @forelse($alumni as $student)
                 <tr>
                   <td class="ps-4">
-                    <div class="fw-bold text-dark"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
+                    <div class="fw-bold text-dark"><a
+                        href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
                     <small class="text-muted">NIS: {{ $student->nis }}</small>
                   </td>
                   <td>
@@ -126,7 +127,8 @@
                             <hr class="dropdown-divider">
                           </li>
                           <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('students.exit.print-skl', $student->id) }}"
+                              target="_blank">
                               <i class="bi bi-file-earmark-pdf me-2 text-danger"></i> Cetak SKL
                             </a>
                           </li>
@@ -135,8 +137,9 @@
                             <hr class="dropdown-divider">
                           </li>
                           <li>
-                            <a class="dropdown-item" href="#">
-                              <i class="bi bi-envelope-paper me-2 text-warning"></i> Surat Pindah
+                            <a class="dropdown-item" href="{{ route('students.exit.print', $student->id) }}"
+                              target="_blank">
+                              <i class="bi bi-envelope-paper me-2 text-warning"></i> Cetak Surat Pindah
                             </a>
                           </li>
                         @endif
@@ -170,12 +173,12 @@
   <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
   <script>
     $(document).ready(function() {
-        $('#alumniTable').DataTable({
-            responsive: true,
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json"
-            }
-        });
+      $('#alumniTable').DataTable({
+        responsive: true,
+        language: {
+          url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json"
+        }
+      });
     });
   </script>
 @endpush

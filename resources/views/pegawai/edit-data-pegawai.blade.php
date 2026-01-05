@@ -174,14 +174,31 @@
 
               <div class="row g-3">
                 <div class="col-md-6">
+                  <label for="kategori_pegawai" class="form-label">Kategori Pegawai</label>
+                  <select class="form-select @error('kategori_pegawai') is-invalid @enderror" id="kategori_pegawai"
+                    name="kategori_pegawai" required>
+                    <option value="" disabled>-- Pilih Kategori --</option>
+                    @foreach ($kategoris as $kategori)
+                      <option value="{{ $kategori->name }}"
+                        {{ old('kategori_pegawai', $pegawai->kategori_pegawai) == $kategori->name ? 'selected' : '' }}>
+                        {{ $kategori->name }}
+                      </option>
+                    @endforeach
+                  </select>
+                  @error('kategori_pegawai')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                  @enderror
+                </div>
+
+                <div class="col-md-6">
                   <label for="status_pegawai" class="form-label">Status Pegawai</label>
                   <select class="form-select @error('status_pegawai') is-invalid @enderror" id="status_pegawai"
                     name="status_pegawai" required>
                     <option value="" disabled>-- Pilih Status --</option>
-                    @foreach ($kategoris as $kategori)
-                      <option value="{{ $kategori->name }}"
-                        {{ old('status_pegawai', $pegawai->status_pegawai) == $kategori->name ? 'selected' : '' }}>
-                        {{ $kategori->name }}
+                    @foreach (['Aktif', 'Non-aktif', 'Cuti', 'Keluar'] as $status)
+                      <option value="{{ $status }}"
+                        {{ old('status_pegawai', $pegawai->status_pegawai) == $status ? 'selected' : '' }}>
+                        {{ $status }}
                       </option>
                     @endforeach
                   </select>

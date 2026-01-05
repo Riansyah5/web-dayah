@@ -56,6 +56,9 @@ Route::middleware('auth')->group(function () {
 		Route::get('/student/{student}/biodatashow', [StudentHistoryController::class, 'showBiodata'])->name('student.biodata.show');
 		// Route untuk proses mutasi (POST)
 		Route::post('/students/{student}/exit', [StudentExitController::class, 'store'])->name('students.exit.store');
+		Route::get('/students/{student}/print-mutation', [StudentExitController::class, 'printLetter'])->name('students.exit.print');
+		// Route Cetak SKL
+Route::get('/students/{student}/print-skl', [StudentExitController::class, 'printSkl'])->name('students.exit.print-skl');
 		Route::resource('/students', StudentController::class);
 
 

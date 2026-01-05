@@ -129,30 +129,30 @@
               <table id="completeTable" class="table table-modern w-100">
                 <thead>
                   <tr>
-                    <th width="5%">No.</th>
-                    <th>NIK</th>
+                    <th width="2%">No.</th>
                     <th>Nama Lengkap</th>
-                    <th>L/P</th>
-                    <th>Jabatan</th>
-                    <th>Status</th>
-                    <th width="10%" class="text-center">Aksi</th>
-
+                    <th width="2%">L/P</th>
                     <th>Tempat Lahir</th>
                     <th>Tgl. Lahir</th>
+                    <th>Jabatan</th>
+                    <th>Kategori</th>
+
                     <th>Status Kawin</th>
+                    <th>NIK</th>
                     <th>No. KK</th>
                     <th>Desa</th>
                     <th>Kecamatan</th>
                     <th>Kabupaten</th>
                     <th>Provinsi</th>
                     <th>TMT</th>
+                    <th>Status</th>
+                    <th width="10%" class="text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   @foreach ($pegawais as $pegawai)
                     <tr>
-                      <td>{{ $loop->iteration }}</td>
-                      <td><span class="">{{ $pegawai->nik }}</span></td>
+                      <td class="text-center">{{ $loop->iteration }}</td>
                       <td>
                         <div class="d-flex align-items-center">
                           {{-- <div
@@ -167,19 +167,42 @@
                         </div>
                       </td>
                       <td>{{ $pegawai->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}</td>
+                      <td>{{ $pegawai->tempat_lahir }}</td>
+                      <td>{{ $pegawai->tanggal_lahir->format('d/m/Y') }}</td>
                       <td>{{ $pegawai->jabatan }}</td>
                       <td>
                         @php
-                          $statusClass = match ($pegawai->status_pegawai) {
+                          $kategoriClass = match ($pegawai->kategori_pegawai) {
                               'PNS', 'TETAP' => 'bg-success',
-                              'Honorer', 'Kontrak', 'TRAINING' => 'bg-warning text-dark',
+                              'HONORER', 'KONTRAK', 'TRAINING' => 'bg-warning text-dark',
+                              default => 'bg-secondary',
+                          };
+                        @endphp
+                        <span
+                          class="badge {{ $kategoriClass }} bg-opacity-75 rounded-pill px-3">{{ $pegawai->kategori_pegawai }}</span>
+                      </td>
+
+                      <td>{{ $pegawai->status_perkawinan }}</td>
+                      <td>{{ $pegawai->nik }}</td>
+                      <td>{{ $pegawai->no_kk }}</td>
+                      <td>{{ $pegawai->desa }}</td>
+                      <td>{{ $pegawai->kecamatan }}</td>
+                      <td>{{ $pegawai->kabupaten }}</td>
+                      <td>{{ $pegawai->provinsi }}</td>
+                      <td>{{ $pegawai->terhitung_mulai_tanggal->format('d/m/Y') }}</td>
+                      <td>
+                        @php
+                          $statusClass = match ($pegawai->status_pegawai) {
+                              'Aktif' => 'bg-success',
+                              'Cuti' => 'bg-warning text-dark',
+                              'Non-aktif' => 'bg-secondary',
+                              'Keluar' => 'bg-danger',
                               default => 'bg-secondary',
                           };
                         @endphp
                         <span
                           class="badge {{ $statusClass }} bg-opacity-75 rounded-pill px-3">{{ $pegawai->status_pegawai }}</span>
                       </td>
-
                       <td class="text-center" style="position: relative; z-index: 2;">
                         <div class="btn-group shadow-sm" role="group">
                           <a href="{{ route('pegawai.edit', $pegawai->id) }}"
@@ -196,16 +219,6 @@
                           @csrf @method('DELETE')
                         </form>
                       </td>
-
-                      <td>{{ $pegawai->tempat_lahir }}</td>
-                      <td>{{ $pegawai->tanggal_lahir->format('d/m/Y') }}</td>
-                      <td>{{ $pegawai->status_perkawinan }}</td>
-                      <td>{{ $pegawai->no_kk }}</td>
-                      <td>{{ $pegawai->desa }}</td>
-                      <td>{{ $pegawai->kecamatan }}</td>
-                      <td>{{ $pegawai->kabupaten }}</td>
-                      <td>{{ $pegawai->provinsi }}</td>
-                      <td>{{ $pegawai->terhitung_mulai_tanggal->format('d/m/Y') }}</td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -309,7 +322,7 @@
           }
         },
         columnDefs: [{
-          targets: [7, 8, 9, 10, 11, 12, 13, 14, 15],
+          targets: [7, 8, 9, 10, 11, 12, 13, 14], // Indeks kolom yang ingin disembunyikan (NIK, No. KK, Desa, Kecamatan, Kabupaten, Provinsi, TMT)
           visible: false
         }],
         initComplete: function() {

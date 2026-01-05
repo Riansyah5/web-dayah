@@ -25,7 +25,7 @@
 
     /* Buat selector lebih spesifik agar tidak bentrok dengan halaman lain */
     #dashboard-page {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Roboto', sans-serif;
       background-color: var(--berry-bg);
       color: var(--berry-dark);
     }
@@ -51,7 +51,7 @@
       transform: translateY(-2px);
     }
 
-    /* Hero Card (Full Color) - Total Santri */
+    /* Hero Card (Full Color) - Total Pegawai */
     #dashboard-page .card-purple-gradient {
       background: linear-gradient(to right, #673ab7, #5e35b1);
       color: #fff;
@@ -75,6 +75,41 @@
     }
 
     #dashboard-page .card-purple-gradient::before {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -125px;
+      right: -15px;
+      z-index: 1;
+    }
+
+    /* Hero Card (Full Color) - Total Santri */
+    #dashboard-page .card-santri-gradient {
+      background: linear-gradient(to right, #2b88cbff, #5e35b1);
+      color: #fff;
+    }
+
+    #dashboard-page .card-santri-gradient .text-muted {
+      color: #d1c4e9 !important;
+    }
+
+    /* Decorative Circles for Hero Card */
+    #dashboard-page .card-santri-gradient::after {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -85px;
+      right: -95px;
+      z-index: 1;
+    }
+
+    #dashboard-page .card-santri-gradient::before {
       content: "";
       position: absolute;
       width: 210px;
@@ -192,7 +227,7 @@
           <div style="position: relative; z-index: 2;">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <div class="text-muted card-head-text">Pegawai</div>
+                <div class="text-muted card-head-text">Pegawai Aktif</div>
                 <div class="d-flex align-items-center">
                   <div class="card-main-number text-white" data-target="{{ $totalPegawai }}">0</div>
                   <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
@@ -211,13 +246,13 @@
       </div>
 
       <div class="col-xl-3 col-md-6 mb-3">
-        <div class="card card-berry bg-warning bg-opacity-75 p-4 ">
+        <div class="card card-berry card-santri-gradient bg-opacity-75 p-4 ">
           <div style="position: relative; z-index: 2;">
             <div class="d-flex justify-content-between align-items-start">
               <div>
                 <div class="text-muted card-head-text">Total Santri</div>
                 <div class="d-flex align-items-center">
-                  <div class="card-main-number text-dark" data-target="{{ $totalSantri }}">0</div>
+                  <div class="card-main-number text-white" data-target="{{ $totalSantri }}">0</div>
                   <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
                 </div>
               </div>
@@ -302,8 +337,8 @@
           <div id="chart-pie"></div>
           <div class="text-center mt-3">
             <div class="d-flex justify-content-center gap-3">
-              <div class="small"><i class="fas fa-circle" style="color: #673ab7"></i> SMP</div>
-              <div class="small"><i class="fas fa-circle" style="color: #2196f3"></i> SMA</div>
+              <div class="small"><i class="fas fa-circle" style="color: #25f795ff"></i> SMP</div>
+              <div class="small"><i class="fas fa-circle" style="color: #ffc107"></i> SMA</div>
             </div>
           </div>
         </div>
@@ -384,13 +419,13 @@
       }],
       chart: {
         type: 'bar',
-        height: 350,
+        height: 300,
         toolbar: {
           show: false
         },
         fontFamily: 'Poppins, sans-serif'
       },
-      colors: ['#673ab7'], // Warna Ungu Berry
+      colors: ['#3aa3ffff'], // Warna Ungu Berry
       plotOptions: {
         bar: {
           borderRadius: 4,
@@ -419,7 +454,7 @@
       },
       grid: {
         strokeDashArray: 4,
-        borderColor: '#f1f3fa'
+        borderColor: '#e2e2e2ff'
       },
       tooltip: {
         y: {
@@ -442,7 +477,7 @@
         height: 300,
         fontFamily: 'Poppins, sans-serif'
       },
-      colors: ['#673ab7', '#2196f3'], // Ungu dan Biru
+      colors: ['#25f795ff', '#ffc107'], // Ungu dan Biru
       legend: {
         show: false
       }, // Kita custom legend di HTML
@@ -457,7 +492,7 @@
               show: true,
               total: {
                 show: true,
-                label: 'Total',
+                label: 'Total Santri',
                 fontSize: '16px',
                 fontWeight: 600,
                 color: '#364152'
