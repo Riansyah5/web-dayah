@@ -15,19 +15,22 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\DataMasterController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\StudentExitController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\Academic\SyllabusController;
+use App\Http\Controllers\Tahfizh\TahfizhReportController;
+use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
+use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
 use App\Http\Controllers\Academic\Grading\CourseController;
+use App\Http\Controllers\Academic\Student\AlumniController;
+use App\Http\Controllers\Academic\AcademicCalendarController;
+use App\Http\Controllers\Academic\Student\GraduationController;
+use App\Http\Controllers\Academic\Report\ReportSettingController;
+use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
-use App\Http\Controllers\Academic\Report\StudentHistoryController;
-use App\Http\Controllers\Academic\Report\ReportSettingController;
-use App\Http\Controllers\Academic\AcademicCalendarController;
-use App\Http\Controllers\StudentExitController;
-use App\Http\Controllers\Academic\Student\GraduationController;
-use App\Http\Controllers\Academic\Student\AlumniController;
 
 
 // Guest (Belum Login)
@@ -58,7 +61,7 @@ Route::middleware('auth')->group(function () {
 		Route::post('/students/{student}/exit', [StudentExitController::class, 'store'])->name('students.exit.store');
 		Route::get('/students/{student}/print-mutation', [StudentExitController::class, 'printLetter'])->name('students.exit.print');
 		// Route Cetak SKL
-Route::get('/students/{student}/print-skl', [StudentExitController::class, 'printSkl'])->name('students.exit.print-skl');
+		Route::get('/students/{student}/print-skl', [StudentExitController::class, 'printSkl'])->name('students.exit.print-skl');
 		Route::resource('/students', StudentController::class);
 
 
@@ -186,6 +189,22 @@ Route::get('/students/{student}/print-skl', [StudentExitController::class, 'prin
 		});
 		// Group Modul Alumni
 		Route::get('/academic/alumni', [AlumniController::class, 'index'])->name('alumni.index');
+
+		// Group Modul Tahfizh
+		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
+			// Route untuk membuka form input setoran per siswa
+			Route::get('/setoran/create/{student}', [TahfizhSetoranController::class, 'create'])->name('setoran.create');
+			Route::post('/setoran/store/{student}', [TahfizhSetoranController::class, 'store'])->name('setoran.store');
+
+			// Resource Route CRUD
+			Route::resource('halaqah', TahfizhHalaqahController::class);
+
+			// Custom Route untuk Plotting Anggota
+			Route::post('/halaqah/{halaqah}/add-member', [TahfizhHalaqahController::class, 'addMember'])->name('halaqah.add-member');
+			Route::delete('/halaqah/{halaqah}/remove-member/{student}', [TahfizhHalaqahController::class, 'removeMember'])->name('halaqah.remove-member');
+			// Route untuk melihat Rapor Tahfizh per Santri
+    	Route::get('/report/{student}', [TahfizhReportController::class, 'show'])->name('report.show');
+		});
 	});
 
 

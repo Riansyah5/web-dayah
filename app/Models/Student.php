@@ -95,4 +95,9 @@ class Student extends Model
     {
         return $query->where('status', 'graduated');
     }
+    
+    // 3. RELASI MANY-TO-MANY KE TAHFIZH HALAQAH
+    public function tahfizhHalaqahs() {
+        return $this->belongsToMany(TahfizhHalaqah::class, 'tahfizh_students', 'student_id', 'tahfizh_halaqah_id');
+    }
 }
