@@ -34,16 +34,22 @@
                   <button class="btn btn-sm btn-light rounded-circle" data-bs-toggle="dropdown"><i
                       class="bi bi-three-dots-vertical"></i></button>
                   <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-                    <li><a class="dropdown-item" href="{{ route('tahfizh.halaqah.edit', $halaqah->id) }}">Edit Info</a>
+                    <li>
+                      <a class="dropdown-item btn-edit" href="#" 
+                        data-name="{{ $halaqah->name }}"
+                        data-teacher="{{ $halaqah->teacher_id }}"
+                        data-gender="{{ $halaqah->gender }}"
+                        data-description="{{ $halaqah->description }}"
+                        data-url="{{ route('tahfizh.halaqah.update', $halaqah->id) }}">Edit Info</a>
                     </li>
                     <li>
                       <hr class="dropdown-divider">
                     </li>
                     <li>
                       <form action="{{ route('tahfizh.halaqah.destroy', $halaqah->id) }}" method="POST"
-                        onsubmit="return confirm('Hapus kelompok ini?')">
+                        class="delete-form">
                         @csrf @method('DELETE')
-                        <button class="dropdown-item text-danger">Hapus</button>
+                        <button type="submit" class="dropdown-item text-danger">Hapus</button>
                       </form>
                     </li>
                   </ul>
@@ -72,8 +78,50 @@
       @endforelse
     </div>
   </div>
+
+  <!-- Modal Edit Halaqah -->
+  <div class="modal fade" id="editHalaqahModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Edit Halaqah</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm" method="POST">
+            @csrf @method('PUT')
+            <div class="mb-3">
+              <label class="form-label small text-muted">Nama Halaqah</label>
+              <input type="text" name="name" id="editName" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-muted">Musyrif</label>
+              <select name="teacher_id" id="editTeacher" class="form-select" required>
+                @foreach($teachers as $teacher)
+                  <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-muted">Gender</label>
+              <select name="gender" id="editGender" class="form-select" required>
+                <option value="L">Putra (Laki-laki)</option>
+                <option value="P">Putri (Perempuan)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-muted">Deskripsi</label>
+              <textarea name="description" id="editDescription" class="form-control" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 rounded-pill">Simpan Perubahan</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     document.getElementById('searchInput').addEventListener('keyup', function() {
       const searchTerm = this.value.toLowerCase();
@@ -84,5 +132,62 @@
         card.style.display = text.includes(searchTerm) ? '' : 'none';
       });
     });
+
+    // Handle Edit Modal
+    document.querySelectorAll('.btn-edit').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Populate Form
+        document.getElementById('editName').value = this.dataset.name;
+        document.getElementById('editTeacher').value = this.dataset.teacher;
+        document.getElementById('editGender').value = this.dataset.gender;
+        document.getElementById('editDescription').value = this.dataset.description || '';
+        document.getElementById('editForm').action = this.dataset.url;
+
+        // Show Modal
+        new bootstrap.Modal(document.getElementById('editHalaqahModal')).show();
+      });
+    });
+
+    // SweetAlert untuk Konfirmasi Hapus
+    document.querySelectorAll('.delete-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Hapus Halaqah?',
+          text: "Data halaqah ini akan dihapus permanen.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Ya, Hapus!',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.submit();
+          }
+        });
+      });
+    });
+
+    // SweetAlert untuk Notifikasi Session
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        showConfirmButton: false
+      });
+    @endif
+
+    @if (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: '{{ session('error') }}',
+      });
+    @endif
   </script>
 @endpush

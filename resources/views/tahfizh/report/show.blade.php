@@ -3,9 +3,48 @@
 @push('link')
 @endpush
 @push('styles')
+<style>
+
+  /* Animasi Gelombang Air */
+  .wave-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 1); /* Warna area kosong (lebih solid) */
+    z-index: 0;
+  }
+  .wave-overlay::before, .wave-overlay::after {
+    content: "";
+    position: absolute;
+    width: 130%; /* Diperkecil agar gelombang lebih halus */
+    padding-bottom: 120%;
+    top: 100%; /* Mulai dari batas bawah overlay (permukaan air) */
+    left: 50%;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 40%;
+    transform: translate(-50%, -100%); /* Posisi pas di garis batas */
+    animation: wave-rotate 6s linear infinite;
+  }
+  .wave-overlay::after {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 45%;
+    animation: wave-rotate-reverse 10s linear infinite; /* Durasi beda biar acak */
+  }
+  @keyframes wave-rotate {
+    0% { transform: translate(-50%, -100%) rotate(0deg); }
+    100% { transform: translate(-50%, -100%) rotate(360deg); }
+  }
+  @keyframes wave-rotate-reverse {
+    0% { transform: translate(-50%, -100%) rotate(0deg); }
+    100% { transform: translate(-50%, -100%) rotate(-360deg); }
+  }
+
+</style>
 @endpush
 @section('content')
   <div class="container py-4">
+    {{-- // Header Laporan Santri // --}}
     <div class="d-flex align-items-center mb-4">
       <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded me-3"><i class="bi bi-arrow-left"></i></a>
       <div class="d-flex align-items-center">
@@ -21,6 +60,7 @@
       </div>
     </div>
 
+    <!-- Statistik Ringkas -->
     <div class="row g-3 mb-4">
       <div class="col-md-4">
         <div class="card border-0 shadow-sm rounded-4 bg-secondary text-white h-100">
@@ -81,6 +121,83 @@
       </div>
     </div>
 
+    <!-- Peta Kemajuan Hafalan -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0">Peta Kemajuan Hafalan (30 Juz)</h6>
+
+        <div class="d-flex gap-2 small">
+          <span class="badge bg-success">Selesai (Khatam)</span>
+          <span class="badge bg-warning text-dark">Sedang Berjalan</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="alert alert-light border d-flex flex-column flex-md-row align-items-md-center mb-4">
+          <div class="me-4 mb-2 mb-md-0">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Posisi Terakhir</small>
+            <span class="fw-bold text-dark fs-5">
+              @if ($lastSetoran && $lastSetoran->type == 'ziyadah')
+                {{ $lastSetoran->location }}
+              @else
+                - Belum ada Ziyadah -
+              @endif
+            </span>
+          </div>
+          <div class="vr d-none d-md-block me-4"></div>
+          <div class="me-4 mb-2 mb-md-0">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Total Akumulasi Ayat</small>
+            <span class="fw-bold text-primary fs-5">{{ number_format($totalVersesHafal) }} Ayat</span>
+          </div>
+          <div class="vr d-none d-md-block me-4"></div>
+          <div>
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Estimasi Juz</small>
+            <span class="fw-bold text-success fs-5">{{ number_format(($totalVersesHafal / 6236) * 30, 1) }} Juz</span>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          @for ($i = 1; $i <= 30; $i++)
+            @php
+              $data = $juzStatus[$i];
+            @endphp
+
+            <div class="text-center position-relative tooltip-container" style="width: 48px;">
+              <div
+                class="btn {{ $data['color'] }} rounded-circle fw-bold d-flex align-items-center justify-content-center shadow-sm mb-1 position-relative overflow-hidden"
+                style="width: 42px; height: 42px; cursor: default;"
+                title="Juz {{ $i }}: {{ $data['percent'] }}% Terhafal">
+
+                <span style="z-index: 2; position: relative;">{{ $i }}</span>
+
+                @if ($data['status'] == 'process')
+                  <div class="wave-overlay"
+                    style="height: {{ 100 - $data['percent'] }}%; pointer-events: none;"></div>
+                @endif
+              </div>
+
+              @if ($data['status'] != 'none')
+                <small style="font-size: 0.6rem;"
+                  class="d-block fw-bold {{ $data['status'] == 'khatam' ? 'text-success' : 'text-warning' }}">
+                  {{ $data['percent'] }}%
+                </small>
+              @else
+                <small style="font-size: 0.6rem;" class="text-muted">Juz</small>
+              @endif
+            </div>
+          @endfor
+        </div>
+
+        <div class="mt-4 pt-3 border-top text-center">
+          <small class="text-muted fst-italic" style="font-size: 0.8rem;">
+            * Perhitungan berdasarkan akumulasi jumlah ayat yang disetorkan (Ziyadah).
+          </small>
+        </div>
+
+      </div>
+    </div>
+
+    {{-- // Riwayat Setoran Terakhir --}}
     <div class="card border-0 shadow-sm rounded-4">
       <div class="card-header bg-white py-3">
         <h6 class="fw-bold mb-0">10 Riwayat Setoran Terakhir</h6>

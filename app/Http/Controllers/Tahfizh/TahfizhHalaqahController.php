@@ -22,8 +22,10 @@ class TahfizhHalaqahController extends Controller
                     ->with('teacher')
                     ->withCount('students')
                     ->get();
+        
+        $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
-        return view('tahfizh.halaqah.index', compact('halaqahs', 'activeYear'));
+        return view('tahfizh.halaqah.index', compact('halaqahs', 'activeYear', 'teachers'));
     }
 
     public function create()
