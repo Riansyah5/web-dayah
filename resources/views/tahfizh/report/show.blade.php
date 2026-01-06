@@ -3,67 +3,152 @@
 @push('link')
 @endpush
 @push('styles')
-<style>
+  <style>
+    .card-total-setoran {
+      background-color: #696FC7;
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* Animasi Gelombang Air */
-  .wave-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 1); /* Warna area kosong (lebih solid) */
-    z-index: 0;
-  }
-  .wave-overlay::before, .wave-overlay::after {
-    content: "";
-    position: absolute;
-    width: 130%; /* Diperkecil agar gelombang lebih halus */
-    padding-bottom: 120%;
-    top: 100%; /* Mulai dari batas bawah overlay (permukaan air) */
-    left: 50%;
-    background: rgba(255, 255, 255, 1);
-    border-radius: 40%;
-    transform: translate(-50%, -100%); /* Posisi pas di garis batas */
-    animation: wave-rotate 6s linear infinite;
-  }
-  .wave-overlay::after {
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 45%;
-    animation: wave-rotate-reverse 10s linear infinite; /* Durasi beda biar acak */
-  }
-  @keyframes wave-rotate {
-    0% { transform: translate(-50%, -100%) rotate(0deg); }
-    100% { transform: translate(-50%, -100%) rotate(360deg); }
-  }
-  @keyframes wave-rotate-reverse {
-    0% { transform: translate(-50%, -100%) rotate(0deg); }
-    100% { transform: translate(-50%, -100%) rotate(-360deg); }
-  }
+    .card-total-setoran::after {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -85px;
+      right: -95px;
+      z-index: 1;
+    }
 
-</style>
+    .card-total-setoran::before {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -135px;
+      right: -15px;
+      z-index: 1;
+    }
+
+    .card-ziyadah {
+      background-color: #FFCF71;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-ziyadah::after {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      top: -85px;
+      right: -95px;
+      z-index: 1;
+    }
+
+    .card-ziyadah::before {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      top: -135px;
+      right: -15px;
+      z-index: 1;
+    }
+
+
+    /* Animasi Gelombang Air */
+    .wave-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 1);
+      /* Warna area kosong (lebih solid) */
+      z-index: 0;
+    }
+
+    .wave-overlay::before,
+    .wave-overlay::after {
+      content: "";
+      position: absolute;
+      width: 130%;
+      /* Diperkecil agar gelombang lebih halus */
+      padding-bottom: 120%;
+      top: 100%;
+      /* Mulai dari batas bawah overlay (permukaan air) */
+      left: 50%;
+      background: rgba(255, 255, 255, 1);
+      border-radius: 40%;
+      transform: translate(-50%, -95%);
+      /* Posisi pas di garis batas */
+      animation: wave-rotate 6s linear infinite;
+    }
+
+    .wave-overlay::after {
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 45%;
+      animation: wave-rotate-reverse 10s linear infinite;
+      /* Durasi beda biar acak */
+    }
+
+    @keyframes wave-rotate {
+      0% {
+        transform: translate(-50%, -95%) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-50%, -95%) rotate(360deg);
+      }
+    }
+
+    @keyframes wave-rotate-reverse {
+      0% {
+        transform: translate(-50%, -95%) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-50%, -95%) rotate(-360deg);
+      }
+    }
+  </style>
 @endpush
 @section('content')
   <div class="container py-4">
     {{-- // Header Laporan Santri // --}}
-    <div class="d-flex align-items-center mb-4">
-      <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded me-3"><i class="bi bi-arrow-left"></i></a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="d-flex align-items-center">
-        <div
-          class="avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold"
-          style="width: 50px; height: 50px; font-size: 1.2rem;">
-          {{ substr($student->name, 0, 1) }}
+        <div class="d-flex align-items-center">
+          <div
+            class="avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold"
+            style="width: 50px; height: 50px; font-size: 1.2rem;">
+            {{ substr($student->name, 0, 1) }}
+          </div>
+          <div>
+            <h4 class="fw-bold mb-0">{{ $student->name }}</h4>
+            <small class="text-muted">Laporan Perkembangan Tahfizh</small>
+          </div>
         </div>
-        <div>
-          <h4 class="fw-bold mb-0">{{ $student->name }}</h4>
-          <small class="text-muted">Laporan Perkembangan Tahfizh</small>
-        </div>
+      </div>
+      <div>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm rounded">
+          <i class="bi bi-arrow-left"></i> Kembali
+        </a>
       </div>
     </div>
 
     <!-- Statistik Ringkas -->
     <div class="row g-3 mb-4">
       <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-secondary text-white h-100">
+        <div class="card border-0 shadow-sm rounded-4 card-total-setoran text-white h-100">
           <div class="card-body">
             <small class="">Total Setoran</small>
             <h2 class="fw-bold mb-0 text-white">{{ $totalSetoran }} <span class="fs-6 fw-normal">kali</span></h2>
@@ -71,7 +156,7 @@
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-info text-white h-100">
+        <div class="card border-0 shadow-sm rounded-4 card-ziyadah text-white h-100">
           <div class="card-body">
             <small class="">Hafalan Baru (Ziyadah)</small>
             <h2 class="fw-bold mb-0 text-white">{{ $totalZiyadah }} <span class="fs-6 fw-normal">kali</span></h2>
@@ -171,8 +256,7 @@
                 <span style="z-index: 2; position: relative;">{{ $i }}</span>
 
                 @if ($data['status'] == 'process')
-                  <div class="wave-overlay"
-                    style="height: {{ 100 - $data['percent'] }}%; pointer-events: none;"></div>
+                  <div class="wave-overlay" style="height: {{ 100 - $data['percent'] }}%; pointer-events: none;"></div>
                 @endif
               </div>
 

@@ -20,7 +20,7 @@
               <div class="text-muted">{{ $student->name }} ({{ $student->nis }})</div>
             </div>
           </div>
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm ms-auto">
+            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm ms-auto rounded">
               <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
