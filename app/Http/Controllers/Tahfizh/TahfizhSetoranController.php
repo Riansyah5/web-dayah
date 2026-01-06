@@ -45,6 +45,33 @@ class TahfizhSetoranController extends Controller
             return back()->withInput()->withErrors(['ayat_end' => 'Ayat melebihi jumlah ayat surat ' . $surahEnd->name_latin . ' (' . $surahEnd->total_verses . ')']);
         }
 
+        // Validasi Ziyadah: Cek apakah ayat ini sudah pernah disetor sebagai Ziyadah sebelumnya
+        if ($request->type == 'ziyadah') {
+            $surahs = QuranSurah::orderBy('id')->get();
+            $offsets = [];
+            $cumulative = 0;
+            foreach ($surahs as $s) {
+                $offsets[$s->id] = $cumulative;
+                $cumulative += $s->total_verses;
+            }
+
+            $newStart = $offsets[$request->surah_start_id] + $request->ayat_start;
+            $newEnd = $offsets[$request->surah_end_id] + $request->ayat_end;
+
+            $existingZiyadahs = TahfizhSetoran::where('student_id', $student->id)
+                ->where('type', 'ziyadah')
+                ->get();
+
+            foreach ($existingZiyadahs as $existing) {
+                $exStart = $offsets[$existing->surah_start_id] + $existing->ayat_start;
+                $exEnd = $offsets[$existing->surah_end_id] + $existing->ayat_end;
+
+                if (max($newStart, $exStart) <= min($newEnd, $exEnd)) {
+                    return back()->withInput()->withErrors(['type' => 'Ayat ini sudah pernah disetor sebagai Ziyadah. Silakan pilih tipe Muraja\'ah atau cek kembali ayat.']);
+                }
+            }
+        }
+
         // Ambil Musyrif (Teacher) dari Halaqah Aktif Santri
         $activeHalaqah = $student->tahfizhHalaqahs()
             ->whereHas('academicYear', function ($q) {

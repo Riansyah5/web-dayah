@@ -8,20 +8,26 @@
   <div class="container py-4">
     <div class="row justify-content-center">
       <div class="col-md-8">
-
-        <div class="d-flex align-items-center mb-4">
-          <div class="avatar-lg bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-            style="width: 50px; height: 50px; font-size: 1.5rem;">
-            {{ substr($student->name, 0, 1) }}
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div
+              class="avatar-lg bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+              style="width: 50px; height: 50px; font-size: 1.5rem;">
+              {{ substr($student->name, 0, 1) }}
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0">Input Setoran Hafalan</h5>
+              <div class="text-muted">{{ $student->name }} ({{ $student->nis }})</div>
+            </div>
           </div>
-          <div>
-            <h5 class="fw-bold mb-0">Input Setoran Hafalan</h5>
-            <div class="text-muted">{{ $student->name }} ({{ $student->nis }})</div>
-          </div>
+            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm ms-auto">
+              <i class="bi bi-arrow-left"></i> Kembali
+            </a>
         </div>
 
+
         @if ($lastSetoran)
-          <div class="alert alert-info border-0 shadow-sm rounded-3 d-flex align-items-center">
+          <div class="alert alert-info border-0 shadow-sm rounded-3 d-flex align-items-center mt-2">
             <i class="bi bi-info-circle-fill me-3 fs-4"></i>
             <div>
               <small class="text-uppercase fw-bold opacity-75" style="font-size: 0.7rem;">Setoran Terakhir
@@ -102,7 +108,7 @@
                 </div>
               </div>
 
-              <div class="form-check mb-4 ms-md-auto text-md-end">
+              <div class="form-check mb-4 ms-md-auto text-md-start">
                 <input class="form-check-input" type="checkbox" id="sameSurahCheck" checked>
                 <label class="form-check-label small text-muted" for="sameSurahCheck">
                   Surat Akhir sama dengan Surat Awal
@@ -144,6 +150,34 @@
 
 @endsection
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @elseif ($errors->has('ayat_end'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Kesalahan Input',
+        html: '{{ $errors->first('ayat_end') }}',
+        showConfirmButton: true
+      });
+    @elseif ($errors->has('type'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        html: '{{ $errors->first('type') }}',
+        showConfirmButton: true
+      });
+    @endif
+  </script>
+
   <script>
     // Script Helper Sederhana
     document.addEventListener('DOMContentLoaded', function() {
