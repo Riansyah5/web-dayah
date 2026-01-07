@@ -169,7 +169,7 @@
             <small class="text-muted">Posisi Terakhir</small>
             @if ($lastSetoran)
               <div class="fw-bold text-dark">{{ $lastSetoran->location }}</div>
-              <small class="text-muted">{{ $lastSetoran->date->translatedFormat('d F Y') }}</small>
+              <small class="text-muted">{{ $lastSetoran->date->locale('id')->translatedFormat('d F Y') }}</small>
             @else
               <div class="fw-bold">-</div>
             @endif

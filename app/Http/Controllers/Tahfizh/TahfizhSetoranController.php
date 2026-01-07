@@ -21,6 +21,7 @@ class TahfizhSetoranController extends Controller
         $lastSetoran = TahfizhSetoran::where('student_id', $student->id)
                         ->with(['surahEnd'])
                         ->latest('date')
+                        ->latest('id')
                         ->first();
 
         return view('tahfizh.setoran.create', compact('student', 'surahs', 'lastSetoran'));
@@ -45,9 +46,37 @@ class TahfizhSetoranController extends Controller
             return back()->withInput()->withErrors(['ayat_end' => 'Ayat melebihi jumlah ayat surat ' . $surahEnd->name_latin . ' (' . $surahEnd->total_verses . ')']);
         }
 
+        // Validasi Batas Juz: Pastikan ayat akhir tidak melewati batas Juz yang dipilih
+        $juzStandards = [
+            1 => 148, 2 => 111, 3 => 126, 4 => 131, 5 => 124,
+            6 => 110, 7 => 149, 8 => 142, 9 => 159, 10 => 127,
+            11 => 151, 12 => 170, 13 => 154, 14 => 227, 15 => 185,
+            16 => 269, 17 => 190, 18 => 202, 19 => 339, 20 => 171,
+            21 => 178, 22 => 169, 23 => 357, 24 => 175, 25 => 246,
+            26 => 195, 27 => 216, 28 => 137, 29 => 431, 30 => 564
+        ];
+
+        $juzEndLimit = 0;
+        for ($i = 1; $i <= $request->juz; $i++) {
+            $juzEndLimit += $juzStandards[$i];
+        }
+
+        $surahs = QuranSurah::orderBy('id')->get();
+        $inputAbsEnd = 0;
+        foreach ($surahs as $s) {
+            if ($s->id == $request->surah_end_id) {
+                $inputAbsEnd += $request->ayat_end;
+                break;
+            }
+            $inputAbsEnd += $s->total_verses;
+        }
+
+        if ($inputAbsEnd > $juzEndLimit) {
+            return back()->withInput()->withErrors(['ayat_end' => 'Ayat akhir melewati batas Juz ' . $request->juz . '.']);
+        }
+
         // Validasi Ziyadah: Cek apakah ayat ini sudah pernah disetor sebagai Ziyadah sebelumnya
         if ($request->type == 'ziyadah') {
-            $surahs = QuranSurah::orderBy('id')->get();
             $offsets = [];
             $cumulative = 0;
             foreach ($surahs as $s) {
