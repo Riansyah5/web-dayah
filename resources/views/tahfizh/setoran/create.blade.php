@@ -20,9 +20,9 @@
               <div class="text-muted">{{ $student->name }} ({{ $student->nis }})</div>
             </div>
           </div>
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm ms-auto rounded">
-              <i class="bi bi-arrow-left"></i> Kembali
-            </a>
+          <a href="{{ $activeHalaqah ? route('tahfizh.halaqah.show', $activeHalaqah->id) : url()->previous() }}" class="btn btn-outline-secondary btn-sm ms-auto rounded">
+            <i class="bi bi-arrow-left"></i> Kembali
+          </a>
         </div>
 
 
@@ -37,7 +37,7 @@
             </div>
           </div>
         @else
-          <div class="alert alert-secondary border-0 shadow-sm rounded-3">
+          <div class="alert alert-secondary border-0 shadow-sm rounded-3 mt-2">
             <i class="bi bi-stars me-2"></i> Belum ada riwayat setoran. Ini adalah setoran pertama.
           </div>
         @endif
@@ -161,18 +161,18 @@
         timer: 2000,
         showConfirmButton: false
       });
-    @elseif ($errors->has('ayat_end'))
+    @endif
+    @if ($errors->any())
       Swal.fire({
         icon: 'error',
         title: 'Kesalahan Input',
-        html: '{{ $errors->first('ayat_end') }}',
-        showConfirmButton: true
-      });
-    @elseif ($errors->has('type'))
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        html: '{{ $errors->first('type') }}',
+        html: `
+            <ul style="text-align:left">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        `,
         showConfirmButton: true
       });
     @endif

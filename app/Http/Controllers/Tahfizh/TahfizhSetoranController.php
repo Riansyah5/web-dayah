@@ -24,7 +24,13 @@ class TahfizhSetoranController extends Controller
                         ->latest('id')
                         ->first();
 
-        return view('tahfizh.setoran.create', compact('student', 'surahs', 'lastSetoran'));
+        $activeHalaqah = $student->tahfizhHalaqahs()
+            ->whereHas('academicYear', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->first();
+
+        return view('tahfizh.setoran.create', compact('student', 'surahs', 'lastSetoran', 'activeHalaqah'));
     }
 
     public function store(Request $request, Student $student)
@@ -60,8 +66,19 @@ class TahfizhSetoranController extends Controller
         for ($i = 1; $i <= $request->juz; $i++) {
             $juzEndLimit += $juzStandards[$i];
         }
+        $juzStartLimit = $juzEndLimit - $juzStandards[$request->juz];
 
         $surahs = QuranSurah::orderBy('id')->get();
+        
+        $inputAbsStart = 0;
+        foreach ($surahs as $s) {
+            if ($s->id == $request->surah_start_id) {
+                $inputAbsStart += $request->ayat_start;
+                break;
+            }
+            $inputAbsStart += $s->total_verses;
+        }
+
         $inputAbsEnd = 0;
         foreach ($surahs as $s) {
             if ($s->id == $request->surah_end_id) {
@@ -69,6 +86,14 @@ class TahfizhSetoranController extends Controller
                 break;
             }
             $inputAbsEnd += $s->total_verses;
+        }
+
+        if ($inputAbsStart <= $juzStartLimit) {
+            return back()->withInput()->withErrors(['ayat_start' => 'Ayat awal tidak masuk dalam cakupan Juz ' . $request->juz . ' (Kurang dari batas awal).']);
+        }
+
+        if ($inputAbsStart > $juzEndLimit) {
+            return back()->withInput()->withErrors(['ayat_start' => 'Ayat awal melewati batas Juz ' . $request->juz . '.']);
         }
 
         if ($inputAbsEnd > $juzEndLimit) {
