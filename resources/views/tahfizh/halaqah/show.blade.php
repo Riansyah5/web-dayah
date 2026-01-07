@@ -66,6 +66,7 @@
                         @php
                           $last = \App\Models\TahfizhSetoran::where('student_id', $student->id)
                               ->latest('date')
+                              ->latest('id')
                               ->first();
                         @endphp
                         @if ($last)

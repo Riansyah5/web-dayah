@@ -17,7 +17,7 @@ class TahfizhReportController extends Controller
         // 1. Data Ringkasan Atas
         $totalSetoran = TahfizhSetoran::where('student_id', $student->id)->count();
         $totalZiyadah = TahfizhSetoran::where('student_id', $student->id)->where('type', 'ziyadah')->count();
-        $lastSetoran = TahfizhSetoran::where('student_id', $student->id)->latest('date')->first();
+        $lastSetoran = TahfizhSetoran::where('student_id', $student->id)->latest('date')->latest('id')->first();
 
         // 2. Data Grafik 1: Keaktifan Setoran 6 Bulan Terakhir
         // Mengelompokkan jumlah setoran berdasarkan Bulan

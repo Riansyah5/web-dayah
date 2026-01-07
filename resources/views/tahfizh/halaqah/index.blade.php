@@ -3,6 +3,14 @@
 @push('link')
 @endpush
 @push('styles')
+<style>
+.bg-halaqah-l {
+    background: linear-gradient(135deg, #00B7B5 0%, #00B7B5 100%);
+  }
+  .bg-halaqah-p {
+    background: linear-gradient(135deg, #FF6F91 0%, #FF6F91 100%);
+  }
+</style>
 @endpush
 @section('content')
   <div class="container py-4">
@@ -26,7 +34,7 @@
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div
-                  class="avatar-sm rounded-circle d-flex align-items-center justify-content-center text-white fw-bold {{ $halaqah->gender == 'L' ? 'bg-primary' : 'bg-success' }}"
+                  class="avatar-sm rounded-circle d-flex align-items-center justify-content-center text-white fw-bold {{ $halaqah->gender == 'L' ? 'bg-halaqah-l' : 'bg-halaqah-p' }}"
                   style="width: 45px; height: 45px;">
                   {{ $halaqah->gender }}
                 </div>
