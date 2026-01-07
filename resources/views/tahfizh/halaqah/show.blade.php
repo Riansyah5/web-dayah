@@ -4,15 +4,25 @@
 @endpush
 @push('styles')
 <style>
-  .bg-halaqah {
+  .bg-halaqah-l {
     background: linear-gradient(135deg, #00B7B5 0%, #00B7B5 100%);
+  }
+  .bg-halaqah-p {
+    background: linear-gradient(135deg, #FF6F91 0%, #FF6F91 100%);
   }
 </style>
 @endpush
 @section('content')
+  @php
+    if($halaqah->gender == "L"){
+      $bgHalaqah = 'bg-halaqah-l';
+    }else{
+      $bgHalaqah = 'bg-halaqah-p';
+    }
+  @endphp
   <div class="container py-4">
   <a href="{{ route('tahfizh.halaqah.index') }}" class="btn btn-outline-secondary btn-sm rounded mb-2"><i class="bi bi-arrow-left"></i> Kembali</a>
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-halaqah text-white overflow-hidden">
+    <div class="card border-0 shadow-sm rounded-4 mb-4 {{ $bgHalaqah }} text-white overflow-hidden">
       {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded me-3"><i class="bi bi-arrow-left"></i></a> --}}
       <div class="card-body p-4">
         <div class="d-flex justify-content-between align-items-center">
