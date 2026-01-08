@@ -19,6 +19,7 @@ use App\Http\Controllers\StudentExitController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\Academic\SyllabusController;
+use App\Http\Controllers\Tahfizh\TahfizhExportController;
 use App\Http\Controllers\Tahfizh\TahfizhReportController;
 use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
 use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
@@ -203,7 +204,11 @@ Route::middleware('auth')->group(function () {
 			Route::post('/halaqah/{halaqah}/add-member', [TahfizhHalaqahController::class, 'addMember'])->name('halaqah.add-member');
 			Route::delete('/halaqah/{halaqah}/remove-member/{student}', [TahfizhHalaqahController::class, 'removeMember'])->name('halaqah.remove-member');
 			// Route untuk melihat Rapor Tahfizh per Santri
-    	Route::get('/report/{student}', [TahfizhReportController::class, 'show'])->name('report.show');
+			Route::get('/report/{student}', [TahfizhReportController::class, 'show'])->name('report.show');
+			// Route Export Surat
+			Route::post('/export/hafalan/{student}/preview', [TahfizhExportController::class, 'preview'])->name('export.preview');
+			Route::get('/export/hafalan/{student}', [TahfizhExportController::class, 'form'])->name('export.form');
+			Route::post('/export/hafalan/{student}', [TahfizhExportController::class, 'print'])->name('export.print');
 		});
 	});
 

@@ -139,6 +139,11 @@
         </div>
       </div>
       <div>
+        {{-- tombol cetak SKH --}}
+        <a href="{{ route('tahfizh.export.form', $student->id) }}" class="btn btn-sm btn-danger rounded px-3"
+          title="Cetak Syahadah">
+          <i class="bi bi-printer-fill"></i>
+        </a>
         <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm rounded">
           <i class="bi bi-arrow-left"></i> Kembali
         </a>

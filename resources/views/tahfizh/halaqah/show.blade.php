@@ -59,7 +59,7 @@
                   @forelse($halaqah->students as $student)
                     <tr>
                       <td class="ps-4">
-                        <div class="fw-bold">{{ $student->name }}</div>
+                        <div class="fw-bold"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
                         <small class="text-muted">{{ $student->nis }}</small>
                       </td>
                       <td>
