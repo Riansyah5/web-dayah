@@ -191,7 +191,7 @@
             </div>
           </div>
           <div class="col-md-auto mt-3 mt-md-3 d-flex flex-wrap gap-2 justify-content-center">
-            
+
             {{-- tombol riwayat rapor --}}
             <a href="{{ route('student.history', $student->id) }}"
               class="btn btn-success text-white rounded-3 shadow-sm px-3 ms-2">
@@ -233,21 +233,27 @@
             <h6 class="fw-bold text-dark">
               <i class="bi bi-info-circle me-2 text-primary"></i>Status Akademik
             </h6>
-            @if ($student->status == 'active')
-              <button type="button" class="btn btn-warning btn-sm text-dark fw-bold rounded" data-bs-toggle="modal"
-                data-bs-target="#modalMutasi">
-                <i class="bi bi-box-arrow-right me-2"></i> Mutasi
-              </button>
-            @else
-              <div class="alert alert-secondary d-inline-block py-1 px-3 mb-0">
-                <i class="bi bi-info-circle me-2"></i>
-                Status: <strong>{{ strtoupper($student->status) }}</strong>
-                @if ($student->exitDetail)
-                  <small
-                    class="ms-2 text-muted">({{ $student->exitDetail->exit_date->translatedFormat('d M Y') }})</small>
-                @endif
-              </div>
-            @endif
+            <div>
+              <a href="{{ route('tahfizh.report.show', $student->id) }}"
+                class="btn btn-sm btn-info text-white rounded me-1" title="Lihat Hafalan">
+                <i class="bi bi-bar-chart-line"></i>
+              </a>
+              @if ($student->status == 'active')
+                <button type="button" class="btn btn-warning btn-sm text-dark fw-bold rounded" data-bs-toggle="modal"
+                  data-bs-target="#modalMutasi">
+                  <i class="bi bi-box-arrow-right me-2"></i> Mutasi
+                </button>
+              @else
+                <div class="alert alert-secondary d-inline-block py-1 px-3 mb-0">
+                  <i class="bi bi-info-circle me-2"></i>
+                  Status: <strong>{{ strtoupper($student->status) }}</strong>
+                  @if ($student->exitDetail)
+                    <small
+                      class="ms-2 text-muted">({{ $student->exitDetail->exit_date->translatedFormat('d M Y') }})</small>
+                  @endif
+                </div>
+              @endif
+            </div>
           </div>
           <div class="card-body">
             <div class="mb-3">
