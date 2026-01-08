@@ -93,13 +93,13 @@
               </div>
 
 
-              <div class="d-grid mt-4">
+              <div class="d-flex gap-2 justify-content-end mt-4">
                 <button type="submit" formaction="{{ route('tahfizh.export.preview', $student->id) }}"
                   class="btn btn-success fw-bold">
-                  <i class="bi bi-show me-2"></i> Preview PDF
+                  <i class="bi bi-eye me-2"></i> Preview PDF
                 </button>
                 <button type="submit" formaction="{{ route('tahfizh.export.print', $student->id) }}"
-                  class="btn btn-primary fw-bold">
+                  class="btn btn-danger fw-bold">
                   <i class="bi bi-printer me-2"></i> Generate & Cetak PDF
                 </button>
               </div>

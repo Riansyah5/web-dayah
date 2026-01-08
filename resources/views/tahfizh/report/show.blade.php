@@ -128,7 +128,7 @@
       <div class="d-flex align-items-center">
         <div class="d-flex align-items-center">
           <div
-            class="avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold"
+            class="avatar-md bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold"
             style="width: 50px; height: 50px; font-size: 1.2rem;">
             {{ substr($student->name, 0, 1) }}
           </div>
@@ -142,7 +142,7 @@
         {{-- tombol cetak SKH --}}
         <a href="{{ route('tahfizh.export.form', $student->id) }}" class="btn btn-sm btn-outline-danger rounded px-3"
           title="Cetak Syahadah">
-          <i class="bi bi-printer-fill"></i>
+          <i class="bi bi-printer-fill"></i> SKH
         </a>
         <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm rounded">
           <i class="bi bi-arrow-left"></i> Kembali
