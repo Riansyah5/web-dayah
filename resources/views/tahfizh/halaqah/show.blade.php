@@ -3,25 +3,27 @@
 @push('link')
 @endpush
 @push('styles')
-<style>
-  .bg-halaqah-l {
-    background: linear-gradient(135deg, #00B7B5 0%, #00B7B5 100%);
-  }
-  .bg-halaqah-p {
-    background: linear-gradient(135deg, #FF6F91 0%, #FF6F91 100%);
-  }
-</style>
+  <style>
+    .bg-halaqah-l {
+      background: linear-gradient(135deg, #00B7B5 0%, #00B7B5 100%);
+    }
+
+    .bg-halaqah-p {
+      background: linear-gradient(135deg, #FF6F91 0%, #FF6F91 100%);
+    }
+  </style>
 @endpush
 @section('content')
   @php
-    if($halaqah->gender == "L"){
-      $bgHalaqah = 'bg-halaqah-l';
-    }else{
-      $bgHalaqah = 'bg-halaqah-p';
+    if ($halaqah->gender == 'L') {
+        $bgHalaqah = 'bg-halaqah-l';
+    } else {
+        $bgHalaqah = 'bg-halaqah-p';
     }
   @endphp
   <div class="container py-4">
-  <a href="{{ route('tahfizh.halaqah.index') }}" class="btn btn-outline-secondary btn-sm rounded mb-2"><i class="bi bi-arrow-left"></i> Kembali</a>
+    <a href="{{ route('tahfizh.halaqah.index') }}" class="btn btn-outline-secondary btn-sm rounded mb-2"><i
+        class="bi bi-arrow-left"></i> Kembali</a>
     <div class="card border-0 shadow-sm rounded-4 mb-4 {{ $bgHalaqah }} text-white overflow-hidden">
       {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded me-3"><i class="bi bi-arrow-left"></i></a> --}}
       <div class="card-body p-4">
@@ -29,7 +31,8 @@
           <div>
             <h6 class="opacity-75 text-uppercase letter-spacing-1 mb-1">Halaqah Tahfizh</h6>
             <h2 class="fw-bold mb-1"><i class="bi bi-journal-bookmark"></i> {{ $halaqah->name }}</h2>
-            <p class="mb-0 text-white"><i class="bi bi-person-badge me-2"></i>Musyrif: {{ $halaqah->teacher->name ?? '-' }}</p>
+            <p class="mb-0 text-white"><i class="bi bi-person-badge me-2"></i>Musyrif:
+              {{ $halaqah->teacher->name ?? '-' }}</p>
           </div>
           <div class="text-end">
             <h1 class="display-4 fw-bold mb-0 text-white">{{ $halaqah->students->count() }}</h1>
@@ -59,7 +62,8 @@
                   @forelse($halaqah->students as $student)
                     <tr>
                       <td class="ps-4">
-                        <div class="fw-bold"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a></div>
+                        <div class="fw-bold"><a href="{{ route('students.show', $student->id) }}">{{ $student->name }}</a>
+                        </div>
                         <small class="text-muted">{{ $student->nis }}</small>
                       </td>
                       <td>
@@ -86,6 +90,11 @@
                         <a href="{{ route('tahfizh.report.show', $student->id) }}"
                           class="btn btn-sm btn-info text-white rounded me-1" title="Lihat Grafik">
                           <i class="bi bi-bar-chart-line"></i>
+                        </a>
+
+                        <a href="{{ route('tahfizh.assessment.edit', $student->id) }}"
+                          class="btn btn-sm btn-warning text-dark rounded-pill px-3 me-1" title="Input Rapor">
+                          <i class="bi bi-pencil-square"></i>
                         </a>
 
                         <form

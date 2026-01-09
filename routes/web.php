@@ -26,13 +26,14 @@ use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
 use App\Http\Controllers\Academic\Grading\CourseController;
 use App\Http\Controllers\Academic\Student\AlumniController;
 use App\Http\Controllers\Academic\AcademicCalendarController;
+use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
 use App\Http\Controllers\Academic\Student\GraduationController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
-
+use App\Http\Controllers\Tahfizh\TahfizhSettingController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -209,6 +210,14 @@ Route::middleware('auth')->group(function () {
 			Route::post('/export/hafalan/{student}/preview', [TahfizhExportController::class, 'preview'])->name('export.preview');
 			Route::get('/export/hafalan/{student}', [TahfizhExportController::class, 'form'])->name('export.form');
 			Route::post('/export/hafalan/{student}', [TahfizhExportController::class, 'print'])->name('export.print');
+			// Route Input Rapor
+    	Route::get('/assessment/{student}', [TahfizhAssessmentController::class, 'edit'])->name('assessment.edit');
+    	Route::post('/assessment/{student}', [TahfizhAssessmentController::class, 'update'])->name('assessment.update');
+			Route::get('/assessment/{student}/print', [TahfizhAssessmentController::class, 'print'])->name('assessment.print');
+			Route::get('/assessment/{student}/preview', [TahfizhAssessmentController::class, 'preview'])->name('assessment.preview');
+			// Route setting Rapor Tahfizh
+			Route::get('/setting', [TahfizhSettingController::class, 'index'])->name('setting.index');
+			Route::post('/setting', [TahfizhSettingController::class, 'update'])->name('setting.update');
 		});
 	});
 
