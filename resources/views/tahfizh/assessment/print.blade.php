@@ -139,6 +139,15 @@
     .clear {
       clear: both;
     }
+
+    .watermark {
+      position: fixed;
+      top: 25%;
+      left: 10%;
+      width: 80%;
+      opacity: 0.09;
+      z-index: -1;
+    }
   </style>
 </head>
 
@@ -157,7 +166,21 @@
         '9' => '٩',
     ];
   @endphp
+  @php
+  $logoDayah = $isPdf
+      ? public_path('assets/images/logo_dayah.png')
+      : asset('assets/images/logo_dayah.png');
+
+  $logoKemenag = $isPdf
+      ? public_path('assets/images/logo_kemenag.png')
+      : asset('assets/images/logo_kemenag.png');
+@endphp
+{{-- watermark --}}
+<img src="{{ $logoDayah}}" class="watermark">
+
   <div class="header">
+    <img src="{{ $logoKemenag }}" alt="Logo Kemenag" style="height: 90px; position: absolute; left: 0.4cm; top: 10px;">
+    <img src="{{ $logoDayah }}" alt="Logo Dayah" style="height: 90px; position: absolute; right: 0.4cm; top: 10px;">
     <h1>معهد تحفيظ القرآن الكريم</h1>
     <h1>عثمان بن عفان</h1>
     <p>شارع لاين بيبا، قرية الوي ليم، لوكسوماوي</p>
