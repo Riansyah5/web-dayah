@@ -93,7 +93,7 @@
                         </a>
 
                         <a href="{{ route('tahfizh.assessment.edit', $student->id) }}"
-                          class="btn btn-sm btn-warning text-dark rounded-pill px-3 me-1" title="Input Rapor">
+                          class="btn btn-sm btn-warning text-dark rounded me-1" title="Input Rapor">
                           <i class="bi bi-pencil-square"></i>
                         </a>
 

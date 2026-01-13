@@ -6,9 +6,12 @@ use App\Models\Student;
 use App\Models\AcademicYear;
 use Illuminate\Http\Request;
 use App\Models\TahfizhReport;
-use Barryvdh\DomPDF\Facade\Pdf;
+// use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Models\TahfizhSetting;
+use Mpdf\Mpdf;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
 
 class TahfizhAssessmentController extends Controller
 {
@@ -107,47 +110,100 @@ class TahfizhAssessmentController extends Controller
         return redirect()->back()->with('success', 'Data Rapor berhasil disimpan.');
     }
 
-    // Proses Cetak Rapor
+    // Proses Cetak Rapor (PDF)
     public function print(Student $student)
     {
         $isPdf = true;
         $activeYear = AcademicYear::where('is_active', true)->firstOrFail();
 
-        // 1. Ambil Data Rapor
         $report = TahfizhReport::where('student_id', $student->id)
             ->where('academic_year_id', $activeYear->id)
-            ->with('teacher') // Load data Musyrif
+            ->with('teacher')
             ->first();
 
         if (!$report) {
             return back()->with('error', 'Data rapor belum diinput untuk semester ini.');
         }
 
-        // --- LOGIKA BARU: AMBIL DARI SETTING ---
         $setting = TahfizhSetting::where('academic_year_id', $activeYear->id)->first();
 
-        // 2. Data Kepala Sekolah / Tahfizh (Bisa hardcode atau ambil dari setting)
-        // Disini saya buat variabel agar mudah diganti
-        // $headmaster = "Ustadz Abdullah, Lc."; // Ganti sesuai nama Kepala Tahfizh
         $city = $setting->city ?? 'Lhokseumawe';
         $date = $setting && $setting->distribution_date
-            ? $setting->distribution_date->locale('id')->translatedFormat('d F Y')
-            : now()->locale('id')->translatedFormat('d F Y');
+            ? $setting->distribution_date->locale('ar')->translatedFormat('d F Y')
+            : now()->locale('ar')->translatedFormat('d F Y');
 
-        // 3. Render PDF
-        $pdf = Pdf::loadView('tahfizh.assessment.print', compact(
+        // Render Blade ke HTML
+        $html = view('tahfizh.assessment.print', compact(
             'student',
             'report',
             'activeYear',
             'city',
             'date',
             'isPdf'
-        ));
+        ))->render();
 
-        $pdf->setPaper('A4', 'portrait');
+        // ===== mPDF CONFIG =====
+        $defaultConfig = (new ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
 
-        return $pdf->stream('Rapor_Tahfizh_' . $student->name . '.pdf');
+        $defaultFontConfig = (new FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'fontDir' => array_merge($fontDirs, [
+                storage_path('fonts'),
+            ]),
+            'fontdata' => $fontData + [
+                'noto-naskh' => [
+                    'R' => 'NotoNaskhArabic-Regular.ttf',
+                    'B' => 'NotoNaskhArabic-Bold.ttf',
+                    // 'useOTL' => 0xFF,    // Wajib untuk font Arab kompleks agar ligatur benar
+                    // 'useKashida' => 75,  // Opsional: Untuk pemanjangan huruf jika text-align justify
+                ],
+            ],
+            'default_font' => 'noto-naskh',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'directionality' => 'rtl',
+        ]);
+
+        // ============================================================
+        // TAMBAHKAN KONFIGURASI WATERMARK DI SINI
+        // ============================================================
+
+        // 1. Tentukan path gambar secara lokal (gunakan public_path)
+        // mPDF bekerja lebih baik dengan path file lokal daripada URL http://
+        $watermarkPath = public_path('assets/images/logo_dayah.png');
+
+        // Pastikan filenya ada agar tidak error
+        if (file_exists($watermarkPath)) {
+            // Set gambar watermark
+            // Parameter 1: Path gambar
+            // Parameter 2: Opasitas (0.1 = sangat transparan, 1 = jelas) -> Silahkan disesuaikan
+            // Parameter 3: Ukuran ('F' = Fit to page / Pas satu halaman penuh, 'P' = Pas di dalam margin, 'D' = Ukuran asli)
+            $mpdf->SetWatermarkImage($watermarkPath, 0.1, 'F');
+
+            // Aktifkan watermark agar tampil
+            $mpdf->showWatermarkImage = true;
+        }
+        
+        // ============================================================
+        // AKHIR KONFIGURASI WATERMARK
+        // ============================================================
+
+        $mpdf->WriteHTML($html);
+
+        return response(
+            $mpdf->Output(
+                'Rapor_Tahfizh_' . $student->name . '.pdf',
+                'S'
+            )
+        )->header('Content-Type', 'application/pdf');
     }
+
 
     // Preview Rapor (Untuk Testing)
     public function preview(Student $student)
@@ -173,8 +229,8 @@ class TahfizhAssessmentController extends Controller
         // $headmaster = "Ustadz Abdullah, Lc."; // Ganti sesuai nama Kepala Tahfizh
         $city = $setting->city ?? 'Lhokseumawe';
         $date = $setting && $setting->distribution_date
-            ? $setting->distribution_date->locale('id')->translatedFormat('d F Y')
-            : now()->locale('id')->translatedFormat('d F Y');
+            ? $setting->distribution_date->locale('ar')->translatedFormat('d F Y')
+            : now()->locale('ar')->translatedFormat('d F Y');
 
         return view('tahfizh.assessment.print', compact(
             'student',
