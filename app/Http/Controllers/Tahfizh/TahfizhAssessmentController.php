@@ -189,7 +189,7 @@ class TahfizhAssessmentController extends Controller
             // Aktifkan watermark agar tampil
             $mpdf->showWatermarkImage = true;
         }
-        
+
         // ============================================================
         // AKHIR KONFIGURASI WATERMARK
         // ============================================================
@@ -240,5 +240,16 @@ class TahfizhAssessmentController extends Controller
             'date',
             'isPdf'
         ));
+    }
+
+    public function history(Student $student)
+    {
+        // Ambil semua rapor siswa ini, urutkan dari tahun ajaran terbaru
+        $reports = TahfizhReport::with(['academicYear', 'teacher'])
+            ->where('student_id', $student->id)
+            ->orderByDesc('academic_year_id') // Asumsi ID makin besar = makin baru
+            ->get();
+
+        return view('tahfizh.assessment.history', compact('student', 'reports'));
     }
 }

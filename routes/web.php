@@ -214,6 +214,7 @@ Route::middleware('auth')->group(function () {
     	Route::get('/assessment/{student}', [TahfizhAssessmentController::class, 'edit'])->name('assessment.edit');
     	Route::post('/assessment/{student}', [TahfizhAssessmentController::class, 'update'])->name('assessment.update');
 			Route::get('/assessment/{student}/print', [TahfizhAssessmentController::class, 'print'])->name('assessment.print');
+			Route::get('/assessment/{student}/history', [TahfizhAssessmentController::class, 'history'])->name('assessment.history');
 			Route::get('/assessment/{student}/preview', [TahfizhAssessmentController::class, 'preview'])->name('assessment.preview');
 			// Route setting Rapor Tahfizh
 			Route::get('/setting', [TahfizhSettingController::class, 'index'])->name('setting.index');

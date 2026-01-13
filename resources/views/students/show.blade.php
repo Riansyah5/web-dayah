@@ -154,7 +154,7 @@
       </div>
     </div>
 
-    <div class="card profile-header rounded-4 mb-4 shadow-sm position-relative overflow-hidden">
+    <div class="card profile-header rounded-4 mb-4 shadow-sm position-relative">
       <div class="card-body p-4 p-md-5">
         <div class="row align-items-center">
           <div class="col-md-auto text-center text-md-start mb-3 mb-md-0">
@@ -193,10 +193,15 @@
           <div class="col-md-auto mt-3 mt-md-3 d-flex flex-wrap gap-2 justify-content-center">
 
             {{-- tombol riwayat rapor --}}
-            <a href="{{ route('student.history', $student->id) }}"
-              class="btn btn-success text-white rounded-3 shadow-sm px-3 ms-2">
-              <i class="bi bi-journal-text me-2"></i>Rapor
-            </a>
+            <div class="dropdown ms-2">
+              <button class="btn btn-success text-white dropdown-toggle rounded-3 shadow-sm px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-journal-text me-2"></i>Rapor
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ route('student.history', $student->id) }}">Rapor Akademik</a></li>
+                <li><a class="dropdown-item" href="{{ route('tahfizh.assessment.history', $student->id) }}">Rapor Tahfizh</a></li>
+              </ul>
+            </div>
             {{-- tombol riwayat pelanggaran --}}
             <a href="{{ route('violations.index', $student->id) }}"
               class="btn btn-danger text-white rounded-3 shadow-sm px-3">
