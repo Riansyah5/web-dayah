@@ -156,7 +156,7 @@
             <div class="col-md-4 mb-3">
               <div class="card border-0 shadow-sm rounded-4 mb-4 h-100">
                 <div class="card-header bg-secondary text-white py-3 rounded-top-4">
-                  <h6 class="fw-bold mb-0">E. Kehadiran</h6>
+                  <h6 class="fw-bold mb-0 text-white">E. Kehadiran</h6>
                 </div>
                 <div class="card-body p-4">
                   <div class="mb-3 row align-items-center">

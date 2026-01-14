@@ -127,11 +127,14 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="d-flex align-items-center">
         <div class="d-flex align-items-center">
-          <div
+          <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded me-3">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+          {{-- <div
             class="avatar-md bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold"
             style="width: 50px; height: 50px; font-size: 1.2rem;">
             {{ substr($student->name, 0, 1) }}
-          </div>
+          </div> --}}
           <div>
             <h4 class="fw-bold mb-0">{{ $student->name }}</h4>
             <small class="text-muted">Laporan Perkembangan Tahfizh</small>
@@ -143,9 +146,6 @@
         <a href="{{ route('tahfizh.export.form', $student->id) }}" class="btn btn-sm btn-outline-danger rounded px-3"
           title="Cetak Syahadah">
           <i class="bi bi-printer-fill"></i> SKH
-        </a>
-        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm rounded">
-          <i class="bi bi-arrow-left"></i> Kembali
         </a>
       </div>
     </div>

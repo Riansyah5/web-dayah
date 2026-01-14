@@ -30,8 +30,8 @@
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <h6 class="opacity-75 text-uppercase letter-spacing-1 mb-1">Halaqah Tahfizh</h6>
-            <h2 class="fw-bold mb-1"><i class="bi bi-journal-bookmark"></i> {{ $halaqah->name }}</h2>
-            <p class="mb-0 text-white"><i class="bi bi-person-badge me-2"></i>Musyrif:
+            <h2 class="fw-bold mb-1 text-white"><i class=""></i> {{ $halaqah->name }}</h2>
+            <p class="mb-0 text-white opacity-75"><i class="bi bi-person-badge me-2"></i>Musyrif:
               {{ $halaqah->teacher->name ?? '-' }}</p>
           </div>
           <div class="text-end">
@@ -48,7 +48,7 @@
           <div class="card-header bg-white py-3">
             <h6 class="fw-bold mb-0">Daftar Santri</h6>
           </div>
-          <div class="card-body p-0">
+          <div class="card-body p-0 position-relative">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
@@ -83,27 +83,49 @@
                         @endif
                       </td>
                       <td class="text-end pe-4">
-                        <a href="{{ route('tahfizh.setoran.create', $student->id) }}"
-                          class="btn btn-sm btn-success rounded me-1" title="Input Setoran Baru">
-                          <i class="bi bi-journal-plus me-1"></i>
-                        </a>
-                        <a href="{{ route('tahfizh.report.show', $student->id) }}"
-                          class="btn btn-sm btn-info text-white rounded me-1" title="Lihat Grafik">
-                          <i class="bi bi-bar-chart-line"></i>
-                        </a>
+                        {{-- Tampilan Desktop --}}
+                        <div class="d-none d-md-block">
+                          <a href="{{ route('tahfizh.setoran.create', $student->id) }}"
+                            class="btn btn-sm btn-success rounded me-1" title="Input Setoran Baru">
+                            <i class="bi bi-journal-plus me-1"></i>
+                          </a>
+                          <a href="{{ route('tahfizh.report.show', $student->id) }}"
+                            class="btn btn-sm btn-info text-white rounded me-1" title="Lihat Grafik">
+                            <i class="bi bi-bar-chart-line"></i>
+                          </a>
 
-                        <a href="{{ route('tahfizh.assessment.edit', $student->id) }}"
-                          class="btn btn-sm btn-warning text-dark rounded me-1" title="Input Rapor">
-                          <i class="bi bi-pencil-square"></i>
-                        </a>
+                          <a href="{{ route('tahfizh.assessment.edit', $student->id) }}"
+                            class="btn btn-sm btn-warning text-dark rounded me-1" title="Input Rapor">
+                            <i class="bi bi-pencil-square"></i>
+                          </a>
 
-                        <form
-                          action="{{ route('tahfizh.halaqah.remove-member', ['halaqah' => $halaqah->id, 'student' => $student->id]) }}"
-                          method="POST" class="d-inline delete-form">
-                          @csrf @method('DELETE')
-                          <button class="btn btn-sm btn-outline-danger rounded-circle" title="Keluarkan"><i
-                              class="bi bi-x-lg"></i></button>
-                        </form>
+                          <form
+                            action="{{ route('tahfizh.halaqah.remove-member', ['halaqah' => $halaqah->id, 'student' => $student->id]) }}"
+                            method="POST" class="d-inline delete-form">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-sm btn-outline-danger rounded-circle" title="Keluarkan"><i
+                                class="bi bi-x-lg"></i></button>
+                          </form>
+                        </div>
+
+                        {{-- Tampilan Mobile (Dropdown) --}}
+                        <div class="d-md-none dropdown position-static">
+                          <button class="btn btn-sm rounded btn-light border shadow-sm" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                            <li><a class="dropdown-item" href="{{ route('tahfizh.setoran.create', $student->id) }}"><i class="bi bi-journal-plus me-2 text-success"></i>Input Setoran</a></li>
+                            <li><a class="dropdown-item" href="{{ route('tahfizh.report.show', $student->id) }}"><i class="bi bi-bar-chart-line me-2 text-info"></i>Lihat Grafik</a></li>
+                            <li><a class="dropdown-item" href="{{ route('tahfizh.assessment.edit', $student->id) }}"><i class="bi bi-pencil-square me-2 text-warning"></i>Input Rapor</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <form action="{{ route('tahfizh.halaqah.remove-member', ['halaqah' => $halaqah->id, 'student' => $student->id]) }}" method="POST" class="delete-form">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Keluarkan</button>
+                              </form>
+                            </li>
+                          </ul>
+                        </div>
                       </td>
                     </tr>
                   @empty

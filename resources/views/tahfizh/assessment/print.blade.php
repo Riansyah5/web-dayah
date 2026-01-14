@@ -102,9 +102,9 @@
       background-color: #f0f0f0;
     }
 
-    .score-table tbody tr:nth-child(even) {
+    /*.score-table tbody tr:nth-child(even) {
       background-color: #f9f9f9;
-    }
+    }*/
 
 
     .page-break {
@@ -174,9 +174,9 @@
         <img src="{{ $logoKemenag }}" style="height: 80px;">
       </td>
       <td width="70%" class="text-center header-title">
-        <h1>معهد تحفيظ القرآن الكريم</h1>
-        <h1>عثمان بن عفان</h1>
-        <p>شارع لاين بيبا، قرية الوي ليم، لوكسوماوي</p>
+        <h1>معهد تعليم القرآن </h1>
+        <h1>عثمان بن عفان لوكسيماوي</h1>
+        {{-- <p>شارع لاين بيبا، قرية الوي ليم، لوكسوماوي</p> --}}
       </td>
       <td width="15%" class="text-center">
         <img src="{{ $logoDayah }}" style="height: 80px;">
@@ -188,7 +188,7 @@
     <tr>
       <td width="15%">اسم الطالب</td>
       <td width="2%">:</td>
-      <td width="40%"><strong>{{ strtoupper($student->name) }}</strong></td>
+      <td width="40%"><strong>{{ Str::title($student->name) }}</strong></td>
       <td width="15%">العام الدراسي</td>
       <td width="2%">:</td>
       <td width="26%">{{ toArabic($activeYear->name, $arabicNumbers) }}</td>
@@ -199,7 +199,7 @@
       <td>{{ toArabic($student->nis, $arabicNumbers) }}</td>
       <td>الفصل الدراسي</td>
       <td>:</td>
-      <td>{{ $activeYear->semester }}</td>
+      <td>{{ $activeYear->semester == 'Ganjil' ? 'الأوّل' : ($activeYear->semester == 'Genap' ? 'الثاني' : $activeYear->semester) }}</td>
     </tr>
   </table>
 
