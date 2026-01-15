@@ -54,9 +54,9 @@
         <div class="card border-0 shadow-sm rounded-4 h-100">
           <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-list-ol me-2 text-primary"></i>Daftar Anggota Kelas</h6>
-            <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
-              <i class="bi bi-printer me-2"></i>Cetak Absen
-            </button>
+            <a href="{{ route('classrooms.print-attendance', $classroom->id) }}" class="btn btn-sm btn-danger" target="_blank">
+              <i class="bi bi-file-pdf me-2"></i>Cetak Absen (PDF)
+            </a>
           </div>
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">

@@ -6,6 +6,8 @@ use App\Models\{Classroom, AcademicYear, Student, Level, Major, Stage, Pegawai};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+
 
 class ClassroomController extends Controller
 {
@@ -220,5 +222,14 @@ class ClassroomController extends Controller
         });
 
         return back()->with('success', 'Siswa berhasil dipindahkan');
+    }
+    /* ==========================
+     |  PRINT ATTENDANCE (PDF)
+     ========================== */
+    public function printAttendance(Classroom $classroom)
+    {
+        $classroom->load(['students', 'level.stage', 'major']);
+        $pdf = PDF::loadView('academic.classrooms.print_attendance', compact('classroom'));
+        return $pdf->setPaper('a4', 'portrait')->stream('Absensi_Kelas_' . $classroom->name . '.pdf');
     }
 }
