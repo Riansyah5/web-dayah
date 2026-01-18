@@ -250,7 +250,7 @@
           <div style="position: relative; z-index: 2;">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <div class="text-muted card-head-text">Total Santri</div>
+                <div class="text-muted card-head-text">Total Santri Aktif</div>
                 <div class="d-flex align-items-center">
                   <div class="card-main-number text-white" data-target="{{ $totalSantri }}">0</div>
                   <i class="fas fa-copy copy-btn ms-3" title="Salin Data"></i>
@@ -264,6 +264,7 @@
             <div class="gender-row">
               <span class="gender-badge"><i class="fas fa-mars text-primary"></i> {{ $santriLaki }} Laki-laki</span>
               <span class="gender-badge"><i class="fas fa-venus text-danger"></i> {{ $santriPerempuan }} Perempuan</span>
+              <span class="gender-badge"><i class="fas fa-graduation-cap text-warning"></i> {{ $totalAlumni }} Alumni</span>
             </div>
           </div>
         </div>

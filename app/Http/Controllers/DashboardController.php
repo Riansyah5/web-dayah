@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
 use App\Models\Student;
+use App\Models\StudentExit;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -13,7 +14,7 @@ class DashboardController extends Controller
         $totalPegawai = Pegawai::where('status_pegawai', 'Aktif')->count();
         $pegawaiLaki = Pegawai::where('jenis_kelamin', 'Laki-laki')->count();
         $pegawaiPerempuan = Pegawai::where('jenis_kelamin', 'Perempuan')->count();
-        $totalSantri = Student::count();
+        $totalSantri = Student::where('status', 'active')->count();
         $santriLaki = Student::where('gender', 'L')->count();
         $santriPerempuan = Student::where('gender', 'P')->count();
         $santriSMP = Student::where('education_level', 'WUSTHA')->count();
@@ -22,9 +23,10 @@ class DashboardController extends Controller
         $santriSMA = Student::where('education_level', 'ULYA')->count();
         $santriSMAlaki = Student::where([['education_level','=', 'ULYA'],['gender','=', 'L']])->count();
         $santriSMAperempuan = Student::where([['education_level','=', 'ULYA'],['gender','=', 'P']])->count();
+        $totalAlumni = StudentExit::count();
 
         $totalStudents = Student::count();
         return view('dashboard', 
-        compact('totalPegawai', 'pegawaiLaki', 'pegawaiPerempuan', 'totalStudents', 'totalSantri', 'santriLaki', 'santriPerempuan', 'santriSMP', 'santriSMPlaki', 'santriSMPperempuan', 'santriSMA', 'santriSMAlaki', 'santriSMAperempuan'));
+        compact('totalPegawai', 'pegawaiLaki', 'pegawaiPerempuan', 'totalStudents', 'totalSantri', 'santriLaki', 'santriPerempuan', 'santriSMP', 'santriSMPlaki', 'santriSMPperempuan', 'santriSMA', 'santriSMAlaki', 'santriSMAperempuan', 'totalAlumni'));
     }
 }
