@@ -14,7 +14,7 @@
           <span class="badge bg-success">TA: {{ $activeYear->name }} ({{ $activeYear->semester }})</span>
         @endif
       </div>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 align-items-center">
         <form action="{{ route('classrooms.index') }}" method="GET">
           <select name="stage_id" class="form-select" onchange="this.form.submit()">
             <option value="">Semua Jenjang</option>

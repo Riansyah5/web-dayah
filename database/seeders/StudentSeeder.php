@@ -13,21 +13,28 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         // 1. Buat 50 data santri random
-        Student::factory(50)->create();
+        Student::factory(50)->create([
+            'education_level' => null,
+            'major'           => null,
+            'class_group'     => null,
+            'dormitory'       => null,
+            'room'            => null,
+            'status'          => 'active',
+            ]);
 
         // 2. Buat data spesifik (Opsional, untuk testing user tertentu)
-        Student::create([
-            'nis' => '12345678',
-            'nisn' => '0012345678',
-            'name' => 'Ahmad Contoh Santri',
-            'gender' => 'L',
-            'birth_place' => 'Banda Aceh',
-            'birth_date' => '2010-01-01',
-            'status' => 'active',
-            'education_level' => 'MA',
-            'class_group' => '10 IPA 1',
-            'dormitory' => 'Al-Ghazali',
-            'room' => '01'
-        ]);
+        // Student::create([
+        //     'nis' => '12345678',
+        //     'nisn' => '0012345678',
+        //     'name' => 'Ahmad Contoh Santri',
+        //     'gender' => 'L',
+        //     'birth_place' => 'Banda Aceh',
+        //     'birth_date' => '2010-01-01',
+        //     'status' => 'active',
+            // 'education_level' => 'MA',
+            // 'class_group' => '10 IPA 1',
+            // 'dormitory' => 'Al-Ghazali',
+            // 'room' => '01'
+        // ]);
     }
 }
