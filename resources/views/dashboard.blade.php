@@ -262,8 +262,8 @@
             </div>
 
             <div class="gender-row">
-              <span class="gender-badge"><i class="fas fa-mars text-primary"></i> {{ $santriLaki }} Laki-laki</span>
-              <span class="gender-badge"><i class="fas fa-venus text-danger"></i> {{ $santriPerempuan }} Perempuan</span>
+              <span class="gender-badge"><i class="fas fa-mars text-success"></i> {{ $santriLaki }} Lk</span>
+              <span class="gender-badge"><i class="fas fa-venus text-danger"></i> {{ $santriPerempuan }} Pr</span>
               <span class="gender-badge"><i class="fas fa-graduation-cap text-warning"></i> {{ $totalAlumni }} Alumni</span>
             </div>
           </div>
