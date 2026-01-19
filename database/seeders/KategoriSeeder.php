@@ -17,11 +17,15 @@ class KategoriSeeder extends Seeder
             'name' => 'TETAP',
             'created_at' => now(),
             'updated_at' => now(),
-        ],[
-            'name' => 'KONTRAK',
+        ]);
+
+        Kategori::create([
+            'name' => 'MAGANG',
             'created_at' => now(),
             'updated_at' => now(),
-        ],[
+        ]);
+
+        Kategori::create([
             'name' => 'TRAINING',
             'created_at' => now(),
             'updated_at' => now(),

@@ -10,7 +10,7 @@ class QuranSurahSeeder extends Seeder
     public function run()
     {
         // Kosongkan tabel dulu agar tidak duplikat
-        DB::table('quran_surahs')->truncate();
+        // DB::table('quran_surahs')->truncate();
 
         $surahs = [
             [1, 'Al-Fatihah', 'الفاتحة', 7],
