@@ -20,7 +20,7 @@
               <div class="mb-3">
                 <label class="form-label small text-muted">Kota (Tempat Terbit Rapor)</label>
                 <input type="text" name="city" class="form-control"
-                  value="{{ old('city', $setting->city ?? 'Lhokseumawe') }}" required>
+                  value="{{ old('city', $setting->city ?? 'Lhokseumawe') }}" required placeholder="Contoh: لؤسيموي">
               </div>
 
               <div class="mb-3">

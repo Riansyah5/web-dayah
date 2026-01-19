@@ -89,7 +89,7 @@
                 <div class="col-md-6 mb-3">
                   <label class="form-label small text-muted">Total Hafalan (Teks)</label>
                   <input type="text" name="total_hafalan" class="form-control" value="{{ $report->total_hafalan }}"
-                    placeholder="Contoh: 5 Juz">
+                    placeholder="Contoh: 5">
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label small text-muted">Nilai Ujian Tahriri (Tulis)</label>
