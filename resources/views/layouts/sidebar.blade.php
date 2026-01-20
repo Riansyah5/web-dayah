@@ -63,6 +63,7 @@
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('classrooms.index') }}">Kelas</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
             <li class="pc-item pc-hasmenu">
               <a href="#!" class="pc-link"><span class="pc-mtext">Rapor</span><span class="pc-arrow"><i
                     data-feather="chevron-right"></i></span></a>

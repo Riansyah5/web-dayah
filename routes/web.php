@@ -23,8 +23,10 @@ use App\Http\Controllers\Tahfizh\TahfizhExportController;
 use App\Http\Controllers\Tahfizh\TahfizhReportController;
 use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
 use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
+use App\Http\Controllers\Tahfizh\TahfizhSettingController;
 use App\Http\Controllers\Academic\Grading\CourseController;
 use App\Http\Controllers\Academic\Student\AlumniController;
+use App\Http\Controllers\Academic\Schedule\PicketController;
 use App\Http\Controllers\Academic\AcademicCalendarController;
 use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
 use App\Http\Controllers\Academic\Student\GraduationController;
@@ -32,10 +34,9 @@ use App\Http\Controllers\Academic\Report\ReportSettingController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
-use App\Http\Controllers\Academic\Grading\GradingDashboardController;
-use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
-use App\Http\Controllers\Tahfizh\TahfizhSettingController;
 use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
+use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
+use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -208,6 +209,10 @@ Route::middleware('auth')->group(function () {
 			Route::get('/schedule/{classroom}', [LessonScheduleController::class, 'show'])->name('schedule.show'); // Manage
 			Route::post('/schedule/{classroom}', [LessonScheduleController::class, 'store'])->name('schedule.store');
 			Route::delete('/schedule/{schedule}', [LessonScheduleController::class, 'destroy'])->name('schedule.destroy');
+			// Route Piket (Monitoring & Badal)
+			Route::get('/picket', [PicketController::class, 'index'])->name('picket.index');
+			Route::post('/picket/assign', [PicketController::class, 'assignSubstitute'])->name('picket.assign');
+			Route::delete('/picket/remove/{id}', [PicketController::class, 'removeSubstitute'])->name('picket.remove');
 		});
 		// Group Modul Tahfizh
 		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
