@@ -19,9 +19,14 @@ class LessonScheduleController extends Controller
         
         // Ambil kelas beserta jumlah jam pelajaran yang sudah terisi
         $classrooms = Classroom::where('academic_year_id', $activeYear->id)
+                        ->with('level')
                         ->withCount('lessonSchedules')
-                        ->orderBy('name')
-                        ->get();
+                        ->get()
+                        ->sortBy('name')
+                        ->sortBy('level_id')
+                        ->groupBy(function ($item) {
+                            return $item->level->name ?? 'Lainnya';
+                        });
 
         return view('academic.schedule.index', compact('classrooms', 'activeYear'));
     }
