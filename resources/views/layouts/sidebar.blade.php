@@ -145,6 +145,7 @@
             <ul class="pc-submenu">
               <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
               <li class="pc-item"><a class="pc-link" href="{{ route('promotion.index') }}">Migrasi</a></li>
+              <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut SMA</a></li>
               {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li> --}}
             </ul>
           </li>

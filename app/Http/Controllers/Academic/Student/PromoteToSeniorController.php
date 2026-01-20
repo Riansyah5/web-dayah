@@ -8,6 +8,7 @@ use App\Models\AcademicYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class PromoteToSeniorController extends Controller
 {
@@ -23,7 +24,7 @@ class PromoteToSeniorController extends Controller
                             ->orderBy('name')
                             ->get();
 
-        return view('academic.promotion.index', compact('activeYear', 'targetClasses'));
+        return view('academic.promotion.promote-to-senior', compact('activeYear', 'targetClasses'));
     }
 
     // API untuk mencari Data Alumni (Dipanggil via AJAX/Select2)
@@ -54,24 +55,38 @@ class PromoteToSeniorController extends Controller
 
         DB::transaction(function() use ($request) {
             $student = Student::findOrFail($request->student_id);
-            $newClass = Classroom::with('level')->findOrFail($request->classroom_id);
+            $newClass = Classroom::with('level.stage')->findOrFail($request->classroom_id);
+            $educationLevel = $newClass->level->stage->code ?? null;
 
             // 1. Update Data Siswa
             $student->update([
-                'status' => 'active',          // Aktifkan kembali
-                'nis'    => $request->new_nis, // Update NIS Baru (SMA)
-                // 'level_id' => $newClass->level_id, // Update Level sesuai kelas tujuan
-                // Jika Anda punya kolom 'unit' atau 'school_level', update disini juga
+                'status'          => 'active',          // Aktifkan kembali
+                'nis'             => $request->new_nis, // Update NIS Baru (SMA)
+                'class_group'     => $newClass->name,   // Update Nama Kelas
+                'education_level' => $educationLevel,   // Update Jenjang
             ]);
 
             // 2. Masukkan ke Kelas Baru (Tabel Pivot)
-            // Menggunakan syncWithoutDetaching agar riwayat kelas lama (SMP) tidak hilang
-            $student->classrooms()->attach($newClass->id, ['created_at' => now()]);
+            // Manual insert untuk handle ID ULID pada pivot table
+            $exists = DB::table('classroom_student')
+                ->where('classroom_id', $newClass->id)
+                ->where('student_id', $student->id)
+                ->exists();
+
+            if (!$exists) {
+                DB::table('classroom_student')->insert([
+                    'id'           => (string) Str::ulid(),
+                    'classroom_id' => $newClass->id,
+                    'student_id'   => $student->id,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
             
             // Opsional: Jika ada tabel 'mutations' atau log pergerakan siswa, catat disini.
         });
 
-        return redirect()->route('students.promotion.index')
+        return redirect()->route('promotion.promote_to_senior')
                ->with('success', 'Siswa berhasil dipromosikan ke jenjang baru (Aktif Kembali).');
     }
 }

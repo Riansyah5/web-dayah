@@ -23,7 +23,7 @@
             <h5 class="fw-bold mb-0">Form Penerimaan Siswa Internal</h5>
           </div>
           <div class="card-body p-4">
-            <form action="{{ route('students.promotion.store') }}" method="POST">
+            <form action="{{ route('promotion.promote_to_senior.store') }}" method="POST">
               @csrf
 
               <div class="mb-4">
@@ -94,12 +94,33 @@
 
 @endsection
 @push('scripts')
+  {{-- sweetAlert --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Notifikasi Sukses
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    @elseif (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        html: '{{ session('error') }}',
+        showConfirmButton: true
+      });
+    @endif
+  </script>
   <script>
     $(document).ready(function() {
       $('#alumniSelect').select2({
         theme: 'bootstrap-5',
         ajax: {
-          url: '{{ route('students.promotion.search') }}',
+          url: '{{ route('promotion.promote_to_senior.search') }}',
           dataType: 'json',
           delay: 250,
           processResults: function(data) {
