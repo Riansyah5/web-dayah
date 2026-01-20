@@ -33,6 +33,7 @@ use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
 use App\Http\Controllers\Tahfizh\TahfizhSettingController;
 
 // Guest (Belum Login)
@@ -143,6 +144,10 @@ Route::middleware('auth')->group(function () {
 		Route::prefix('academic/promotion')->name('promotion.')->group(function () {
 			Route::get('/', [PromotionController::class, 'index'])->name('index');
 			Route::post('/process', [PromotionController::class, 'process'])->name('process');
+			// Route Promosi Jenjang SMA
+			Route::get('/promote-to-senior', [PromoteToSeniorController::class, 'index'])->name('promote_to_senior');
+			Route::post('/promotion', [PromoteToSeniorController::class, 'store'])->name('promote_to_senior.store');
+			Route::get('/api/search-alumni', [PromoteToSeniorController::class, 'searchAlumni'])->name('promote_to_senior.search');
 		});
 
 		// Group Modul Rapor / Grading
