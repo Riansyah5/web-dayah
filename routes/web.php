@@ -35,6 +35,7 @@ use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
 use App\Http\Controllers\Tahfizh\TahfizhSettingController;
+use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -199,6 +200,15 @@ Route::middleware('auth')->group(function () {
 		// Group Modul Alumni
 		Route::get('/academic/alumni', [AlumniController::class, 'index'])->name('alumni.index');
 
+
+
+		Route::prefix('academic')->name('academic.')->group(function () {
+			// Route Jadwal Pelajaran
+			Route::get('/schedule', [LessonScheduleController::class, 'index'])->name('schedule.index');
+			Route::get('/schedule/{classroom}', [LessonScheduleController::class, 'show'])->name('schedule.show'); // Manage
+			Route::post('/schedule/{classroom}', [LessonScheduleController::class, 'store'])->name('schedule.store');
+			Route::delete('/schedule/{schedule}', [LessonScheduleController::class, 'destroy'])->name('schedule.destroy');
+		});
 		// Group Modul Tahfizh
 		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
 			// Route untuk membuka form input setoran per siswa
@@ -218,8 +228,8 @@ Route::middleware('auth')->group(function () {
 			Route::get('/export/hafalan/{student}', [TahfizhExportController::class, 'form'])->name('export.form');
 			Route::post('/export/hafalan/{student}', [TahfizhExportController::class, 'print'])->name('export.print');
 			// Route Input Rapor
-    	Route::get('/assessment/{student}', [TahfizhAssessmentController::class, 'edit'])->name('assessment.edit');
-    	Route::post('/assessment/{student}', [TahfizhAssessmentController::class, 'update'])->name('assessment.update');
+			Route::get('/assessment/{student}', [TahfizhAssessmentController::class, 'edit'])->name('assessment.edit');
+			Route::post('/assessment/{student}', [TahfizhAssessmentController::class, 'update'])->name('assessment.update');
 			Route::get('/assessment/{student}/print', [TahfizhAssessmentController::class, 'print'])->name('assessment.print');
 			Route::get('/assessment/{student}/history', [TahfizhAssessmentController::class, 'history'])->name('assessment.history');
 			Route::get('/assessment/{student}/preview', [TahfizhAssessmentController::class, 'preview'])->name('assessment.preview');
