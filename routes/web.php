@@ -31,6 +31,7 @@ use App\Http\Controllers\Academic\AcademicCalendarController;
 use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
 use App\Http\Controllers\Academic\Student\GraduationController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
+use App\Http\Controllers\Academic\Report\AcademicReportController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Journal\TeacherJournalController;
@@ -143,7 +144,7 @@ Route::middleware('auth')->group(function () {
 		// Route Cetak Absen Kelas (PDF)
 		Route::get('academic/classrooms/{classroom}/print-attendance', [ClassroomController::class, 'printAttendance'])->name('classrooms.print-attendance');
 
-
+		// Group Modul Promosi Siswa
 		Route::prefix('academic/promotion')->name('promotion.')->group(function () {
 			Route::get('/', [PromotionController::class, 'index'])->name('index');
 			Route::post('/process', [PromotionController::class, 'process'])->name('process');
@@ -202,8 +203,7 @@ Route::middleware('auth')->group(function () {
 		// Group Modul Alumni
 		Route::get('/academic/alumni', [AlumniController::class, 'index'])->name('alumni.index');
 
-
-
+		// Group Modul Jadwal & Jurnal Guru
 		Route::prefix('academic')->name('academic.')->group(function () {
 			// Route Jadwal Pelajaran
 			Route::get('/schedule', [LessonScheduleController::class, 'index'])->name('schedule.index');
@@ -219,9 +219,17 @@ Route::middleware('auth')->group(function () {
 			Route::get('/journal/create/{schedule}', [TeacherJournalController::class, 'create'])->name('journal.create');
 			Route::post('/journal/store/{schedule}', [TeacherJournalController::class, 'store'])->name('journal.store');
 			// Route Absensi Siswa
-    	Route::get('/journal/{journal}/attendance', [TeacherJournalController::class, 'attendance'])->name('journal.attendance');
-    	Route::post('/journal/{journal}/attendance', [TeacherJournalController::class, 'storeAttendance'])->name('journal.store_attendance');
+			Route::get('/journal/{journal}/attendance', [TeacherJournalController::class, 'attendance'])->name('journal.attendance');
+			Route::post('/journal/{journal}/attendance', [TeacherJournalController::class, 'storeAttendance'])->name('journal.store_attendance');
 		});
+
+		// Group Modul Laporan Akademik
+		Route::prefix('academic/report')->name('academic.report.')->group(function () {
+			Route::get('/teacher-performance', [AcademicReportController::class, 'teacherRecap'])->name('teacher');
+			Route::get('/student-subject', [AcademicReportController::class, 'studentSubjectRecap'])->name('student_subject');
+			Route::get('/teacher-performance/{teacher}', [AcademicReportController::class, 'teacherDetail'])->name('teacher.detail');
+		});
+
 		// Group Modul Tahfizh
 		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
 			// Route untuk membuka form input setoran per siswa

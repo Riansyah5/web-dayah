@@ -64,7 +64,7 @@ class PicketController extends Controller
             [
                 'substitute_teacher_id' => $request->substitute_teacher_id,
                 'note' => $request->note,
-                'assigned_by' => Auth::user()->name,
+                'assigned_by' => Auth::id(),
             ]
         );
 
