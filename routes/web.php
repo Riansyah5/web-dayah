@@ -218,11 +218,9 @@ Route::middleware('auth')->group(function () {
 			Route::get('/my-schedule', [TeacherJournalController::class, 'index'])->name('journal.dashboard');
 			Route::get('/journal/create/{schedule}', [TeacherJournalController::class, 'create'])->name('journal.create');
 			Route::post('/journal/store/{schedule}', [TeacherJournalController::class, 'store'])->name('journal.store');
-
-			// Placeholder untuk Tahap 4
-			Route::get('/journal/{journal}/attendance', function () {
-				return "Halaman Absen Siswa";
-			})->name('journal.attendance');
+			// Route Absensi Siswa
+    	Route::get('/journal/{journal}/attendance', [TeacherJournalController::class, 'attendance'])->name('journal.attendance');
+    	Route::post('/journal/{journal}/attendance', [TeacherJournalController::class, 'storeAttendance'])->name('journal.store_attendance');
 		});
 		// Group Modul Tahfizh
 		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {

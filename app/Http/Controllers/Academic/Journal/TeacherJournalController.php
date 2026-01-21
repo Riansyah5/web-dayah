@@ -10,6 +10,8 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\StudentLessonAttendance;
+use Illuminate\Support\Facades\DB;
 
 class TeacherJournalController extends Controller
 {
@@ -25,20 +27,20 @@ class TeacherJournalController extends Controller
         // 1. Ambil Jadwal ASLI (Regular)
         // Kecuali jadwal yang hari ini sedang dibadalkan ke orang lain
         $regularSchedules = LessonSchedule::where('teacher_id', $teacher->id)
-                            ->where('day_of_week', $dayOfWeek)
-                            ->whereDoesntHave('substitutes', function($q) use ($today) {
-                                $q->where('date', $today); // Cek apakah ada badal hari ini
-                            })
-                            ->with(['classroom', 'subject'])
-                            ->orderBy('start_time')
-                            ->get();
+            ->where('day_of_week', $dayOfWeek)
+            ->whereDoesntHave('substitutes', function ($q) use ($today) {
+                $q->where('date', $today); // Cek apakah ada badal hari ini
+            })
+            ->with(['classroom', 'subject'])
+            ->orderBy('start_time')
+            ->get();
 
         // 2. Ambil Jadwal BADAL (Pengganti)
         // Jadwal orang lain yang didelegasikan ke guru ini hari ini
         $substituteSchedules = ScheduleSubstitute::where('substitute_teacher_id', $teacher->id)
-                            ->where('date', $today)
-                            ->with(['lessonSchedule.classroom', 'lessonSchedule.subject', 'lessonSchedule.teacher'])
-                            ->get();
+            ->where('date', $today)
+            ->with(['lessonSchedule.classroom', 'lessonSchedule.subject', 'lessonSchedule.teacher'])
+            ->get();
 
         return view('academic.journal.dashboard', compact('regularSchedules', 'substituteSchedules', 'today'));
     }
@@ -47,11 +49,11 @@ class TeacherJournalController extends Controller
     public function create($schedule_id)
     {
         $schedule = LessonSchedule::findOrFail($schedule_id);
-        
+
         // Cek apakah jurnal sudah diisi hari ini?
         $existing = TeachingJournal::where('lesson_schedule_id', $schedule_id)
-                    ->where('date', Carbon::today())
-                    ->first();
+            ->where('date', Carbon::today())
+            ->first();
 
         if ($existing) {
             // Jika sudah absen, redirect ke absensi siswa (Tahap 4)
@@ -109,16 +111,68 @@ class TeacherJournalController extends Controller
 
         // Redirect ke Absensi Siswa
         return redirect()->route('academic.journal.attendance', $journal->id)
-               ->with('success', 'Berhasil masuk kelas. Silakan absen siswa.');
+            ->with('success', 'Berhasil masuk kelas. Silakan absen siswa.');
     }
 
     // Helper Hitung Jarak (Meter)
-    private function calculateDistance($lat1, $lon1, $lat2, $lon2) {
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
         $earthRadius = 6371000; // Radius bumi dalam meter
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
         $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
         return $earthRadius * $c;
+    }
+
+    // Halaman Form Absensi Siswa
+    public function attendance(TeachingJournal $journal)
+    {
+        // Pastikan hanya guru ybs atau admin yg bisa akses
+        // (Tambahkan logic otorisasi jika perlu)
+
+        // 1. Ambil Data Siswa di Kelas Tersebut
+        // Asumsi: Classroom punya relasi 'students' (via pivot student_classrooms)
+        $students = $journal->lessonSchedule->classroom->students()
+            ->where('status', 'active') // Hanya siswa aktif
+            ->orderBy('name')
+            ->get();
+
+        // 2. Cek apakah sudah pernah absen sebelumnya? (Untuk mode Edit)
+        $existingAttendance = StudentLessonAttendance::where('teaching_journal_id', $journal->id)
+            ->get()
+            ->keyBy('student_id');
+
+        return view('academic.journal.attendance', compact('journal', 'students', 'existingAttendance'));
+    }
+
+    // Proses Simpan Absensi
+    public function storeAttendance(Request $request, TeachingJournal $journal)
+    {
+        $request->validate([
+            'attendance' => 'required|array', // Array status [student_id => status]
+            'note' => 'nullable|array',       // Array catatan [student_id => note]
+        ]);
+
+        DB::transaction(function () use ($request, $journal) {
+            foreach ($request->attendance as $studentId => $status) {
+
+                $note = $request->note[$studentId] ?? null;
+
+                StudentLessonAttendance::updateOrCreate(
+                    [
+                        'teaching_journal_id' => $journal->id,
+                        'student_id' => $studentId
+                    ],
+                    [
+                        'status' => $status,
+                        'note' => $note
+                    ]
+                );
+            }
+        });
+
+        return redirect()->route('academic.journal.dashboard')
+            ->with('success', 'Jurnal dan Absensi berhasil disimpan!');
     }
 }
