@@ -22,4 +22,14 @@ class LessonSchedule extends Model
     public function classroom() { return $this->belongsTo(Classroom::class); }
     public function subject() { return $this->belongsTo(Subject::class); }
     public function teacher() { return $this->belongsTo(Teacher::class); }
+    /**
+     * Relasi ke jadwal badal (pengganti)
+     */
+    public function substitutes()
+    {
+        return $this->hasMany(
+            ScheduleSubstitute::class,
+            'lesson_schedule_id'
+        );
+    }
 }

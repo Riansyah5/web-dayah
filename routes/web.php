@@ -33,6 +33,7 @@ use App\Http\Controllers\Academic\Student\GraduationController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
+use App\Http\Controllers\Academic\Journal\TeacherJournalController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
 use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
@@ -213,6 +214,15 @@ Route::middleware('auth')->group(function () {
 			Route::get('/picket', [PicketController::class, 'index'])->name('picket.index');
 			Route::post('/picket/assign', [PicketController::class, 'assignSubstitute'])->name('picket.assign');
 			Route::delete('/picket/remove/{id}', [PicketController::class, 'removeSubstitute'])->name('picket.remove');
+			// Dashboard Guru & Jurnal
+			Route::get('/my-schedule', [TeacherJournalController::class, 'index'])->name('journal.dashboard');
+			Route::get('/journal/create/{schedule}', [TeacherJournalController::class, 'create'])->name('journal.create');
+			Route::post('/journal/store/{schedule}', [TeacherJournalController::class, 'store'])->name('journal.store');
+
+			// Placeholder untuk Tahap 4
+			Route::get('/journal/{journal}/attendance', function () {
+				return "Halaman Absen Siswa";
+			})->name('journal.attendance');
 		});
 		// Group Modul Tahfizh
 		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
