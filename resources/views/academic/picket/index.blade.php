@@ -95,8 +95,43 @@
                   </td>
                   <td>
                     @if ($isAbsent)
-                      <span class="badge bg-danger">IZIN: {{ strtoupper($permission->type) }}</span>
-                      <div style="font-size: 0.7rem;">{{ Str::limit($permission->reason, 20) }}</div>
+                      @if ($permission->status == 'pending')
+                        <div class="d-flex gap-1 align-items-center">
+                          <span class="badge bg-warning text-dark me-2">PENDING</span>
+
+                          {{-- Tombol Approve --}}
+                          <form action="{{ route('academic.picket.permission.update', $permission->id) }}"
+                            method="POST">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="approved">
+                            <button class="btn btn-sm btn-success py-0 px-2" title="Setujui"><i
+                                class="bi bi-check"></i></button>
+                          </form>
+
+                          {{-- Tombol Reject --}}
+                          <form action="{{ route('academic.picket.permission.update', $permission->id) }}"
+                            method="POST">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="status" value="rejected">
+                            <button class="btn btn-sm btn-danger py-0 px-2" title="Tolak"><i
+                                class="bi bi-x"></i></button>
+                          </form>
+
+                          {{-- Tombol Lihat Bukti --}}
+                          @if ($permission->attachment)
+                            <a href="{{ asset('storage/' . $permission->attachment) }}" target="_blank"
+                              class="btn btn-sm btn-light border py-0 px-2" title="Lihat Surat"><i
+                                class="bi bi-eye"></i></a>
+                          @endif
+                        </div>
+                        <div style="font-size: 0.7rem; margin-top: 4px;">{{ Str::limit($permission->reason, 20) }}</div>
+                      @elseif($permission->status == 'approved')
+                        <span class="badge bg-danger">IZIN: {{ strtoupper($permission->type) }}</span>
+                        <div style="font-size: 0.7rem;">(Disetujui)</div>
+                      @else
+                        <span class="badge bg-secondary text-decoration-line-through">IZIN DITOLAK</span>
+                        <div style="font-size: 0.7rem;">Wajib Hadir</div>
+                      @endif
                     @else
                       <span class="badge bg-success bg-opacity-10 text-success">Hadir (Jadwal)</span>
                     @endif

@@ -39,6 +39,7 @@ use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
 use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+use App\Http\Controllers\Academic\Permission\TeacherPermissionController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -212,6 +213,8 @@ Route::middleware('auth')->group(function () {
 			Route::delete('/schedule/{schedule}', [LessonScheduleController::class, 'destroy'])->name('schedule.destroy');
 			// Route Piket (Monitoring & Badal)
 			Route::get('/picket', [PicketController::class, 'index'])->name('picket.index');
+				// 2. Akses Admin (Approval)
+    	Route::patch('/picket/permission/{id}', [PicketController::class, 'updatePermissionStatus'])->name('picket.permission.update');
 			Route::post('/picket/assign', [PicketController::class, 'assignSubstitute'])->name('picket.assign');
 			Route::delete('/picket/remove/{id}', [PicketController::class, 'removeSubstitute'])->name('picket.remove');
 			// Dashboard Guru & Jurnal
@@ -221,6 +224,10 @@ Route::middleware('auth')->group(function () {
 			// Route Absensi Siswa
 			Route::get('/journal/{journal}/attendance', [TeacherJournalController::class, 'attendance'])->name('journal.attendance');
 			Route::post('/journal/{journal}/attendance', [TeacherJournalController::class, 'storeAttendance'])->name('journal.store_attendance');
+			// Group Modul Perizinan Guru // 1. Akses Guru (Pengajuan)
+			Route::get('/my-permissions', [TeacherPermissionController::class, 'index'])->name('permission.index');
+			Route::get('/my-permissions/create', [TeacherPermissionController::class, 'create'])->name('permission.create');
+			Route::post('/my-permissions', [TeacherPermissionController::class, 'store'])->name('permission.store');
 		});
 
 		// Group Modul Laporan Akademik

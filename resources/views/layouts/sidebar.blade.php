@@ -47,6 +47,7 @@
               class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.permission.index') }}">Izin & Kehadiran</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.journal.dashboard') }}">Jurnal</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>

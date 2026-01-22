@@ -44,6 +44,24 @@ class PicketController extends Controller
         return view('academic.picket.index', compact('schedules', 'permissions', 'substitutes', 'allTeachers', 'date'));
     }
 
+    // Update Status Izin (Approve/Reject)
+    public function updatePermissionStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected'
+        ]);
+
+        $permission = TeacherPermission::findOrFail($id);
+        
+        $permission->update([
+            'status' => $request->status,
+            'approved_by' => Auth::id(), // Siapa yang ACC
+        ]);
+
+        $msg = $request->status == 'approved' ? 'Izin disetujui.' : 'Izin ditolak.';
+        return back()->with('success', $msg);
+    }
+
     // Simpan Guru Pengganti
     public function assignSubstitute(Request $request)
     {
