@@ -116,7 +116,8 @@ class AcademicReportController extends Controller
         $month = $request->month ?? date('m');
         $year = $request->year ?? date('Y');
 
-        // 1. Ambil Data Jurnal (Mengajar & Badal)
+        // 1. Ambil Data Detail Jurnal & Izin (TETAP DIPERLUKAN UNTUK TABEL BAWAH)
+        // Kita butuh ini sebagai "Bukti Audit" meskipun ringkasannya diambil dari snapshot
         $journals = TeachingJournal::where('teacher_id', $teacher->id)
                     ->whereMonth('date', $month)
                     ->whereYear('date', $year)
@@ -125,21 +126,44 @@ class AcademicReportController extends Controller
                     ->orderByDesc('clock_in_time')
                     ->get();
 
-        // 2. Ambil Data Izin (Absensi Guru)
         $permissions = TeacherPermission::where('teacher_id', $teacher->id)
                         ->whereMonth('date', $month)
                         ->whereYear('date', $year)
                         ->get();
 
-        // 3. Hitung Ringkasan Sederhana
-        $summary = [
-            'total_teaching' => $journals->where('is_substitute', false)->count(),
-            'total_substitute' => $journals->where('is_substitute', true)->count(),
-            'total_absent' => $permissions->where('status', 'approved')->count(),
-            'ontime_percentage' => 0 // Bisa dikembangkan nanti logic terlambatnya
-        ];
+        // 2. LOGIKA PRIORITAS DATA (UNTUK KARTU RINGKASAN ATAS)
+        
+        // Cek apakah sudah ada evaluasi tersimpan?
+        $evaluation = TeacherMonthlyEvaluation::where('teacher_id', $teacher->id)
+                        ->where('month', $month)
+                        ->where('year', $year)
+                        ->first();
 
-        return view('academic.report.teacher_detail', compact('teacher', 'journals', 'permissions', 'summary', 'month', 'year'));
+        if ($evaluation) {
+            // SKENARIO A: SUDAH ADA SNAPSHOT
+            // Ambil data dari tabel evaluasi (Data Beku/Terkunci)
+            $summary = [
+                'source' => 'snapshot', // Penanda untuk View
+                'is_approved' => $evaluation->is_approved,
+                'total_teaching' => $evaluation->total_teaching_hours,
+                'total_substitute' => $evaluation->total_substitute_hours,
+                'total_absent' => $evaluation->total_absent_days,
+            ];
+        } else {
+            // SKENARIO B: BELUM ADA SNAPSHOT
+            // Hitung manual dari data mentah (Data Live)
+            $summary = [
+                'source' => 'live', // Penanda untuk View
+                'is_approved' => false,
+                'total_teaching' => $journals->where('is_substitute', false)->count(),
+                'total_substitute' => $journals->where('is_substitute', true)->count(),
+                'total_absent' => $permissions->where('status', 'approved')->count(),
+            ];
+        }
+
+        return view('academic.report.teacher_detail', compact(
+            'teacher', 'journals', 'permissions', 'summary', 'month', 'year', 'evaluation'
+        ));
     }
 
     

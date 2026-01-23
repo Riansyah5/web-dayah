@@ -15,7 +15,7 @@
               <div class="d-flex align-items-center justify-content-between mb-4">
                 <div class="d-flex align-items-center">
                   <a href="{{ route('academic.report.teacher', ['month' => $month, 'year' => $year]) }}"
-                    class="btn btn-outline-secondary rounded me-3">
+                    class="btn btn-light rounded-circle me-3">
                     <i class="bi bi-arrow-left"></i>
                   </a>
                   <div>
@@ -32,63 +32,27 @@
               </div>
 
               <div class="row g-3 mb-4">
-
-                <div class="col-12 text-end">
-                  @if ($summary['source'] == 'snapshot')
-                    @if ($summary['is_approved'])
-                      <span class="badge bg-success rounded-pill px-3 py-2">
-                        <i class="bi bi-lock-fill me-1"></i> Data Terkunci & Valid (Final)
-                      </span>
-                    @else
-                      <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
-                        <i class="bi bi-file-earmark-medical me-1"></i> Draft Tersimpan (Belum Approved)
-                      </span>
-                    @endif
-                  @else
-                    <span class="badge bg-secondary rounded-pill px-3 py-2">
-                      <i class="bi bi-activity me-1"></i> Data Live (Estimasi Sementara)
-                    </span>
-                  @endif
-                </div>
-
                 <div class="col-md-4">
                   <div class="card border-0 shadow-sm bg-primary text-white h-100 rounded-4">
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center">
                         <div>
-                          <h2 class="fw-bold mb-0">
-                            {{ $summary['total_teaching'] }} <span class="fs-6 fw-normal">Sesi</span>
-                          </h2>
+                          <h2 class="fw-bold mb-0">{{ $summary['total_teaching'] }} <span
+                              class="fs-6 fw-normal">Sesi</span></h2>
                           <small class="opacity-75">Total Mengajar Reguler</small>
                         </div>
                         <i class="bi bi-person-video3 fs-1 opacity-25"></i>
                       </div>
-
-                      {{-- Fitur Audit Kecil: Jika Data Snapshot BEDA dengan Data Live --}}
-                      @if ($summary['source'] == 'snapshot')
-                        @php
-                          $realCount = $journals->where('is_substitute', false)->count();
-                        @endphp
-                        @if ($realCount != $summary['total_teaching'])
-                          <div class="mt-2 bg-white bg-opacity-25 p-1 rounded small px-2">
-                            <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
-                            Data Jurnal berubah jadi: <strong>{{ $realCount }}</strong>
-                          </div>
-                        @endif
-                      @endif
-
                     </div>
                   </div>
                 </div>
-
                 <div class="col-md-4">
                   <div class="card border-0 shadow-sm bg-warning text-dark h-100 rounded-4">
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center">
                         <div>
-                          <h2 class="fw-bold mb-0">
-                            {{ $summary['total_substitute'] }} <span class="fs-6 fw-normal">Sesi</span>
-                          </h2>
+                          <h2 class="fw-bold mb-0">{{ $summary['total_substitute'] }} <span
+                              class="fs-6 fw-normal">Sesi</span></h2>
                           <small class="opacity-75">Total Mengajar Badal (Pengganti)</small>
                         </div>
                         <i class="bi bi-arrow-repeat fs-1 opacity-25"></i>
@@ -96,14 +60,12 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="col-md-4">
                   <div class="card border-0 shadow-sm bg-danger text-white h-100 rounded-4">
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center">
                         <div>
-                          <h2 class="fw-bold mb-0">
-                            {{ $summary['total_absent'] }} <span class="fs-6 fw-normal">Hari</span>
+                          <h2 class="fw-bold mb-0">{{ $summary['total_absent'] }} <span class="fs-6 fw-normal">Hari</span>
                           </h2>
                           <small class="opacity-75">Total Izin / Sakit</small>
                         </div>
@@ -328,21 +290,18 @@
                   <label class="form-label fw-bold">Berikan Rating Bulanan</label>
                   <div class="rating-input d-flex gap-2 justify-content-center mb-2">
                     <select name="rating" class="form-select text-center fw-bold text-warning" required>
-                      <option value="5" {{ ($eval->rating ?? 5) == 5 ? 'selected' : '' }}>⭐⭐⭐⭐⭐ (Sangat Baik)
-                      </option>
+                      <option value="5" {{ ($eval->rating ?? 5) == 5 ? 'selected' : '' }}>⭐⭐⭐⭐⭐ (Sangat Baik)</option>
                       <option value="4" {{ ($eval->rating ?? 5) == 4 ? 'selected' : '' }}>⭐⭐⭐⭐ (Baik)</option>
                       <option value="3" {{ ($eval->rating ?? 5) == 3 ? 'selected' : '' }}>⭐⭐⭐ (Cukup)</option>
                       <option value="2" {{ ($eval->rating ?? 5) == 2 ? 'selected' : '' }}>⭐⭐ (Kurang)</option>
-                      <option value="1" {{ ($eval->rating ?? 5) == 1 ? 'selected' : '' }}>⭐ (Sangat Kurang)
-                      </option>
+                      <option value="1" {{ ($eval->rating ?? 5) == 1 ? 'selected' : '' }}>⭐ (Sangat Kurang)</option>
                     </select>
                   </div>
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label fw-bold">Catatan Evaluasi</label>
-                  <textarea name="headmaster_note" class="form-control" rows="4"
-                    placeholder="Berikan apresiasi atau teguran...">{{ $eval->headmaster_note ?? '' }}</textarea>
+                  <textarea name="headmaster_note" class="form-control" rows="4" placeholder="Berikan apresiasi atau teguran...">{{ $eval->headmaster_note ?? '' }}</textarea>
                 </div>
 
                 <div class="d-grid gap-2">

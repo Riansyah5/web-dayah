@@ -50,7 +50,7 @@
                       </div>
 
                       <form action="{{ route('academic.schedule.destroy', $item->id) }}" method="POST"
-                        onsubmit="return confirm('Hapus jadwal ini?')">
+                        class="form-delete">
                         @csrf @method('DELETE')
                         <button class="btn btn-sm btn-light text-danger rounded-circle p-2 lh-1">
                           <i class="bi bi-trash"></i>
@@ -137,4 +137,52 @@
   </div>
 @endsection
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: "{{ session('success') }}",
+        timer: 3000,
+        showConfirmButton: false
+      });
+    @endif
+
+    @if (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: "{{ session('error') }}",
+      });
+    @endif
+
+    @if ($errors->any())
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Menyimpan',
+        html: '<ul class="text-start">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+      });
+    @endif
+
+    document.querySelectorAll('.form-delete').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Hapus Jadwal?',
+          text: "Data yang dihapus tidak dapat dikembalikan.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Ya, Hapus!',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.submit();
+          }
+        });
+      });
+    });
+  </script>
 @endpush
