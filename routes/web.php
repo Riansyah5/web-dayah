@@ -235,6 +235,7 @@ Route::middleware('auth')->group(function () {
 			Route::get('/teacher-performance', [AcademicReportController::class, 'teacherRecap'])->name('teacher');
 			Route::get('/student-subject', [AcademicReportController::class, 'studentSubjectRecap'])->name('student_subject');
 			Route::get('/teacher-performance/{teacher}', [AcademicReportController::class, 'teacherDetail'])->name('teacher.detail');
+			Route::post('/teacher-performance/{teacher}/evaluate', [AcademicReportController::class, 'storeEvaluation'])->name('teacher.evaluate');
 		});
 
 		// Group Modul Tahfizh

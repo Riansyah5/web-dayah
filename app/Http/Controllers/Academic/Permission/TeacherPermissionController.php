@@ -15,7 +15,8 @@ class TeacherPermissionController extends Controller
     public function index()
     {
         $teacher = Teacher::where('name', Auth::user()->name)->first();
-        
+        if (!$teacher) abort(403, 'Akun ini tidak terhubung dengan data Guru.');
+
         $permissions = TeacherPermission::where('teacher_id', $teacher->id)
                         ->orderByDesc('date')
                         ->get();

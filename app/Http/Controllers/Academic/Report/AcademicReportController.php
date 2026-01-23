@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers\Academic\Report;
 
-use App\Http\Controllers\Controller;
-use App\Models\Teacher;
-use App\Models\TeachingJournal;
-use App\Models\Classroom;
+use Carbon\Carbon;
 use App\Models\Subject;
+use App\Models\Teacher;
+use App\Models\Classroom;
 use App\Models\AcademicYear;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Models\TeachingJournal;
 use App\Models\TeacherPermission;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\TeacherMonthlyEvaluation; 
 
 class AcademicReportController extends Controller
 {
@@ -138,5 +140,64 @@ class AcademicReportController extends Controller
         ];
 
         return view('academic.report.teacher_detail', compact('teacher', 'journals', 'permissions', 'summary', 'month', 'year'));
+    }
+
+    
+    // SIMPAN EVALUASI & APPROVAL (Oleh Kepala Sekolah)
+    public function storeEvaluation(Request $request, Teacher $teacher)
+    {
+        $request->validate([
+            'month' => 'required|integer',
+            'year' => 'required|integer',
+            'rating' => 'required|integer|min:1|max:5',
+            'headmaster_note' => 'nullable|string',
+            'action' => 'required|in:save,approve', // save=draft, approve=final
+        ]);
+
+        // 1. Hitung Ulang Statistik (Snapshot Data)
+        // Kita hitung lagi di sini untuk memastikan angka yang disimpan ke database adalah angka final
+        $journals = TeachingJournal::where('teacher_id', $teacher->id)
+                    ->whereMonth('date', $request->month)
+                    ->whereYear('date', $request->year)
+                    ->get();
+        
+        $permissions = TeacherPermission::where('teacher_id', $teacher->id)
+                        ->whereMonth('date', $request->month)
+                        ->whereYear('date', $request->year)
+                        ->where('status', 'approved')
+                        ->get();
+
+        // 2. Simpan / Update ke Tabel Evaluasi
+        $evaluation = TeacherMonthlyEvaluation::updateOrCreate(
+            [
+                'teacher_id' => $teacher->id,
+                'month' => $request->month,
+                'year' => $request->year,
+            ],
+            [
+                // Simpan Angka Statistik (Frozen Data)
+                'total_teaching_hours' => $journals->where('is_substitute', false)->count(),
+                'total_substitute_hours' => $journals->where('is_substitute', true)->count(),
+                'total_absent_days' => $permissions->count(),
+                
+                // Simpan Inputan Kepala Sekolah
+                'rating' => $request->rating,
+                'headmaster_note' => $request->headmaster_note,
+            ]
+        );
+
+        // 3. Jika Action = Approve
+        if ($request->action == 'approve') {
+            $evaluation->update([
+                'is_approved' => true,
+                'approved_by' => Auth::user()->id,
+                'approved_at' => now(),
+            ]);
+            $msg = 'Laporan kinerja berhasil disetujui dan dikunci.';
+        } else {
+            $msg = 'Draft penilaian berhasil disimpan.';
+        }
+
+        return back()->with('success', $msg);
     }
 }
