@@ -22,7 +22,7 @@ class PicketController extends Controller
 
         // 1. Ambil Jadwal (Tetap sama)
         $schedules = LessonSchedule::where('day_of_week', $dayOfWeek)
-                        ->with(['teacher', 'subject', 'classroom'])
+                        ->with(['teacher', 'subject', 'classroom.level.stage'])
                         ->orderBy('start_time')
                         ->get();
 

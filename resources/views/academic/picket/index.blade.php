@@ -55,21 +55,45 @@
       </div>
     </div>
 
+    @php
+      $groupedSchedules = $schedules
+          ->groupBy(function ($item) {
+              return $item->classroom->level->stage->code ?? 'Umum';
+          })
+          ->sortKeys();
+    @endphp
+
     <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0" style="z-index: 1; position: relative;">
+        <ul class="nav nav-tabs card-header-tabs" id="picketTabs" role="tablist">
+          @foreach ($groupedSchedules as $stage => $items)
+            <li class="nav-item" role="presentation">
+              <button class="nav-link {{ $loop->first ? 'active' : '' }}" id="tab-{{ Str::slug($stage) }}"
+                data-bs-toggle="tab" data-bs-target="#content-{{ Str::slug($stage) }}" type="button" role="tab"
+                aria-controls="content-{{ Str::slug($stage) }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                {{ $stage }} <span class="badge bg-secondary ms-1">{{ $items->count() }}</span>
+              </button>
+            </li>
+          @endforeach
+        </ul>
+      </div>
       <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light">
-              <tr>
-                <th class="ps-4">Jam</th>
-                <th>Kelas / Mapel</th>
-                <th>Guru Asli</th>
-                <th>Status Kehadiran</th>
-                {{-- <th>Guru Pengganti (Badal)</th> --}}
-              </tr>
-            </thead>
-            <tbody id="realtime-schedule-body">
-              @forelse($schedules as $schedule)
+        <div class="tab-content" id="picketTabsContent">
+          @forelse ($groupedSchedules as $stage => $items)
+            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="content-{{ Str::slug($stage) }}"
+              role="tabpanel" aria-labelledby="tab-{{ Str::slug($stage) }}">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 mt-5">
+                  <thead class="bg-light">
+                    <tr>
+                      <th class="ps-4">Jam</th>
+                      <th>Kelas / Mapel</th>
+                      <th>Guru Asli</th>
+                      <th>Status Kehadiran</th>
+                    </tr>
+                  </thead>
+                  <tbody id="realtime-schedule-body-{{ Str::slug($stage) }}" class="realtime-body">
+                    @foreach ($items as $schedule)
                 @php
                   // 1. DATA PENDUKUNG
                   // Cek Izin
@@ -124,7 +148,7 @@
                         <span class="badge bg-danger animate-blink"><i class="bi bi-exclamation-circle-fill me-1"></i>
                           BELUM MASUK</span>
                         <div style="font-size: 0.7rem;" class="text-danger mt-1">
-                          Telat {{ $startTime->diffInMinutes($now) }} mnt
+                          Telat {{ number_format($startTime->floatDiffInMinutes($now), 1) }} mnt
                         </div>
                       @elseif($statusRealtime == 'absent_empty')
                         <span class="badge bg-danger animate-blink">BUTUH BADAL</span>
@@ -256,14 +280,16 @@
                     @endif
                   </td>
                 </tr>
-              @empty
-                <tr>
-                  <td colspan="4" class="text-center py-5 text-muted">Tidak ada jadwal pelajaran pada tanggal ini.
-                  </td>
-                </tr>
-              @endforelse
-            </tbody>
-          </table>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          @empty
+            <div class="text-center py-5 text-muted">
+              Tidak ada jadwal pelajaran pada tanggal ini.
+            </div>
+          @endforelse
         </div>
       </div>
     </div>
@@ -334,10 +360,12 @@
                 }
 
                 // Update Table Body
-                const newBody = doc.getElementById('realtime-schedule-body');
-                if (newBody) {
-                    document.getElementById('realtime-schedule-body').innerHTML = newBody.innerHTML;
-                }
+                doc.querySelectorAll('.realtime-body').forEach(newTbody => {
+                    const currentTbody = document.getElementById(newTbody.id);
+                    if (currentTbody) {
+                        currentTbody.innerHTML = newTbody.innerHTML;
+                    }
+                });
             })
             .catch(err => console.error('Gagal memuat update realtime:', err));
     }, 5000); // Update setiap 5 detik
