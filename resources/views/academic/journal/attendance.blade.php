@@ -84,4 +84,29 @@
   </div>
 @endsection
 @push('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Contoh penggunaan SweetAlert2 untuk notifikasi
+    @if (session('success'))
+      Swal.fire({
+        icon: 'success',
+        title: 'Sukses',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    @endif
+
+    @if (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '{{ session('error') }}',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    @endif
+  </script>
 @endpush

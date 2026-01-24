@@ -288,7 +288,7 @@
 
         <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 20px; z-index: 1;">
           <div class="card-header bg-dark text-white py-3 rounded-top-4">
-            <h6 class="fw-bold mb-0"><i class="bi bi-trophy me-2"></i> Evaluasi Kinerja</h6>
+            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-trophy me-2"></i> Evaluasi Kinerja</h6>
           </div>
           <div class="card-body p-4">
 

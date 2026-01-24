@@ -3,6 +3,16 @@
 @push('link')
 @endpush
 @push('styles')
+<style>
+    @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.4; }
+        100% { opacity: 1; }
+    }
+    .animate-blink {
+        animation: blink 1.5s infinite;
+    }
+</style>
 @endpush
 @section('content')
   <div class="container py-4">
@@ -55,125 +65,201 @@
                 <th>Kelas / Mapel</th>
                 <th>Guru Asli</th>
                 <th>Status Kehadiran</th>
-                <th>Guru Pengganti (Badal)</th>
+                {{-- <th>Guru Pengganti (Badal)</th> --}}
               </tr>
             </thead>
             <tbody>
               @forelse($schedules as $schedule)
                 @php
-                  // Cek apakah Guru Asli Izin?
+                  // 1. DATA PENDUKUNG
+                  // Cek Izin
                   $isAbsent = isset($permissions[$schedule->teacher_id]);
                   $permission = $isAbsent ? $permissions[$schedule->teacher_id] : null;
 
-                  // Cek apakah sudah ada Badal?
+                  // Cek Badal
                   $hasSubstitute = isset($substitutes[$schedule->id]);
                   $substituteData = $hasSubstitute ? $substitutes[$schedule->id] : null;
 
-                  // Styling Row
-                  $rowClass = '';
-                  if ($isAbsent && !$hasSubstitute) {
-                      $rowClass = 'table-danger';
-                  } // Izin tapi blm ada badal (Bahaya)
-                  if ($hasSubstitute) {
-                      $rowClass = 'table-warning';
-                  } // Sudah ada badal (Aman)
+                  // Cek Realisasi Jurnal (Apakah sudah ada guru masuk?)
+                  $journal = isset($journals[$schedule->id]) ? $journals[$schedule->id] : null;
+
+                  // 2. LOGIKA INDIKATOR WAKTU (Realtime)
+                  $now = \Carbon\Carbon::now();
+                  $startTime = \Carbon\Carbon::parse($date->format('Y-m-d') . ' ' . $schedule->start_time);
+                  $endTime = \Carbon\Carbon::parse($date->format('Y-m-d') . ' ' . $schedule->end_time);
+
+                  $statusRealtime = 'waiting';
+
+                  if ($journal) {
+                      $statusRealtime = 'present'; // Guru ada di kelas
+                  } elseif ($isAbsent && !$hasSubstitute) {
+                      // Jika izin disetujui tapi belum ada badal = BAHAYA
+                      if ($permission->status == 'approved') {
+                          $statusRealtime = 'absent_empty';
+                      } else {
+                          $statusRealtime = 'waiting_approval';
+                      }
+                  } elseif ($now > $startTime && $now < $endTime) {
+                      $statusRealtime = 'late'; // Telat
+                  } elseif ($now > $endTime) {
+                      $statusRealtime = 'alpha'; // Lewat jam
+                  }
                 @endphp
 
-                <tr class="{{ $rowClass }}">
+                <tr
+                  class="{{ $statusRealtime == 'late' || $statusRealtime == 'absent_empty' ? 'bg-danger bg-opacity-10' : '' }}">
+
                   <td class="ps-4">
                     <span class="badge bg-light text-dark border">
-                      {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} -
-                      {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                      {{ $startTime->format('H:i') }} - {{ $endTime->format('H:i') }}
                     </span>
+
+                    <div class="mt-2">
+                      @if ($statusRealtime == 'present')
+                        <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Masuk</span>
+                        <div style="font-size: 0.7rem;" class="text-success fw-bold mt-1">
+                          @ {{ $journal->clock_in_time->format('H:i') }}
+                        </div>
+                      @elseif($statusRealtime == 'late')
+                        <span class="badge bg-danger animate-blink"><i class="bi bi-exclamation-circle-fill me-1"></i>
+                          BELUM MASUK</span>
+                        <div style="font-size: 0.7rem;" class="text-danger mt-1">
+                          Telat {{ $startTime->diffInMinutes($now) }} mnt
+                        </div>
+                      @elseif($statusRealtime == 'absent_empty')
+                        <span class="badge bg-danger animate-blink">BUTUH BADAL</span>
+                      @elseif($statusRealtime == 'alpha')
+                        <span class="badge bg-secondary">Alpha / Kosong</span>
+                      @elseif($statusRealtime == 'waiting_approval')
+                        <span class="badge bg-warning text-dark">Menunggu Admin</span>
+                      @else
+                        <span class="badge bg-light text-muted border">Belum Mulai</span>
+                      @endif
+                    </div>
                   </td>
+
                   <td>
                     <div class="fw-bold">{{ $schedule->classroom->name }}</div>
                     <small class="text-muted">{{ $schedule->subject->name }}</small>
                   </td>
+
                   <td>
-                    {{ $schedule->teacher->name }}
-                  </td>
-                  <td>
+                    <div class="fw-bold text-dark">{{ $schedule->teacher->name }}</div>
+
                     @if ($isAbsent)
-                      @if ($permission->status == 'pending')
-                        <div class="d-flex gap-1 align-items-center">
-                          <span class="badge bg-warning text-dark me-2">PENDING</span>
+                      <div class="mt-2 p-2 bg-white border rounded shadow-sm">
 
-                          {{-- Tombol Approve --}}
-                          <form action="{{ route('academic.picket.permission.update', $permission->id) }}"
-                            method="POST">
-                            @csrf @method('PATCH')
-                            <input type="hidden" name="status" value="approved">
-                            <button class="btn btn-sm btn-success py-0 px-2" title="Setujui"><i
-                                class="bi bi-check"></i></button>
-                          </form>
+                        {{-- KASUS 1: Izin Masih Pending --}}
+                        @if ($permission->status == 'pending')
+                          <small class="d-block text-warning fw-bold mb-1"><i class="bi bi-envelope"></i> Pengajuan
+                            Izin:</small>
+                          <div class="small fst-italic mb-2 text-muted">"{{ Str::limit($permission->reason, 20) }}"</div>
 
-                          {{-- Tombol Reject --}}
-                          <form action="{{ route('academic.picket.permission.update', $permission->id) }}"
-                            method="POST">
-                            @csrf @method('PATCH')
-                            <input type="hidden" name="status" value="rejected">
-                            <button class="btn btn-sm btn-danger py-0 px-2" title="Tolak"><i
-                                class="bi bi-x"></i></button>
-                          </form>
+                          <div class="d-flex gap-1">
+                            {{-- Tombol Approve --}}
+                            <form action="{{ route('academic.picket.permission.update', $permission->id) }}"
+                              method="POST">
+                              @csrf @method('PATCH')
+                              <input type="hidden" name="status" value="approved">
+                              <button class="btn btn-sm btn-success py-1 px-2" title="Setujui"><i
+                                  class="bi bi-check-lg"></i> ACC</button>
+                            </form>
 
-                          {{-- Tombol Lihat Bukti --}}
-                          @if ($permission->attachment)
-                            <a href="{{ asset('storage/' . $permission->attachment) }}" target="_blank"
-                              class="btn btn-sm btn-light border py-0 px-2" title="Lihat Surat"><i
-                                class="bi bi-eye"></i></a>
-                          @endif
-                        </div>
-                        <div style="font-size: 0.7rem; margin-top: 4px;">{{ Str::limit($permission->reason, 20) }}</div>
-                      @elseif($permission->status == 'approved')
-                        <span class="badge bg-danger">IZIN: {{ strtoupper($permission->type) }}</span>
-                        <div style="font-size: 0.7rem;">(Disetujui)</div>
-                      @else
-                        <span class="badge bg-secondary text-decoration-line-through">IZIN DITOLAK</span>
-                        <div style="font-size: 0.7rem;">Wajib Hadir</div>
-                      @endif
-                    @else
-                      <span class="badge bg-success bg-opacity-10 text-success">Hadir (Jadwal)</span>
+                            {{-- Tombol Reject --}}
+                            <form action="{{ route('academic.picket.permission.update', $permission->id) }}"
+                              method="POST">
+                              @csrf @method('PATCH')
+                              <input type="hidden" name="status" value="rejected">
+                              <button class="btn btn-sm btn-danger py-1 px-2" title="Tolak"><i class="bi bi-x-lg"></i>
+                                Tolak</button>
+                            </form>
+
+                            @if ($permission->attachment)
+                              <a href="{{ asset('storage/' . $permission->attachment) }}" target="_blank"
+                                class="btn btn-sm btn-light border" title="Lihat Bukti"><i
+                                  class="bi bi-file-earmark"></i></a>
+                            @endif
+                          </div>
+
+                          {{-- KASUS 2: Sudah Approved --}}
+                        @elseif($permission->status == 'approved')
+                          <span class="badge bg-danger mb-1">IZIN: {{ strtoupper($permission->type) }}</span>
+                          <div style="font-size: 0.7rem;">(Disetujui)</div>
+
+                          {{-- KASUS 3: Ditolak --}}
+                        @else
+                          <span class="badge bg-secondary text-decoration-line-through">IZIN DITOLAK</span>
+                          <div style="font-size: 0.7rem;">Wajib Hadir</div>
+                        @endif
+                      </div>
                     @endif
                   </td>
+
                   <td>
-                    @if ($hasSubstitute)
-                      <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                          <span class="badge bg-dark">Badal:</span>
-                          <span class="fw-bold">{{ $substituteData->substituteTeacher->name }}</span>
+                    @if ($journal)
+                      @if ($journal->is_substitute)
+                        <div class="alert alert-warning py-2 px-2 mb-0 border-warning small">
+                          <i class="bi bi-person-badge-fill me-1"></i>
+                          Badal: <strong>{{ $journal->teacher->name }}</strong>
                         </div>
-                        <form action="{{ route('academic.picket.remove', $substituteData->id) }}" method="POST"
-                          class="delete-form">
-                          @csrf @method('DELETE')
-                          <button class="btn btn-sm text-danger ms-2" title="Hapus"><i
-                              class="bi bi-x-circle-fill"></i></button>
-                        </form>
+                      @else
+                        <div class="alert alert-success py-2 px-2 mb-0 border-success small">
+                          <i class="bi bi-person-check-fill me-1"></i> Guru Asli Hadir
+                        </div>
+                      @endif
+                      <div class="text-muted small mt-1 fst-italic">
+                        Materi: "{{ Str::limit($journal->topic, 20) }}"
                       </div>
                     @else
-                      <form action="{{ route('academic.picket.assign') }}" method="POST" class="d-flex gap-2">
-                        @csrf
-                        <input type="hidden" name="lesson_schedule_id" value="{{ $schedule->id }}">
-                        <input type="hidden" name="date" value="{{ $date->format('Y-m-d') }}">
+                      @if ($hasSubstitute)
+                        <div class="d-flex align-items-center justify-content-between p-2 bg-light rounded border">
+                          <div>
+                            <span class="badge bg-dark mb-1">Jadwal Badal:</span><br>
+                            <span class="fw-bold text-dark small">{{ $substituteData->substituteTeacher->name }}</span>
+                          </div>
+                          <form action="{{ route('academic.picket.remove', $substituteData->id) }}" method="POST"
+                            onsubmit="return confirm('Batalkan badal ini?')">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-sm text-danger ms-1"><i class="bi bi-x-circle-fill"></i></button>
+                          </form>
+                        </div>
+                        <div class="text-muted small mt-1 fst-italic text-center">Menunggu Guru Badal...</div>
+                      @elseif($isAbsent && $permission->status == 'approved')
+                        <div class="p-2 border border-danger bg-danger bg-opacity-10 rounded">
+                          <small class="text-danger fw-bold d-block mb-2"><i class="bi bi-exclamation-triangle"></i> Pilih
+                            Guru Pengganti:</small>
 
-                        <select name="substitute_teacher_id" class="form-select form-select-sm" style="max-width: 200px;"
-                          required>
-                          <option value="">-- Pilih Badal --</option>
-                          @foreach ($allTeachers as $t)
-                            {{-- Jangan tampilkan guru asli di dropdown --}}
-                            @if ($t->id != $schedule->teacher_id)
-                              <option value="{{ $t->id }}">{{ $t->name }}</option>
-                            @endif
-                          @endforeach
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-outline-primary">Set</button>
-                      </form>
+                          <form action="{{ route('academic.picket.assign') }}" method="POST" class="d-flex gap-1">
+                            @csrf
+                            <input type="hidden" name="lesson_schedule_id" value="{{ $schedule->id }}">
+                            <input type="hidden" name="date" value="{{ $date->format('Y-m-d') }}">
+
+                            <select name="substitute_teacher_id" class="form-select form-select-sm"
+                              style="width: 140px;" required>
+                              <option value="">-- Pilih --</option>
+                              @foreach ($allTeachers as $t)
+                                @if ($t->id != $schedule->teacher_id)
+                                  <option value="{{ $t->id }}">{{ $t->name }}</option>
+                                @endif
+                              @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Set</button>
+                          </form>
+                        </div>
+                      @else
+                        @if ($statusRealtime == 'late')
+                          <small class="text-danger fw-bold d-block text-center">Guru Terlambat!</small>
+                        @else
+                          <small class="text-muted d-block text-center">-</small>
+                        @endif
+                      @endif
                     @endif
                   </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="5" class="text-center py-5 text-muted">Tidak ada jadwal pelajaran hari ini.</td>
+                  <td colspan="4" class="text-center py-5 text-muted">Tidak ada jadwal pelajaran pada tanggal ini.
+                  </td>
                 </tr>
               @endforelse
             </tbody>

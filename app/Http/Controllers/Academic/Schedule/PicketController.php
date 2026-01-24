@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Models\LessonSchedule;
+use App\Models\TeachingJournal;
 use App\Models\TeacherPermission;
 use App\Models\ScheduleSubstitute;
 use App\Http\Controllers\Controller;
@@ -16,32 +17,36 @@ class PicketController extends Controller
     // Dashboard Piket Harian
     public function index(Request $request)
     {
-        // Default hari ini, atau tanggal yg dipilih
         $date = $request->date ? Carbon::parse($request->date) : Carbon::today();
-        $dayOfWeek = $date->dayOfWeekIso; // 1 (Senin) - 7 (Minggu)
+        $dayOfWeek = $date->dayOfWeekIso;
 
-        // 1. Ambil Jadwal Hari Ini
+        // 1. Ambil Jadwal (Tetap sama)
         $schedules = LessonSchedule::where('day_of_week', $dayOfWeek)
                         ->with(['teacher', 'subject', 'classroom'])
                         ->orderBy('start_time')
                         ->get();
 
-        // 2. Cek Guru yang Izin Hari Ini
+        // 2. Ambil Izin (Tetap sama)
         $permissions = TeacherPermission::whereDate('date', $date)
                         ->with('teacher')
                         ->get()
-                        ->keyBy('teacher_id'); // Biar mudah dicek
+                        ->keyBy('teacher_id');
 
-        // 3. Cek Data Badal yang sudah diset
+        // 3. Ambil Badal (Tetap sama)
         $substitutes = ScheduleSubstitute::whereDate('date', $date)
                         ->with('substituteTeacher')
                         ->get()
                         ->keyBy('lesson_schedule_id');
 
-        // 4. List Semua Guru (Untuk Dropdown Badal)
+        // 4. [BARU] Ambil Realisasi Jurnal (Siapa yg sudah masuk kelas?)
+        // Kita ambil jurnal pada tanggal tersebut, key-nya schedule_id
+        $journals = TeachingJournal::whereDate('date', $date)
+                        ->get()
+                        ->keyBy('lesson_schedule_id');
+
         $allTeachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
-        return view('academic.picket.index', compact('schedules', 'permissions', 'substitutes', 'allTeachers', 'date'));
+        return view('academic.picket.index', compact('schedules', 'permissions', 'substitutes', 'journals', 'allTeachers', 'date'));
     }
 
     // Update Status Izin (Approve/Reject)

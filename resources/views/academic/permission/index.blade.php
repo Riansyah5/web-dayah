@@ -22,7 +22,7 @@
               <th>Jenis</th>
               <th>Alasan</th>
               <th>Status</th>
-              <th class="text-end pe-4">Bukti</th>
+              {{-- <th class="text-end pe-4">Bukti</th> --}}
             </tr>
           </thead>
           <tbody>
@@ -48,7 +48,7 @@
                     <span class="badge bg-danger">Ditolak</span>
                   @endif
                 </td>
-                <td class="text-end pe-4">
+                {{-- <td class="text-end pe-4">
                   @if ($p->attachment)
                     <a href="{{ asset('storage/' . $p->attachment) }}" target="_blank" class="btn btn-sm btn-light border">
                       <i class="bi bi-file-earmark-text"></i>
@@ -56,7 +56,7 @@
                   @else
                     -
                   @endif
-                </td>
+                </td> --}}
               </tr>
             @empty
               <tr>
