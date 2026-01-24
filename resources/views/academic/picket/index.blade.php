@@ -71,7 +71,7 @@
               <button class="nav-link {{ $loop->first ? 'active' : '' }}" id="tab-{{ Str::slug($stage) }}"
                 data-bs-toggle="tab" data-bs-target="#content-{{ Str::slug($stage) }}" type="button" role="tab"
                 aria-controls="content-{{ Str::slug($stage) }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                {{ $stage }} <span class="badge bg-secondary ms-1">{{ $items->count() }}</span>
+                <span class="fw-bold">{{ $stage }}</span> <span class="badge bg-secondary ms-1">{{ $items->count() }}</span>
               </button>
             </li>
           @endforeach
@@ -153,7 +153,8 @@
                       @elseif($statusRealtime == 'absent_empty')
                         <span class="badge bg-danger animate-blink">BUTUH BADAL</span>
                       @elseif($statusRealtime == 'alpha')
-                        <span class="badge bg-secondary">Alpha / Kosong</span>
+                        <span class="badge bg-dark">TIDAK HADIR</span>
+                        <div style="font-size: 0.7rem;" class="text-muted mt-1">Tanpa Keterangan</div>
                       @elseif($statusRealtime == 'waiting_approval')
                         <span class="badge bg-warning text-dark">Menunggu Admin</span>
                       @else

@@ -34,11 +34,13 @@
         @endphp
 
         @if($isDone)
-            <button class="btn btn-success w-100 rounded-pill" disabled><i class="bi bi-check-circle me-2"></i> Sudah Selesai</button>
+            <button class="btn btn-success w-100 rounded-pill" disabled><i class="bi bi-check-circle me-2"></i> Sudah Absen</button>
         @elseif($canEnter)
             <a href="{{ route('academic.journal.create', $schedule->id) }}" class="btn btn-primary w-100 rounded-pill fw-bold">
                 <i class="bi bi-camera me-2"></i> Masuk Kelas
             </a>
+        @elseif($now > $end)
+            <button class="btn btn-danger w-100 rounded-pill" disabled>Tidak Hadir (Alpha)</button>
         @else
             <button class="btn btn-secondary w-100 rounded-pill" disabled>Belum Waktunya</button>
         @endif
