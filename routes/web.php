@@ -228,6 +228,7 @@ Route::middleware('auth')->group(function () {
 			Route::get('/my-permissions', [TeacherPermissionController::class, 'index'])->name('permission.index');
 			Route::get('/my-permissions/create', [TeacherPermissionController::class, 'create'])->name('permission.create');
 			Route::post('/my-permissions', [TeacherPermissionController::class, 'store'])->name('permission.store');
+			Route::get('/my-permissions/get-schedules', [TeacherPermissionController::class, 'getSchedulesByDate'])->name('permission.get_schedules');
 		});
 
 		// Group Modul Laporan Akademik

@@ -11,6 +11,7 @@ use App\Models\TeacherPermission;
 use App\Models\ScheduleSubstitute;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TeacherPermissionDetail;
 
 class PicketController extends Controller
 {
@@ -22,31 +23,36 @@ class PicketController extends Controller
 
         // 1. Ambil Jadwal (Tetap sama)
         $schedules = LessonSchedule::where('day_of_week', $dayOfWeek)
-                        ->with(['teacher', 'subject', 'classroom.level.stage'])
-                        ->orderBy('start_time')
-                        ->get();
+            ->with(['teacher', 'subject', 'classroom.level.stage'])
+            ->orderBy('start_time')
+            ->get();
 
-        // 2. Ambil Izin (Tetap sama)
-        $permissions = TeacherPermission::whereDate('date', $date)
-                        ->with('teacher')
-                        ->get()
-                        ->keyBy('teacher_id');
+        // 1. Ambil Permission DETAIL hari ini
+        // Kita ingin tahu: Jadwal ID mana saja yang 'Kena Izin'?
+        // Query: Ambil Detail Izin -> Join ke Izin Utama (filter tanggal) -> Pluck ID Jadwal & Data Izinnya
+
+        $affectedSchedules = TeacherPermissionDetail::whereHas('permission', function ($q) use ($date) {
+            $q->whereDate('date', $date);
+        })
+            ->with('permission') // Eager load data izinnya (alasan, tipe, dll)
+            ->get()
+            ->keyBy('lesson_schedule_id'); // Key array pakai ID Jadwal
 
         // 3. Ambil Badal (Tetap sama)
         $substitutes = ScheduleSubstitute::whereDate('date', $date)
-                        ->with('substituteTeacher')
-                        ->get()
-                        ->keyBy('lesson_schedule_id');
+            ->with('substituteTeacher')
+            ->get()
+            ->keyBy('lesson_schedule_id');
 
         // 4. [BARU] Ambil Realisasi Jurnal (Siapa yg sudah masuk kelas?)
         // Kita ambil jurnal pada tanggal tersebut, key-nya schedule_id
         $journals = TeachingJournal::whereDate('date', $date)
-                        ->get()
-                        ->keyBy('lesson_schedule_id');
+            ->get()
+            ->keyBy('lesson_schedule_id');
 
         $allTeachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
-        return view('academic.picket.index', compact('schedules', 'permissions', 'substitutes', 'journals', 'allTeachers', 'date'));
+        return view('academic.picket.index', compact('schedules', 'affectedSchedules', 'substitutes', 'journals', 'allTeachers', 'date'));
     }
 
     // Update Status Izin (Approve/Reject)
@@ -57,7 +63,7 @@ class PicketController extends Controller
         ]);
 
         $permission = TeacherPermission::findOrFail($id);
-        
+
         $permission->update([
             'status' => $request->status,
             'approved_by' => Auth::id(), // Siapa yang ACC
@@ -100,4 +106,5 @@ class PicketController extends Controller
         ScheduleSubstitute::destroy($id);
         return back()->with('success', 'Guru pengganti dibatalkan.');
     }
+
 }

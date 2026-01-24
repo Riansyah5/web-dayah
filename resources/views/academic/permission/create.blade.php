@@ -18,7 +18,32 @@
 
               <div class="mb-3">
                 <label class="form-label fw-bold small text-muted">Tanggal Izin</label>
-                <input type="date" name="date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                <input type="date" name="date" id="dateInput" class="form-control" value="{{ date('Y-m-d') }}"
+                  required onchange="fetchSchedules()">
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-bold small text-muted">Pilih Jam Pelajaran yang Ditinggalkan</label>
+
+                <div class="card bg-light border-0">
+                  <div class="card-body">
+
+                    <div id="loadingSchedule" class="text-center d-none py-3">
+                      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                      <small class="ms-2 text-muted">Memuat jadwal...</small>
+                    </div>
+
+                    <div id="scheduleList">
+                      <p class="text-muted small mb-0 text-center fst-italic">-- Pilih tanggal terlebih dahulu --</p>
+                    </div>
+
+                    <div id="noScheduleMsg" class="d-none text-center text-danger small py-2">
+                      Tidak ada jadwal mengajar pada tanggal ini.
+                    </div>
+
+                  </div>
+                </div>
+                <div class="form-text text-danger d-none" id="validationMsg">* Harap pilih minimal satu jadwal.</div>
               </div>
 
               <div class="mb-3">
@@ -54,28 +79,106 @@
   </div>
 @endsection
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    @if(session('error'))
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: "{{ session('error') }}",
-        });
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    @if (session('error'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: "{{ session('error') }}",
+      });
     @endif
 
-    @if($errors->any())
-        Swal.fire({
-            icon: 'error',
-            title: 'Periksa Kembali Inputan',
-            html: `
+    @if ($errors->any())
+      Swal.fire({
+        icon: 'error',
+        title: 'Periksa Kembali Inputan',
+        html: `
                 <ul style="text-align: left;">
-                    @foreach($errors->all() as $error)
+                    @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             `,
-        });
+      });
     @endif
-</script>
+  </script>
+
+  <script>
+    // Jalankan sekali saat halaman load (siapa tau tanggal default hari ini ada jadwal)
+    document.addEventListener("DOMContentLoaded", function() {
+      fetchSchedules();
+    });
+
+    function fetchSchedules() {
+      const dateVal = document.getElementById('dateInput').value;
+      if (!dateVal) return;
+
+      const container = document.getElementById('scheduleList');
+      const loader = document.getElementById('loadingSchedule');
+      const noMsg = document.getElementById('noScheduleMsg');
+
+      // Reset UI
+      container.innerHTML = '';
+      noMsg.classList.add('d-none');
+      loader.classList.remove('d-none');
+
+      // Panggil Controller via AJAX
+      fetch(`{{ route('academic.permission.get_schedules') }}?date=${dateVal}`)
+        .then(response => response.json())
+        .then(data => {
+          loader.classList.add('d-none');
+
+          // Handle jika response bukan array (misal error message dari controller)
+          //if (!Array.isArray(data)) {
+          //  if (data.message) {
+          //    container.innerHTML = `<p class="text-danger small text-center">${data.message}</p>`;
+          //  } else {
+          //    container.innerHTML = '<p class="text-danger small text-center">Gagal memuat data.</p>';
+          //  }
+          //  return;
+          //}
+
+          if (data.length === 0) {
+            noMsg.classList.remove('d-none');
+            noMsg.innerText = "Anda tidak memiliki jadwal mengajar di tanggal ini.";
+            return;
+          }
+
+          // Tambahkan Opsi "Pilih Semua" (Opsional tapi membantu)
+          let html = `
+                    <div class="form-check mb-2 pb-2 border-bottom">
+                        <input class="form-check-input" type="checkbox" id="checkAll" onclick="toggleAll(this)">
+                        <label class="form-check-label fw-bold" for="checkAll">Pilih Semua (Izin Seharian)</label>
+                    </div>
+                `;
+
+          // Render Item Jadwal
+          data.forEach(item => {
+            html += `
+                        <div class="form-check mb-2">
+                            <input class="form-check-input schedule-item" type="checkbox" name="schedule_ids[]" value="${item.id}" id="sched_${item.id}">
+                            <label class="form-check-label d-flex align-items-center gap-2" for="sched_${item.id}">
+                                <span class="badge bg-white text-dark border">${item.time}</span>
+                                <span class="fw-bold">${item.classroom}</span>
+                                <small class="text-muted">(${item.subject})</small>
+                            </label>
+                        </div>
+                    `;
+          });
+
+          container.innerHTML = html;
+        })
+        .catch(error => {
+          loader.classList.add('d-none');
+          container.innerHTML = '<p class="text-danger small text-center">Gagal memuat jadwal.</p>';
+          console.error(error);
+        });
+    }
+
+    function toggleAll(source) {
+      const checkboxes = document.querySelectorAll('.schedule-item');
+      checkboxes.forEach(cb => cb.checked = source.checked);
+    }
+  </script>
 @endpush
