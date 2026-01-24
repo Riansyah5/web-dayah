@@ -28,7 +28,7 @@
       </form>
     </div>
 
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4" id="summary-stats">
       <div class="col-md-3">
         <div class="card border-0 shadow-sm bg-primary text-white">
           <div class="card-body">
@@ -68,7 +68,7 @@
                 {{-- <th>Guru Pengganti (Badal)</th> --}}
               </tr>
             </thead>
-            <tbody>
+            <tbody id="realtime-schedule-body">
               @forelse($schedules as $schedule)
                 @php
                   // 1. DATA PENDUKUNG
@@ -311,5 +311,35 @@
         });
       });
     });
+
+    // 3. Realtime Updates (Polling)
+    setInterval(function() {
+        // Jangan update jika user sedang berinteraksi dengan form (input/select)
+        if (document.activeElement.tagName === 'INPUT' || 
+            document.activeElement.tagName === 'SELECT' || 
+            document.activeElement.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Update Summary Stats
+                const newStats = doc.getElementById('summary-stats');
+                if (newStats) {
+                    document.getElementById('summary-stats').innerHTML = newStats.innerHTML;
+                }
+
+                // Update Table Body
+                const newBody = doc.getElementById('realtime-schedule-body');
+                if (newBody) {
+                    document.getElementById('realtime-schedule-body').innerHTML = newBody.innerHTML;
+                }
+            })
+            .catch(err => console.error('Gagal memuat update realtime:', err));
+    }, 5000); // Update setiap 5 detik
   </script>
 @endpush
