@@ -165,7 +165,7 @@
                             @elseif($statusRealtime == 'absent_empty')
                               <span class="badge bg-danger animate-blink">BUTUH BADAL</span>
                             @elseif($statusRealtime == 'alpha')
-                              <span class="badge bg-dark">TIDAK HADIR</span>
+                              <span class="badge bg-danger">TIDAK HADIR</span>
                               <div style="font-size: 0.7rem;" class="text-muted mt-1">Tanpa Keterangan</div>
                             @elseif($statusRealtime == 'waiting_approval')
                               <span class="badge bg-warning text-dark">Menunggu Admin</span>
@@ -237,65 +237,42 @@
                         <td>
                           @if ($journal)
                             @if ($journal->is_substitute)
-                              <div class="alert alert-warning py-2 px-2 mb-0 border-warning small">
+                              <div class="alert alert-warning py-2 px-2 mb-2 border-warning small">
                                 <i class="bi bi-person-badge-fill me-1"></i>
                                 Badal: <strong>{{ $journal->teacher->name }}</strong>
                               </div>
                             @else
-                              <div class="alert alert-success py-2 px-2 mb-0 border-success small">
-                                <i class="bi bi-person-check-fill me-1"></i> Guru Asli Hadir
+                              <div class="d-flex justify-content-between flex-wrap align-items-center alert alert-success py-2 px-2 mb-2 border-success small">
+                                <span><i class="bi bi-person-check-fill me-1"></i> Guru Asli Hadir</span>
+                                <span><button type="button" class="btn btn-sm btn-outline-secondary w-100 rounded py-1"
+                              onclick="showProof(
+                                                  '{{ $journal->teacher->name }}',
+                                                  '{{ $journal->clock_in_time->format('H:i') }}',
+                                                  '{{ asset('storage/' . $journal->photo_proof) }}',
+                                                  '{{ $journal->latitude }}',
+                                                  '{{ $journal->longitude }}'
+                                              )">
+                              <i class="bi bi-geo-alt-fill me-1"></i><i class="bi bi-camera-fill"></i>
+                            </button></span>
                               </div>
                             @endif
-                            <div class="text-muted small mt-1 fst-italic">
-                              Materi: "{{ Str::limit($journal->topic, 20) }}"
+
+                            <div class="text-muted small mb-2 fst-italic border-bottom pb-2">
+                              "{{ Str::limit($journal->topic, 25) }}"
                             </div>
+
+                            {{-- <button type="button" class="btn btn-sm btn-outline-primary w-100 rounded-pill py-1"
+                              onclick="showProof(
+                                                  '{{ $journal->teacher->name }}',
+                                                  '{{ $journal->clock_in_time->format('H:i') }}',
+                                                  '{{ asset('storage/' . $journal->photo_proof) }}',
+                                                  '{{ $journal->latitude }}',
+                                                  '{{ $journal->longitude }}'
+                                              )">
+                              <i class="bi bi-geo-alt-fill me-1"></i> Cek Lokasi & Foto
+                            </button> --}}
+
                           @else
-                            @if ($hasSubstitute)
-                              <div class="d-flex align-items-center justify-content-between p-2 bg-light rounded border">
-                                <div>
-                                  <span class="badge bg-dark mb-1">Jadwal Badal:</span><br>
-                                  <span
-                                    class="fw-bold text-dark small">{{ $substituteData->substituteTeacher->name }}</span>
-                                </div>
-                                <form action="{{ route('academic.picket.remove', $substituteData->id) }}"
-                                  method="POST" onsubmit="return confirm('Batalkan badal ini?')">
-                                  @csrf @method('DELETE')
-                                  <button class="btn btn-sm text-danger ms-1"><i
-                                      class="bi bi-x-circle-fill"></i></button>
-                                </form>
-                              </div>
-                              <div class="text-muted small mt-1 fst-italic text-center">Menunggu Guru Badal...</div>
-                            @elseif($isAbsent && $permission->status == 'approved')
-                              <div class="p-2 border border-danger bg-danger bg-opacity-10 rounded">
-                                <small class="text-danger fw-bold d-block mb-2"><i
-                                    class="bi bi-exclamation-triangle"></i> Pilih
-                                  Guru Pengganti:</small>
-
-                                <form action="{{ route('academic.picket.assign') }}" method="POST"
-                                  class="d-flex gap-1">
-                                  @csrf
-                                  <input type="hidden" name="lesson_schedule_id" value="{{ $schedule->id }}">
-                                  <input type="hidden" name="date" value="{{ $date->format('Y-m-d') }}">
-
-                                  <select name="substitute_teacher_id" class="form-select form-select-sm"
-                                    style="width: 140px;" required>
-                                    <option value="">-- Pilih --</option>
-                                    @foreach ($allTeachers as $t)
-                                      @if ($t->id != $schedule->teacher_id)
-                                        <option value="{{ $t->id }}">{{ $t->name }}</option>
-                                      @endif
-                                    @endforeach
-                                  </select>
-                                  <button type="submit" class="btn btn-sm btn-primary">Set</button>
-                                </form>
-                              </div>
-                            @else
-                              @if ($statusRealtime == 'late')
-                                <small class="text-danger fw-bold d-block text-center">Guru Terlambat!</small>
-                              @else
-                                <small class="text-muted d-block text-center">-</small>
-                              @endif
-                            @endif
                           @endif
                         </td>
                       </tr>
@@ -313,6 +290,77 @@
       </div>
     </div>
   </div>
+  {{-- Modal Foto dan Lokasi --}}
+  <div class="modal fade" id="proofModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="modal-title fw-bold" id="proofTeacherName">Nama Guru</h5>
+            <small class="text-muted">Waktu Masuk: <span id="proofTime" class="fw-bold text-dark">-</span></small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Foto Aktivitas (Selfie/Kelas)</label>
+            <div class="bg-light rounded-3 overflow-hidden d-flex align-items-center justify-content-center"
+              style="height: 250px; border: 1px dashed #ccc;">
+              <img src="" id="proofImage" class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                alt="Bukti Foto">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label small fw-bold text-muted">Titik Koordinat Absen</label>
+
+            <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2">
+              <div class="small font-monospace">
+                <i class="bi bi-pin-map-fill text-danger me-2"></i>
+                <span id="proofLat">-</span>, <span id="proofLng">-</span>
+              </div>
+            </div>
+
+            <a href="#" id="proofMapLink" target="_blank" class="btn btn-primary w-100 rounded-pill">
+              <i class="bi bi-map-fill me-2"></i> Buka di Google Maps
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showProof(name, time, photoUrl, lat, lng) {
+      // 1. Set Data ke Elemen Modal
+      document.getElementById('proofTeacherName').innerText = name;
+      document.getElementById('proofTime').innerText = time;
+      document.getElementById('proofLat').innerText = lat;
+      document.getElementById('proofLng').innerText = lng;
+
+      // 2. Handle Foto (Jika kosong, tampilkan placeholder)
+      const imgEl = document.getElementById('proofImage');
+      if (photoUrl && !photoUrl.includes('storage/')) {
+        // Cek sederhana kalau URL valid (sesuaikan logic storage Anda)
+        imgEl.src = 'https://via.placeholder.com/400x300?text=No+Photo';
+      } else {
+        imgEl.src = photoUrl;
+      }
+
+      // 3. Handle Link Google Maps
+      // Format: https://www.google.com/maps/search/?api=1&query=LAT,LNG
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      document.getElementById('proofMapLink').href = mapUrl;
+
+      // 4. Tampilkan Modal
+      var myModal = new bootstrap.Modal(document.getElementById('proofModal'));
+      myModal.show();
+    }
+  </script>
 @endsection
 @push('scripts')
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
