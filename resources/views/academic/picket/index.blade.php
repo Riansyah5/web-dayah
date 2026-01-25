@@ -37,7 +37,7 @@
       </form>
     </div>
 
-    <div class="row g-3 mb-4" id="summary-stats">
+    <div class="row g-2 mb-4" id="summary-stats">
       <div class="col-md-3">
         <div class="card border-0 shadow-sm bg-primary text-white">
           <div class="card-body">
@@ -235,11 +235,25 @@
                         </td>
 
                         <td>
+                          
                           @if ($journal)
+                            {{-- Materi pelajaran --}}
+                            <div class="text-muted small mb-2 fst-italic border-bottom pb-2">
+                              "{{ Str::limit($journal->topic, 25) }}"
+                            </div>
                             @if ($journal->is_substitute)
-                              <div class="alert alert-warning py-2 px-2 mb-2 border-warning small">
-                                <i class="bi bi-person-badge-fill me-1"></i>
-                                Badal: <strong>{{ $journal->teacher->name }}</strong>
+                              <div class="d-flex justify-content-between flex-wrap align-items-center alert alert-warning py-2 px-2 mb-2 border-warning small">
+                                <span><i class="bi bi-person-badge-fill me-1"></i> Badal: <strong>{{ $journal->teacher->name }}</strong></span>
+                                <span><button type="button" class="btn btn-sm btn-outline-secondary w-100 rounded py-1"
+                              onclick="showProof(
+                                                  '{{ $journal->teacher->name }}',
+                                                  '{{ $journal->clock_in_time->format('H:i') }}',
+                                                  '{{ asset('storage/' . $journal->photo_proof) }}',
+                                                  '{{ $journal->latitude }}',
+                                                  '{{ $journal->longitude }}'
+                                              )">
+                              <i class="bi bi-geo-alt-fill me-1"></i><i class="bi bi-camera-fill"></i>
+                            </button></span>
                               </div>
                             @else
                               <div class="d-flex justify-content-between flex-wrap align-items-center alert alert-success py-2 px-2 mb-2 border-success small">
@@ -257,22 +271,8 @@
                               </div>
                             @endif
 
-                            <div class="text-muted small mb-2 fst-italic border-bottom pb-2">
-                              "{{ Str::limit($journal->topic, 25) }}"
-                            </div>
-
-                            {{-- <button type="button" class="btn btn-sm btn-outline-primary w-100 rounded-pill py-1"
-                              onclick="showProof(
-                                                  '{{ $journal->teacher->name }}',
-                                                  '{{ $journal->clock_in_time->format('H:i') }}',
-                                                  '{{ asset('storage/' . $journal->photo_proof) }}',
-                                                  '{{ $journal->latitude }}',
-                                                  '{{ $journal->longitude }}'
-                                              )">
-                              <i class="bi bi-geo-alt-fill me-1"></i> Cek Lokasi & Foto
-                            </button> --}}
-
                           @else
+
                           @endif
                         </td>
                       </tr>
