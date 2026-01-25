@@ -18,8 +18,8 @@
                 class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a>
         </li>
         <li class="pc-item">
-          <a href="{{ route('user.show', Auth::user()->id) }}" class="pc-link"><span class="pc-micon"><i class="ti ti-lock"></i></span><span
-              class="pc-mtext">Akun</span></a>
+          <a href="{{ route('user.show', Auth::user()->id) }}" class="pc-link"><span class="pc-micon"><i
+                class="ti ti-lock"></i></span><span class="pc-mtext">Akun</span></a>
         </li>
 
         {{-- <li class="pc-item pc-caption">
@@ -32,7 +32,7 @@
             <span class="pc-mtext">Pegawai</span>
           </a>
         </li>
-        
+
         {{-- kalender akademik --}}
         <li class="pc-item">
           <a class="pc-link" href="{{ route('calendar.index') }}">
@@ -46,12 +46,8 @@
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span
               class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic.permission.index') }}">Izin & Kehadiran</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.journal.dashboard') }}">Jurnal</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.student_subject') }}">Rekap Absensi Santri</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.permission.index') }}">Riwayat Izin</a></li>
           </ul>
         </li>
 
@@ -83,10 +79,13 @@
               <ul class="pc-submenu">
                 <li class="pc-item"><a class="pc-link" href="{{ route('grading.plotting.index') }}">Mapel & Guru</a>
                 </li>
-                <li class="pc-item"><a class="pc-link" href="{{ route('grading.teacher.index') }}">Input Nilai</a></li>
-                <li class="pc-item"><a class="pc-link" href="{{ route('report.settings.index') }}">Pengaturan Rapor</a>
+                <li class="pc-item"><a class="pc-link" href="{{ route('grading.teacher.index') }}">Input Nilai</a>
                 </li>
-                <li class="pc-item"><a class="pc-link" href="{{ route('grading.homeroom.index') }}">Leger & Cetak</a>
+                <li class="pc-item"><a class="pc-link" href="{{ route('report.settings.index') }}">Pengaturan
+                    Rapor</a>
+                </li>
+                <li class="pc-item"><a class="pc-link" href="{{ route('grading.homeroom.index') }}">Leger &
+                    Cetak</a>
                 </li>
               </ul>
             </li>
@@ -100,26 +99,41 @@
               class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.halaqah.index') }}">Halaqah</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.setting.index') }}">Setting Rapor</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.setting.index') }}">Setting Rapor</a>
+            </li>
           </ul>
         </li>
-  
+
         {{-- pengasuhan --}}
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span
-              class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+              class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i
+                data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('students.rooms') }}">Asrama</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('assignments.create') }}">Penempatan Kamar</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('assignments.create') }}">Penempatan Kamar</a>
+            </li>
             <li class="pc-item"><a class="pc-link" href="{{ route('permissions.index') }}">Perizinan</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('violations.dashboard') }}">Kedisiplinan</a></li>
           </ul>
         </li>
 
+        {{-- master data, hanya untuk admin --}}
         @if (Auth::user()->role == 'Admin')
           <li class="pc-item pc-caption">
             <label>Master Data</label>
             <i class="ti ti-database"></i>
+          </li>
+          {{-- menu KBM --}}
+          <li class="pc-item pc-hasmenu">
+            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
+            <span class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+            <ul class="pc-submenu">
+              <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
+              <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
+              <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
+              <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.student_subject') }}">Rekap Absensi Santri</a></li>
+            </ul>
           </li>
           {{-- master data pegawai --}}
           <li class="pc-item pc-hasmenu">
@@ -160,7 +174,8 @@
             <ul class="pc-submenu">
               <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
               <li class="pc-item"><a class="pc-link" href="{{ route('promotion.index') }}">Migrasi</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut SMA</a></li>
+              <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut
+                  SMA</a></li>
               {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li> --}}
             </ul>
           </li>

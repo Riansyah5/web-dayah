@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-start mb-4">
       <div>
         <h4 class="fw-bold">Halo, {{ Auth::user()->name }}!</h4>
-        <p class="text-muted mb-0">Jadwal Mengajar: {{ $today->translatedFormat('l, d F Y') }}</p>
+        <p class="text-muted mb-0">Jadwal Mengajar: {{ $today->locale('id')->translatedFormat('l, d F Y') }}</p>
       </div>
 
       <a href="{{ route('academic.permission.create') }}" class="btn btn-outline-danger rounded-pill shadow-sm">
