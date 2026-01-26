@@ -1,2 +1,9 @@
 1. rekap absensi santri
     - rekapnya per bulan atau semester?
+5. absen santri lagi setelah absen, karena bisa jadi ada santri yang telat saat absen pertama.
+
+2. compress gambar sebelum upload
+
+3. tampilan print roster
+4. buat surat aktif
+6. UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
