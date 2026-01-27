@@ -181,10 +181,17 @@
                                 </td>
                                 <td>
                                   @if ($j->photo_proof)
-                                    <a href="{{ asset('storage/' . $j->photo_proof) }}" target="_blank"
-                                      class="btn btn-sm btn-outline-primary rounded-pill">
-                                      <i class="bi bi-image"></i> Foto
-                                    </a>
+                                    <button type="button" 
+                                      onclick="showProof(
+                                        '{{ $j->lessonSchedule->subject->name }}',
+                                        '{{ $j->date->format('d M Y') }} • {{ $j->clock_in_time->format('H:i') }}',
+                                        '{{ asset('storage/' . $j->photo_proof) }}',
+                                        '{{ $j->latitude }}',
+                                        '{{ $j->longitude }}'
+                                      )"
+                                      class="btn btn-sm btn-outline-primary rounded">
+                                      <i class="bi bi-image me-1"></i><i class="bi bi-geo-alt-fill"></i> Bukti
+                                    </button>
                                   @else
                                     <span class="text-muted small">-</span>
                                   @endif
@@ -359,6 +366,41 @@
         </div>
       </div>
     </div>
+
+    {{-- Modal Bukti Foto & Lokasi --}}
+    <div class="modal fade" id="proofModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+          <div class="modal-header border-0 pb-0">
+            <div>
+              <h5 class="modal-title fw-bold" id="proofTitle">Detail Jurnal</h5>
+              <small class="text-muted" id="proofTime">-</small>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted">Foto Aktivitas</label>
+              <div class="bg-light rounded-3 overflow-hidden d-flex align-items-center justify-content-center" style="height: 300px; border: 1px dashed #ccc;">
+                <img src="" id="proofImage" class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="Bukti Foto">
+              </div>
+            </div>
+            <div>
+              <label class="form-label small fw-bold text-muted">Lokasi (GPS)</label>
+              <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2">
+                <div class="small font-monospace">
+                  <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                  <span id="proofLat">-</span>, <span id="proofLng">-</span>
+                </div>
+              </div>
+              <a href="#" id="proofMapLink" target="_blank" class="btn btn-primary w-100 rounded-pill">
+                <i class="bi bi-map-fill me-2"></i> Buka Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 @endsection
 @push('scripts')
@@ -420,6 +462,28 @@
         actionInput.value = 'save';
         this.closest('form').submit();
       });
+    }
+
+    function showProof(title, time, photoUrl, lat, lng) {
+      document.getElementById('proofTitle').innerText = title;
+      document.getElementById('proofTime').innerText = time;
+      document.getElementById('proofImage').src = photoUrl;
+      
+      // Handle Lokasi
+      if(lat && lng) {
+          document.getElementById('proofLat').innerText = lat;
+          document.getElementById('proofLng').innerText = lng;
+          document.getElementById('proofMapLink').href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+          document.getElementById('proofMapLink').classList.remove('disabled');
+      } else {
+          document.getElementById('proofLat').innerText = '-';
+          document.getElementById('proofLng').innerText = '-';
+          document.getElementById('proofMapLink').href = '#';
+          document.getElementById('proofMapLink').classList.add('disabled');
+      }
+
+      var myModal = new bootstrap.Modal(document.getElementById('proofModal'));
+      myModal.show();
     }
   </script>
 @endpush
