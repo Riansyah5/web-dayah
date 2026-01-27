@@ -14,12 +14,10 @@
           <i class="ti ti-dashboard"></i>
         </li> --}}
         <li class="pc-item">
-          <a href="{{ route('dashboard') }}" class="pc-link"><span class="pc-micon"><i
-                class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a>
+          <a href="{{ route('dashboard') }}" class="pc-link"><span class="pc-micon"><i class="ti ti-dashboard"></i></span><span class="pc-mtext">Dashboard</span></a>
         </li>
         <li class="pc-item">
-          <a href="{{ route('user.show', Auth::user()->id) }}" class="pc-link"><span class="pc-micon"><i
-                class="ti ti-lock"></i></span><span class="pc-mtext">Akun</span></a>
+          <a href="{{ route('user.show', Auth::user()->id) }}" class="pc-link"><span class="pc-micon"><i class="ti ti-lock"></i></span><span class="pc-mtext">Akun</span></a>
         </li>
 
         {{-- <li class="pc-item pc-caption">
@@ -43,8 +41,7 @@
 
         {{-- menu KBM --}}
         <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span
-              class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.journal.dashboard') }}">Jurnal</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.permission.index') }}">Riwayat Izin</a></li>
@@ -53,8 +50,7 @@
 
         {{-- menu santri --}}
         <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-school"></i></span><span
-              class="pc-mtext">Santri</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-school"></i></span><span class="pc-mtext">Santri</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('students.index') }}">Santri Aktif</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('alumni.index') }}">Alumni</a></li>
@@ -63,19 +59,17 @@
 
         {{-- <li class="pc-item">
           <a class="pc-link" href="{{ route('students.index') }}">
-            <span class="pc-micon"><i class="ti ti-school"></i></span>
-            <span class="pc-mtext">Santri</span>
-          </a>
+        <span class="pc-micon"><i class="ti ti-school"></i></span>
+        <span class="pc-mtext">Santri</span>
+        </a>
         </li> --}}
 
         <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-book"></i></span><span
-              class="pc-mtext">Akademik</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-book"></i></span><span class="pc-mtext">Akademik</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('classrooms.index') }}">Kelas</a></li>
             <li class="pc-item pc-hasmenu">
-              <a href="#!" class="pc-link"><span class="pc-mtext">Rapor</span><span class="pc-arrow"><i
-                    data-feather="chevron-right"></i></span></a>
+              <a href="#!" class="pc-link"><span class="pc-mtext">Rapor</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
               <ul class="pc-submenu">
                 <li class="pc-item"><a class="pc-link" href="{{ route('grading.plotting.index') }}">Mapel & Guru</a>
                 </li>
@@ -95,8 +89,7 @@
 
         {{-- menu tahfizh --}}
         <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span
-              class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.halaqah.index') }}">Halaqah</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.setting.index') }}">Setting Rapor</a>
@@ -106,9 +99,7 @@
 
         {{-- pengasuhan --}}
         <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span
-              class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i
-                data-feather="chevron-right"></i></span></a>
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('students.rooms') }}">Asrama</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('assignments.create') }}">Penempatan Kamar</a>
@@ -120,66 +111,70 @@
 
         {{-- master data, hanya untuk admin --}}
         @if (Auth::user()->role == 'Admin')
-          <li class="pc-item pc-caption">
-            <label>Master Data</label>
-            <i class="ti ti-database"></i>
-          </li>
-          {{-- menu KBM --}}
-          <li class="pc-item pc-hasmenu">
-            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
+        <li class="pc-item pc-caption">
+          <label>Master Data</label>
+          <i class="ti ti-database"></i>
+        </li>
+        {{-- menu KBM --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
             <span class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-            <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.student_subject') }}">Rekap Absensi Santri</a></li>
-            </ul>
-          </li>
-          {{-- master data pegawai --}}
-          <li class="pc-item pc-hasmenu">
-            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span
-                class="pc-mtext">Pegawai</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-            <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="{{ route('kategori.index') }}">Kategori</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li>
-            </ul>
-          </li>
-          {{-- end master data pegawai --}}
-          {{-- master data User --}}
-          <li class="pc-item pc-hasmenu">
-            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span
-                class="pc-mtext">Akun</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-            <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="{{ route('user.index') }}">Manajemen Akun</a></li>
-              {{-- <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li> --}}
-            </ul>
-          </li>
-          {{-- end master data User --}}
-          {{-- master data pengasuhan --}}
-          <li class="pc-item pc-hasmenu">
-            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-bed"></i></span><span
-                class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i
-                  data-feather="chevron-right"></i></span></a>
-            <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="{{ route('dorms.index') }}">Asrama</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li>
-            </ul>
-          </li>
-          {{-- end master data pengasuhan --}}
-          {{-- master data sekolah --}}
-          <li class="pc-item pc-hasmenu">
-            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-certificate"></i></span><span
-                class="pc-mtext">Akademik</span><span class="pc-arrow"><i
-                  data-feather="chevron-right"></i></span></a>
-            <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('promotion.index') }}">Migrasi</a></li>
-              <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut
-                  SMA</a></li>
-              {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li> --}}
-            </ul>
-          </li>
-        @endif
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.student_subject') }}">Rekap Absensi Santri</a></li>
+          </ul>
+        </li>
+        {{-- master data pegawai --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">Pegawai</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('kategori.index') }}">Kategori</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li>
+          </ul>
+        </li>
+        {{-- end master data pegawai --}}
+        {{-- master data User --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Akun</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('user.index') }}">Manajemen Akun</a></li>
+            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a>
+        </li> --}}
+      </ul>
+      </li>
+      {{-- end master data User --}}
+      {{-- master data pengasuhan --}}
+      <li class="pc-item pc-hasmenu">
+        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-bed"></i></span><span class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+        <ul class="pc-submenu">
+          <li class="pc-item"><a class="pc-link" href="{{ route('dorms.index') }}">Asrama</a></li>
+          <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li>
+        </ul>
+      </li>
+      {{-- end master data pengasuhan --}}
+      {{-- master data sekolah --}}
+      <li class="pc-item pc-hasmenu">
+        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-certificate"></i></span><span class="pc-mtext">Akademik</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+        <ul class="pc-submenu">
+          <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
+          <li class="pc-item"><a class="pc-link" href="{{ route('promotion.index') }}">Migrasi</a></li>
+          <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut
+              SMA</a></li>
+          {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a>
+      </li> --}}
+      </ul>
+      </li>
+
+      {{-- maintenance sistem --}}
+      <li class="pc-item">
+        <a class="pc-link" href="{{ route('system.maintenance.index') }}">
+          <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+          <span class="pc-mtext">Maintenance Sistem</span>
+        </a>
+      </li>
+      @endif
       </ul>
       {{-- <div class="pc-navbar-card bg-primary rounded">
         <h4 class="text-white">Explore full code</h4>
