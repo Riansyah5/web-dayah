@@ -40,6 +40,7 @@ use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
 use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Permission\TeacherPermissionController;
+use App\Http\Controllers\Academic\Schedule\SchedulePrintController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -207,6 +208,7 @@ Route::middleware('auth')->group(function () {
 		// Group Modul Jadwal & Jurnal Guru
 		Route::prefix('academic')->name('academic.')->group(function () {
 			// Route Jadwal Pelajaran
+			Route::get('/schedule/print-master', [SchedulePrintController::class, 'printAll'])->name('schedule.print_master');
 			Route::get('/schedule', [LessonScheduleController::class, 'index'])->name('schedule.index');
 			Route::get('/schedule/{classroom}', [LessonScheduleController::class, 'show'])->name('schedule.show'); // Manage
 			Route::post('/schedule/{classroom}', [LessonScheduleController::class, 'store'])->name('schedule.store');
