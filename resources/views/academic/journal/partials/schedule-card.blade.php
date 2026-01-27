@@ -61,9 +61,15 @@
       ->value('id');
       @endphp
 
-      <a href="{{ route('academic.journal.attendance', $journalId) }}" class="btn btn-outline-primary rounded-pill btn-sm">
-        <i class="bi bi-pencil-square me-1"></i> Update Absensi Siswa
-      </a>
+      @if($now->lte($end))
+        <a href="{{ route('academic.journal.attendance', $journalId) }}" class="btn btn-outline-primary rounded-pill btn-sm">
+          <i class="bi bi-pencil-square me-1"></i> Update Absensi Siswa
+        </a>
+      @else
+        <button class="btn btn-outline-secondary rounded-pill btn-sm" disabled>
+          <i class="bi bi-lock-fill me-1"></i> Sesi Berakhir
+        </button>
+      @endif
     </div>
 
     @elseif($canEnter)
