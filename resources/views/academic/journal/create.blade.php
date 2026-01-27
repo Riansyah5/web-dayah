@@ -48,7 +48,7 @@
                 Sedang mengkompres foto...
               </div>
             </div>
-
+    
             <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" id="submitBtn" disabled>
               <i class="bi bi-send me-2"></i> Simpan & Absen Siswa
             </button>
@@ -107,7 +107,7 @@
 
         // Tampilkan loading & Matikan tombol submit biar user ga buru-buru klik
         const loading = document.getElementById('compressionLoading');
-        const btnSubmit = document.getElementById('btnSubmit');
+        const btnSubmit = document.getElementById('submitBtn');
         
         loading.classList.remove('d-none');
         btnSubmit.disabled = true;
@@ -138,7 +138,7 @@
                 // 2. Kembalikan UI ke semula
                 loading.classList.add('d-none');
                 btnSubmit.disabled = false;
-                btnSubmit.innerHTML = '<i class="bi bi-send me-2"></i> Simpan Jurnal';
+                btnSubmit.innerHTML = '<i class="bi bi-send me-2"></i> Simpan & Absen Siswa';
 
                 console.log('Kompresi Berhasil!');
                 console.log('Size Asli: ' + (file.size / 1024 / 1024).toFixed(2) + ' MB');
@@ -150,7 +150,7 @@
                 // Jika error, biarkan upload file aslinya saja (fallback)
                 loading.classList.add('d-none');
                 btnSubmit.disabled = false;
-                btnSubmit.innerText = 'Simpan Jurnal';
+                btnSubmit.innerHTML = '<i class="bi bi-send me-2"></i> Simpan & Absen Siswa';
                 alert('Gagal mengkompres foto, file asli akan digunakan.');
             },
         });

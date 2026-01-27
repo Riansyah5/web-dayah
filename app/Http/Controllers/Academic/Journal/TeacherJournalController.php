@@ -70,7 +70,7 @@ class TeacherJournalController extends Controller
             'topic' => 'required|string',
             'latitude' => 'required', // Wajib GPS
             'longitude' => 'required',
-            'photo' => 'required|image|max:5120', // Wajib Foto (Max 5MB)
+            'photo_proof' => 'required|file|mimes:jpeg,png,jpg,gif,svg,webp,heic,heif|max:10240', // Support HEIC & up to 10MB
         ]);
 
         // 1. VALIDASI RADIUS GPS (Haversine Formula)
@@ -87,7 +87,7 @@ class TeacherJournalController extends Controller
         }
 
         // 2. Upload Foto
-        $photoPath = $request->file('photo')->store('journal-proofs', 'public');
+        $photoPath = $request->file('photo_proof')->store('journal-proofs', 'public');
 
         // 3. Cek apakah ini Badal?
         $teacher = Teacher::where('name', Auth::user()->name)->first();
