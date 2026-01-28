@@ -19,6 +19,7 @@ use App\Http\Controllers\StudentExitController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\Academic\SyllabusController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhScheduleController;
 use App\Http\Controllers\Tahfizh\TahfizhExportController;
 use App\Http\Controllers\Tahfizh\TahfizhReportController;
 use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
@@ -275,6 +276,12 @@ Route::middleware('auth')->group(function () {
 		Route::prefix('system')->name('system.')->group(function () {
 			Route::get('/maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
 			Route::post('/maintenance/cleanup', [SystemMaintenanceController::class, 'cleanup'])->name('maintenance.cleanup');
+		});
+
+		// Group Modul Admin Tahfizh (Jadwal)
+		Route::prefix('tahfizh/admin')->name('tahfizh.admin.')->group(function () {
+			Route::get('/schedules', [TahfizhScheduleController::class, 'index'])->name('schedule.index');
+			Route::post('/schedules/update', [TahfizhScheduleController::class, 'updateGlobal'])->name('schedule.update');
 		});
 	});
 

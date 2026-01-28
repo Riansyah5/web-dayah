@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             StageSeeder::class,
             DormSeeder::class,
             SuperAdminSeeder::class,
+            TahfizhScheduleSeeder::class,
         ]);
     }
 }

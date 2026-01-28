@@ -1,7 +1,6 @@
-compress gambar sebelum upload
-fitur hapus data gambar untuk menghemat penyimpanan
 buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
+update input wali di student/edit
 
 
 
@@ -13,4 +12,6 @@ UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
     - rekapnya per bulan atau semester?
 -absen santri lagi setelah absen, karena bisa jadi ada santri yang telat saat absen pertama.
 -tampilan print roster
+-compress gambar sebelum upload
+-fitur hapus data gambar untuk menghemat penyimpanan
 
