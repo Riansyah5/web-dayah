@@ -25,6 +25,7 @@ use App\Http\Controllers\Tahfizh\TahfizhReportController;
 use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
 use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
 use App\Http\Controllers\Tahfizh\TahfizhSettingController;
+use App\Http\Controllers\Tahfizh\Journal\TahfizhJournalController;
 use App\Http\Controllers\Academic\Grading\CourseController;
 use App\Http\Controllers\Academic\Student\AlumniController;
 use App\Http\Controllers\Academic\Schedule\PicketController;
@@ -282,6 +283,19 @@ Route::middleware('auth')->group(function () {
 		Route::prefix('tahfizh/admin')->name('tahfizh.admin.')->group(function () {
 			Route::get('/schedules', [TahfizhScheduleController::class, 'index'])->name('schedule.index');
 			Route::post('/schedules/update', [TahfizhScheduleController::class, 'updateGlobal'])->name('schedule.update');
+		});
+
+		// Dashboard & Absensi
+		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
+			// Dashboard
+			Route::get('/journal', [TahfizhJournalController::class, 'index'])->name('journal.dashboard');
+			// LANGKAH 1: Buka Halaqah (Absen Guru)
+			Route::get('/journal/open/{schedule}', [TahfizhJournalController::class, 'createJournal'])->name('journal.open');
+			Route::post('/journal/store-header/{schedule}', [TahfizhJournalController::class, 'storeJournalHeader'])->name('journal.store_header');
+			// LANGKAH 2: Absen Santri (Bisa diakses berulang kali untuk update)
+			// Parameter diganti jadi {journal} karena jurnalnya sudah tercipta
+			Route::get('/journal/attendance/{journal}', [TahfizhJournalController::class, 'editStudentAttendance'])->name('journal.attendance');
+			Route::post('/journal/update-attendance/{journal}', [TahfizhJournalController::class, 'updateStudentAttendance'])->name('journal.update_attendance');
 		});
 	});
 

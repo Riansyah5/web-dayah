@@ -2,6 +2,9 @@ buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 update input wali di student/edit
 
+monitoring absen tahfizh
+rekap absen tahfizh: guru dan santri
+
 
 
 

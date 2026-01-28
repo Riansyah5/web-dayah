@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Jadwal Halaqah')
+@section('title', 'Jadwal Halaqah Tahfizh')
 @push('link')
 @endpush
 @push('styles')
