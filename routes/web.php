@@ -19,31 +19,33 @@ use App\Http\Controllers\StudentExitController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\Academic\SyllabusController;
-use App\Http\Controllers\Tahfizh\Admin\TahfizhScheduleController;
 use App\Http\Controllers\Tahfizh\TahfizhExportController;
 use App\Http\Controllers\Tahfizh\TahfizhReportController;
 use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
 use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
 use App\Http\Controllers\Tahfizh\TahfizhSettingController;
-use App\Http\Controllers\Tahfizh\Journal\TahfizhJournalController;
 use App\Http\Controllers\Academic\Grading\CourseController;
 use App\Http\Controllers\Academic\Student\AlumniController;
 use App\Http\Controllers\Academic\Schedule\PicketController;
+use App\Http\Controllers\System\SystemMaintenanceController;
 use App\Http\Controllers\Academic\AcademicCalendarController;
 use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
 use App\Http\Controllers\Academic\Student\GraduationController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhScheduleController;
 use App\Http\Controllers\Academic\Report\AcademicReportController;
 use App\Http\Controllers\Academic\Report\StudentHistoryController;
+use App\Http\Controllers\Tahfizh\Journal\TahfizhJournalController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Journal\TeacherJournalController;
+use App\Http\Controllers\Academic\Schedule\SchedulePrintController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhMonitoringController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
 use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+use App\Http\Controllers\Tahfizh\Teacher\TahfizhPermissionController;
 use App\Http\Controllers\Academic\Permission\TeacherPermissionController;
-use App\Http\Controllers\Academic\Schedule\SchedulePrintController;
-use App\Http\Controllers\System\SystemMaintenanceController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -281,8 +283,14 @@ Route::middleware('auth')->group(function () {
 
 		// Group Modul Admin Tahfizh (Jadwal)
 		Route::prefix('tahfizh/admin')->name('tahfizh.admin.')->group(function () {
+			// routes untuk mengelola jadwal tahfizh
 			Route::get('/schedules', [TahfizhScheduleController::class, 'index'])->name('schedule.index');
 			Route::post('/schedules/update', [TahfizhScheduleController::class, 'updateGlobal'])->name('schedule.update');
+			// Monitoring
+			Route::get('/monitoring', [TahfizhMonitoringController::class, 'index'])->name('monitoring.index');
+			Route::get('/monitoring/data', [TahfizhMonitoringController::class, 'getRealtimeData'])->name('monitoring.data');
+			Route::post('/monitoring/assign-badal', [TahfizhMonitoringController::class, 'assignBadal'])->name('monitoring.assign_badal');
+			Route::post('/monitoring/approve-permission', [TahfizhMonitoringController::class, 'approvePermission'])->name('monitoring.approve_permission');
 		});
 
 		// Dashboard & Absensi
@@ -296,6 +304,13 @@ Route::middleware('auth')->group(function () {
 			// Parameter diganti jadi {journal} karena jurnalnya sudah tercipta
 			Route::get('/journal/attendance/{journal}', [TahfizhJournalController::class, 'editStudentAttendance'])->name('journal.attendance');
 			Route::post('/journal/update-attendance/{journal}', [TahfizhJournalController::class, 'updateStudentAttendance'])->name('journal.update_attendance');
+		});
+
+		// Group Modul Perizinan Guru Tahfizh
+		Route::prefix('tahfizh/permission')->name('tahfizh.permission.')->middleware(['auth'])->group(function () {
+			Route::get('/create', [TahfizhPermissionController::class, 'create'])->name('create');
+			Route::post('/store', [TahfizhPermissionController::class, 'store'])->name('store');
+			Route::get('/get-schedules', [TahfizhPermissionController::class, 'getSchedules'])->name('get_schedules');
 		});
 	});
 

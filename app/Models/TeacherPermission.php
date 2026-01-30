@@ -26,4 +26,10 @@ class TeacherPermission extends Model
     {
         return $this->belongsToMany(LessonSchedule::class, 'teacher_permission_details', 'teacher_permission_id', 'lesson_schedule_id');
     }
+
+    // Relasi untuk mengambil sesi tahfizh yang diizinkan
+    public function tahfizhDetails()
+    {
+        return $this->belongsToMany(TahfizhSchedule::class, 'teacher_permission_tahfizh_details', 'teacher_permission_id', 'tahfizh_schedule_id');
+    }
 }

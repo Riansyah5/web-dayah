@@ -93,6 +93,7 @@
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.halaqah.index') }}">Halaqah</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.journal.dashboard') }}">Jurnal</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.create') }}">Pengajuan Izin</a></li>
             </li>
           </ul>
         </li>
@@ -132,6 +133,7 @@
             <span class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.schedule.index') }}">Jadwal Halaqah</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.monitoring.index') }}">Monitoring</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.setting.index') }}">Setting Rapor</a></li>
             {{-- <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
