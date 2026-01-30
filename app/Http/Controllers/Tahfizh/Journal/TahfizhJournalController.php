@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Tahfizh\Journal;
 
-use App\Http\Controllers\Controller;
-use App\Models\TahfizhSchedule;
-use App\Models\TahfizhJournal;
-use App\Models\TahfizhHalaqah;
-use App\Models\TahfizhAttendance;
-use App\Models\Teacher;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\Teacher;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\TahfizhHalaqah;
+use App\Models\TahfizhJournal;
+use App\Models\TahfizhSchedule;
+use App\Models\TahfizhAttendance;
+use App\Models\TeacherPermission;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class TahfizhJournalController extends Controller
 {
@@ -22,32 +23,45 @@ class TahfizhJournalController extends Controller
         $teacher = Teacher::where('name', Auth::user()->name)->first();
         if (!$teacher) abort(403, 'Akun ini tidak terhubung dengan data Guru.');
 
-        // Cek apakah guru ini punya kelompok halaqah?
-        // Asumsi: 1 Guru pegang 1 Halaqah Utama (Bisa disesuaikan jika banyak)
         $halaqah = TahfizhHalaqah::where('teacher_id', $teacher->id)->first();
+        if (!$halaqah) return view('tahfizh.journal.no_group');
 
-        if (!$halaqah) {
-            return view('tahfizh.journal.no_group'); // Tampilan jika belum diassign admin
-        }
-
-        // Ambil Jadwal Global HARI INI (Scope ForToday di model tadi)
         $schedules = TahfizhSchedule::forToday()->orderBy('start_time')->get();
-
-        // Cek status pengisian jurnal untuk setiap sesi jadwal
-        // Kita map agar di view mudah diakses statusnya
-        $journalStatus = [];
         $today = Carbon::now()->format('Y-m-d');
 
+        // ARRAY PENAMPUNG STATUS
+        $journalStatus = [];
+        $permissionStatus = []; // [BARU] Menampung info izin per sesi
+        $substituteStatus = []; // [BARU] Menampung info badal per sesi
+
         foreach ($schedules as $sched) {
-            $journal = TahfizhJournal::where('tahfizh_halaqah_id', $halaqah->id)
+            // 1. Cek Jurnal
+            $journalStatus[$sched->id] = TahfizhJournal::where('tahfizh_halaqah_id', $halaqah->id)
                 ->where('tahfizh_schedule_id', $sched->id)
                 ->where('date', $today)
                 ->first();
 
-            $journalStatus[$sched->id] = $journal; // Isinya null atau object jurnal
+            // 2. [BARU] Cek Izin di Sesi Ini
+            // Izin dianggap berlaku jika statusnya 'approved' atau 'pending'
+            $perm = TeacherPermission::where('teacher_id', $teacher->id)
+                ->where('date', $today)
+                ->whereIn('status', ['approved', 'pending'])
+                ->whereHas('tahfizhDetails', function ($q) use ($sched) {
+                    $q->where('tahfizh_schedule_id', $sched->id);
+                })
+                ->first();
+            $permissionStatus[$sched->id] = $perm;
+
+            // 3. [BARU] Cek Apakah Sudah Ada Badal?
+            $subst = \App\Models\TahfizhSubstitute::where('tahfizh_halaqah_id', $halaqah->id)
+                ->where('tahfizh_schedule_id', $sched->id)
+                ->where('date', $today)
+                ->with('substituteTeacher')
+                ->first();
+            $substituteStatus[$sched->id] = $subst;
         }
 
-        return view('tahfizh.journal.dashboard', compact('halaqah', 'schedules', 'journalStatus', 'today'));
+        return view('tahfizh.journal.dashboard', compact('halaqah', 'schedules', 'journalStatus', 'permissionStatus', 'substituteStatus', 'today'));
     }
 
     // === LANGKAH 1: GURU BUKA HALAQAH ===

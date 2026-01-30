@@ -12,6 +12,19 @@ use Illuminate\Support\Facades\Auth;
 
 class TahfizhPermissionController extends Controller
 {
+    public function index()
+    {
+        $teacher = Teacher::where('name', Auth::user()->name)->first();
+        if (!$teacher) abort(403, 'Akun ini tidak terhubung dengan data Guru.');
+
+        // Ambil history izin, urutkan dari yang terbaru
+        $permissions = TeacherPermission::where('teacher_id', $teacher->id)
+            ->with('tahfizhDetails') // Load sesi apa saja yang diizinkan
+            ->latest()
+            ->paginate(10);
+
+        return view('tahfizh.permission.index', compact('permissions'));
+    }
     // Form Pengajuan
     public function create()
     {
@@ -26,16 +39,16 @@ class TahfizhPermissionController extends Controller
 
         // Ambil sesi tahfizh yang aktif pada hari tersebut
         $schedules = TahfizhSchedule::where('day_of_week', $dayOfWeek)
-                        ->where('is_active', true)
-                        ->orderBy('start_time')
-                        ->get()
-                        ->map(function($item) {
-                            return [
-                                'id' => $item->id,
-                                'session_name' => $item->session_name,
-                                'time' => \Carbon\Carbon::parse($item->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i'),
-                            ];
-                        });
+            ->where('is_active', true)
+            ->orderBy('start_time')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'session_name' => $item->session_name,
+                    'time' => \Carbon\Carbon::parse($item->start_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i'),
+                ];
+            });
 
         return response()->json($schedules);
     }
@@ -51,11 +64,11 @@ class TahfizhPermissionController extends Controller
             'attachment' => 'nullable|file|max:2048'
         ]);
 
-        
-        DB::transaction(function() use ($request) {
+
+        DB::transaction(function () use ($request) {
             $teacher = Teacher::where('name', Auth::user()->name)->first();
             if (!$teacher) return back()->with('error', 'Data Guru tidak ditemukan. Hubungi Admin.');
-            
+
             $path = null;
             if ($request->hasFile('attachment')) {
                 $path = $request->file('attachment')->store('permissions', 'public');
@@ -77,6 +90,6 @@ class TahfizhPermissionController extends Controller
         });
 
         return redirect()->route('tahfizh.journal.dashboard')
-               ->with('success', 'Pengajuan izin berhasil dikirim.');
+            ->with('success', 'Pengajuan izin berhasil dikirim.');
     }
 }

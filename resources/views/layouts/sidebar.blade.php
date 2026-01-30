@@ -94,6 +94,7 @@
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.halaqah.index') }}">Halaqah</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.journal.dashboard') }}">Jurnal</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.create') }}">Pengajuan Izin</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.index') }}">Riwayat Izin</a></li>
             </li>
           </ul>
         </li>

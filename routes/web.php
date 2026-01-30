@@ -308,6 +308,7 @@ Route::middleware('auth')->group(function () {
 
 		// Group Modul Perizinan Guru Tahfizh
 		Route::prefix('tahfizh/permission')->name('tahfizh.permission.')->middleware(['auth'])->group(function () {
+			Route::get('/permissions', [TahfizhPermissionController::class, 'index'])->name('index');
 			Route::get('/create', [TahfizhPermissionController::class, 'create'])->name('create');
 			Route::post('/store', [TahfizhPermissionController::class, 'store'])->name('store');
 			Route::get('/get-schedules', [TahfizhPermissionController::class, 'getSchedules'])->name('get_schedules');
