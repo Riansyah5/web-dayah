@@ -17,77 +17,95 @@ class TahfizhMonitoringController extends Controller
     // 1. TAMPILAN HALAMAN UTAMA
     public function index()
     {
-        // Ambil semua jadwal untuk dropdown filter
+        // Dropdown jadwal (tetap)
         $allSchedules = TahfizhSchedule::orderBy('order_index')->get()->unique('session_name');
-
-        // Ambil guru aktif untuk dropdown badal
+        
+        // Dropdown guru badal (tetap)
         $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
         return view('tahfizh.admin.monitoring.index', compact('allSchedules', 'teachers'));
     }
 
-    // 2. API DATA REALTIME (Dipanggil via AJAX tiap 10 detik)
+    // 2. API DATA REALTIME (DENGAN FILTER TANGGAL)
     public function getRealtimeData(Request $request)
     {
-        $date = Carbon::now()->format('Y-m-d');
+        // 1. Tentukan Tanggal (Default Hari Ini)
+        $date = $request->date ? $request->date : Carbon::now()->format('Y-m-d');
+        $isToday = $date === Carbon::now()->format('Y-m-d');
         $timeNow = Carbon::now()->format('H:i:s');
+        
+        // Ambil Hari dalam angka (1=Senin, 7=Minggu) untuk tanggal yang dipilih
+        $dayOfWeek = Carbon::parse($date)->dayOfWeekIso;
 
-        // A. Tentukan Jadwal Mana yang Aktif?
-        // Jika user memilih filter, pakai itu. Jika tidak, cari otomatis berdasarkan jam.
+        // 2. Tentukan Jadwal Mana yang Ditampilkan?
         if ($request->schedule_id) {
+            // Jika Admin memilih manual dari dropdown
             $currentSchedule = TahfizhSchedule::find($request->schedule_id);
         } else {
-            // Cari jadwal yang sedang berlangsung atau yang paling dekat
-            $currentSchedule = TahfizhSchedule::forToday()
-                ->where('end_time', '>=', $timeNow)
-                ->orderBy('start_time')
-                ->first();
-
-            // Jika tidak ada yang aktif (misal malam hari), ambil sesi pertama hari ini
-            if (!$currentSchedule) {
-                $currentSchedule = TahfizhSchedule::forToday()->orderBy('start_time')->first();
+            if ($isToday) {
+                // HARI INI: Cari jadwal berdasarkan jam sekarang
+                $currentSchedule = TahfizhSchedule::where('day_of_week', $dayOfWeek)
+                                    ->where('end_time', '>=', $timeNow)
+                                    ->orderBy('start_time')
+                                    ->first();
+            }
+            
+            // MASA LALU / BELUM WAKTUNYA:
+            // Jika tidak ada jadwal aktif (karena cek masa lalu), ambil sesi pertama hari itu
+            if (!isset($currentSchedule) || !$currentSchedule) {
+                $currentSchedule = TahfizhSchedule::where('day_of_week', $dayOfWeek)
+                                    ->orderBy('start_time')
+                                    ->first();
             }
         }
 
+        // Jika hari itu libur (tidak ada schedule sama sekali)
         if (!$currentSchedule) {
-            return response()->json(['status' => 'empty', 'message' => 'Tidak ada jadwal hari ini']);
+            return response()->json([
+                'status' => 'empty', 
+                'message' => 'Tidak ada jadwal halaqah pada tanggal/hari ini (' . Carbon::parse($date)->translatedFormat('l') . ').'
+            ]);
         }
 
-        // B. Ambil Data Halaqah & Statusnya
+        // 3. Ambil Data Halaqah
         $halaqahs = TahfizhHalaqah::with('teacher')->get();
-
         $monitoringData = [];
 
         foreach ($halaqahs as $halaqah) {
-            // 1. Cek Jurnal (Sudah masuk?)
+            // A. Cek Jurnal
             $journal = TahfizhJournal::where('tahfizh_halaqah_id', $halaqah->id)
-                ->where('tahfizh_schedule_id', $currentSchedule->id)
-                ->where('date', $date)
-                ->first();
+                        ->where('tahfizh_schedule_id', $currentSchedule->id)
+                        ->where('date', $date)
+                        ->first();
 
-            // 2. Cek Izin (UPDATE LOGIC DISINI)
-            // Kita cari izin yang statusnya approved ATAU pending
+            // B. Cek Izin (Approved / Pending)
             $permission = TeacherPermission::where('teacher_id', $halaqah->teacher_id)
                             ->where('date', $date)
-                            ->whereIn('status', ['approved', 'pending']) // Ambil Pending juga
+                            ->whereIn('status', ['approved', 'pending'])
                             ->whereHas('tahfizhDetails', function($q) use ($currentSchedule) {
                                 $q->where('tahfizh_schedule_id', $currentSchedule->id);
                             })
                             ->first();
 
-            // 3. Cek Badal (Apakah sudah ada badal?)
+            // C. Cek Badal
             $substitute = TahfizhSubstitute::where('tahfizh_halaqah_id', $halaqah->id)
-                ->where('tahfizh_schedule_id', $currentSchedule->id)
-                ->where('date', $date)
-                ->with('substituteTeacher')
-                ->first();
+                            ->where('tahfizh_schedule_id', $currentSchedule->id)
+                            ->where('date', $date)
+                            ->with('substituteTeacher')
+                            ->first();
 
-           // LOGIKA STATUS CARD (UPDATE)
+            // LOGIKA STATUS
             $status = 'waiting';
             $badgeClass = 'bg-light text-dark border';
-            $statusText = 'BELUM MASUK';
+            $statusText = 'BELUM MASUK'; // Atau "ALPHA" jika tanggal masa lalu
             $photoUrl = null;
             $checkInTime = null;
+            
+            // Penyesuaian Teks jika Masa Lalu
+            if (!$isToday && !$journal) {
+                $statusText = 'TIDAK HADIR (ALPHA)';
+                $badgeClass = 'bg-danger';
+            }
 
             if ($journal) {
                 $status = 'present';
@@ -95,27 +113,25 @@ class TahfizhMonitoringController extends Controller
                 $statusText = 'SUDAH MASUK';
                 $photoUrl = asset('storage/' . $journal->photo_proof);
                 $checkInTime = $journal->clock_in->format('H:i');
-                // Cek apakah yang mengajar Badal?
                 if ($journal->teacher_id != $halaqah->teacher_id) {
                     $statusText .= ' (BADAL)';
                 }
             } elseif ($substitute) {
-                $status = 'badal_assigned'; // Badal sudah ditunjuk, tapi belum masuk
+                $status = 'badal_assigned';
                 $badgeClass = 'bg-primary';
                 $statusText = 'BADAL: ' . $substitute->substituteTeacher->name;
             } elseif ($permission) {
-                // [BARU] Logika Percabangan Izin
                 if ($permission->status == 'approved') {
                     $status = 'permission_approved';
                     $badgeClass = 'bg-warning text-dark';
                     $statusText = 'IZIN DITERIMA';
                 } else {
-                    // JIKA PENDING
                     $status = 'permission_pending';
-                    $badgeClass = 'bg-warning text-dark border border-dark'; // Atau warna Oranye
+                    $badgeClass = 'bg-warning text-dark border border-dark';
                     $statusText = 'PENGAJUAN IZIN';
                 }
-            } elseif ($timeNow > $currentSchedule->start_time) {
+            } elseif ($isToday && $timeNow > $currentSchedule->start_time) {
+                // Hanya tampilkan "Terlambat" jika hari ini
                 $status = 'late';
                 $badgeClass = 'bg-danger';
                 $statusText = 'TERLAMBAT / ALPHA';
@@ -130,17 +146,19 @@ class TahfizhMonitoringController extends Controller
                 'status_text' => $statusText,
                 'photo_url' => $photoUrl,
                 'check_in_time' => $checkInTime,
-                'is_late' => !$journal && $timeNow > $currentSchedule->start_time, // Penanda telat
+                // Is Late hanya true jika hari ini dan lewat jam
+                'is_late' => ($isToday && !$journal && $timeNow > $currentSchedule->start_time), 
                 'permission_reason' => $permission ? $permission->reason : null,
-                // Kirim ID Izin untuk tombol Approve
-                'permission_id' => $permission ? $permission->id : null, // Tambahkan ini
-                'schedule_id' => $currentSchedule->id, // Untuk parameter kirim badal
-                'teacher_id' => $halaqah->teacher_id, // Guru Asli
+                'permission_id' => $permission ? $permission->id : null,
+                'schedule_id' => $currentSchedule->id,
+                'teacher_id' => $halaqah->teacher_id,
+                'substitute_id' => $substitute ? $substitute->substitute_teacher_id : null,
             ];
         }
 
         return response()->json([
             'status' => 'success',
+            'is_today' => $isToday,
             'session_name' => $currentSchedule->session_name,
             'session_time' => Carbon::parse($currentSchedule->start_time)->format('H:i') . ' - ' . Carbon::parse($currentSchedule->end_time)->format('H:i'),
             'data' => $monitoringData
@@ -158,17 +176,47 @@ class TahfizhMonitoringController extends Controller
         return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan.'], 404);
     }
 
-    // 3. SIMPAN BADAL
+    // 3. SET / UPDATE BADAL
     public function assignBadal(Request $request)
     {
-        TahfizhSubstitute::create([
-            'tahfizh_halaqah_id' => $request->halaqah_id,
-            'tahfizh_schedule_id' => $request->schedule_id,
-            'original_teacher_id' => $request->original_teacher_id,
-            'substitute_teacher_id' => $request->substitute_teacher_id,
-            'date' => Carbon::now()->format('Y-m-d'),
+        $request->validate([
+            'halaqah_id' => 'required',
+            'schedule_id' => 'required',
+            'original_teacher_id' => 'required',
+            'substitute_teacher_id' => 'required|different:original_teacher_id', // Guru badal tidak boleh sama dengan guru asli
         ]);
 
-        return back()->with('success', 'Guru badal berhasil ditugaskan.');
+        // Gunakan updateOrCreate agar tidak double data
+        TahfizhSubstitute::updateOrCreate(
+            [
+                'tahfizh_halaqah_id' => $request->halaqah_id,
+                'tahfizh_schedule_id' => $request->schedule_id,
+                'date' => Carbon::now()->format('Y-m-d'),
+            ],
+            [
+                'original_teacher_id' => $request->original_teacher_id,
+                'substitute_teacher_id' => $request->substitute_teacher_id,
+            ]
+        );
+
+        return back()->with('success', 'Guru pengganti berhasil ditetapkan.');
+    }
+
+    // 4. HAPUS BADAL (BATALKAN)
+    public function removeBadal(Request $request)
+    {
+        $date = Carbon::now()->format('Y-m-d');
+
+        $substitute = TahfizhSubstitute::where('tahfizh_halaqah_id', $request->halaqah_id)
+            ->where('tahfizh_schedule_id', $request->schedule_id)
+            ->where('date', $date)
+            ->first();
+
+        if ($substitute) {
+            $substitute->delete();
+            return back()->with('success', 'Guru pengganti dibatalkan. Status kembali seperti semula.');
+        }
+
+        return back()->with('error', 'Data badal tidak ditemukan.');
     }
 }

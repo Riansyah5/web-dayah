@@ -291,6 +291,8 @@ Route::middleware('auth')->group(function () {
 			Route::get('/monitoring/data', [TahfizhMonitoringController::class, 'getRealtimeData'])->name('monitoring.data');
 			Route::post('/monitoring/assign-badal', [TahfizhMonitoringController::class, 'assignBadal'])->name('monitoring.assign_badal');
 			Route::post('/monitoring/approve-permission', [TahfizhMonitoringController::class, 'approvePermission'])->name('monitoring.approve_permission');
+			Route::post('/monitoring/assign-badal', [TahfizhMonitoringController::class, 'assignBadal'])->name('monitoring.assign_badal');
+			Route::delete('/monitoring/remove-badal', [TahfizhMonitoringController::class, 'removeBadal'])->name('monitoring.remove_badal');
 		});
 
 		// Dashboard & Absensi
