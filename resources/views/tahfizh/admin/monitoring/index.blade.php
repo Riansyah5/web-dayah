@@ -66,10 +66,29 @@
     </div>
   </div>
 
-  <div class="row g-3" id="monitoringGrid">
-    <div class="col-12 text-center py-5">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-2 text-muted">Mengambil data...</p>
+  <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active rounded-pill px-4" id="pills-male-tab" data-bs-toggle="pill" data-bs-target="#pills-male" type="button" role="tab">
+        <i class="bi bi-gender-male me-1"></i> Putra
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link rounded-pill px-4" id="pills-female-tab" data-bs-toggle="pill" data-bs-target="#pills-female" type="button" role="tab">
+        <i class="bi bi-gender-female me-1"></i> Putri
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-male" role="tabpanel">
+      <div class="row g-3" id="gridMale">
+        <div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Mengambil data...</p></div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="pills-female" role="tabpanel">
+      <div class="row g-3" id="gridFemale">
+        <div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Mengambil data...</p></div>
+      </div>
     </div>
   </div>
 </div>
@@ -145,7 +164,8 @@
     const scheduleId = document.getElementById('scheduleFilter').value;
     const dateVal = document.getElementById('dateFilter').value; // Ambil nilai tanggal
 
-    const grid = document.getElementById('monitoringGrid');
+    const gridMale = document.getElementById('gridMale');
+    const gridFemale = document.getElementById('gridFemale');
     const sessionInfo = document.getElementById('currentSessionInfo');
     const liveBadge = document.getElementById('liveBadge');
 
@@ -154,7 +174,9 @@
       .then(response => response.json())
       .then(res => {
         if (res.status === 'empty') {
-          grid.innerHTML = `<div class="col-12 text-center text-muted py-5 fw-bold"><i class="bi bi-calendar-x fs-1 d-block mb-3"></i>${res.message}</div>`;
+          const emptyMsg = `<div class="col-12 text-center text-muted py-5 fw-bold"><i class="bi bi-calendar-x fs-1 d-block mb-3"></i>${res.message}</div>`;
+          gridMale.innerHTML = emptyMsg;
+          gridFemale.innerHTML = emptyMsg;
           sessionInfo.innerText = "-";
           return;
         }
@@ -177,11 +199,23 @@
         }
 
         // Render Kartu
-        let html = '';
+        let htmlMale = '';
+        let htmlFemale = '';
+        let countMale = 0;
+        let countFemale = 0;
+
         res.data.forEach(item => {
-          html += buildCard(item);
+          if(item.gender === 'L') {
+            htmlMale += buildCard(item);
+            countMale++;
+          } else {
+            htmlFemale += buildCard(item);
+            countFemale++;
+          }
         });
-        grid.innerHTML = html;
+        
+        gridMale.innerHTML = countMale > 0 ? htmlMale : `<div class="col-12 text-center text-muted py-5">Tidak ada data halaqah putra.</div>`;
+        gridFemale.innerHTML = countFemale > 0 ? htmlFemale : `<div class="col-12 text-center text-muted py-5">Tidak ada data halaqah putri.</div>`;
       })
       .catch(err => console.error(`Error polling data: ${err}`));
   }

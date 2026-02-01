@@ -140,6 +140,7 @@ class TahfizhMonitoringController extends Controller
             $monitoringData[] = [
                 'halaqah_id' => $halaqah->id,
                 'group_name' => $halaqah->name,
+                'gender' => $halaqah->gender,
                 'teacher_name' => $halaqah->teacher->name,
                 'status' => $status,
                 'badge_class' => $badgeClass,
