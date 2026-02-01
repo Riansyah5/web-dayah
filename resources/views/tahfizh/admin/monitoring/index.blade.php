@@ -57,7 +57,7 @@
               @endforeach
             </select>
 
-            <button class="btn btn-primary rounded shadow-sm" onclick="fetchData()" title="Refresh" >
+            <button class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" onclick="fetchData()" title="Refresh" style="width: 40px; height: 40px;">
               <i class="bi bi-arrow-clockwise"></i>
             </button>
           </div>

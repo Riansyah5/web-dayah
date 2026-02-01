@@ -63,7 +63,7 @@ class TahfizhMonitoringController extends Controller
         if (!$currentSchedule) {
             return response()->json([
                 'status' => 'empty', 
-                'message' => 'Tidak ada jadwal halaqah pada tanggal/hari ini (' . Carbon::parse($date)->translatedFormat('l') . ').'
+                'message' => 'Tidak ada jadwal halaqah pada tanggal/hari ini (' . Carbon::parse($date)->locale('id')->translatedFormat('l') . ').'
             ]);
         }
 

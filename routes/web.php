@@ -31,6 +31,7 @@ use App\Http\Controllers\System\SystemMaintenanceController;
 use App\Http\Controllers\Academic\AcademicCalendarController;
 use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
 use App\Http\Controllers\Academic\Student\GraduationController;
+use App\Http\Controllers\Tahfizh\Admin\MasterScheduleController;
 use App\Http\Controllers\Academic\Report\ReportSettingController;
 use App\Http\Controllers\Tahfizh\Admin\TahfizhScheduleController;
 use App\Http\Controllers\Academic\Report\AcademicReportController;
@@ -284,8 +285,8 @@ Route::middleware('auth')->group(function () {
 		// Group Modul Admin Tahfizh (Jadwal)
 		Route::prefix('tahfizh/admin')->name('tahfizh.admin.')->group(function () {
 			// routes untuk mengelola jadwal tahfizh
-			Route::get('/schedules', [TahfizhScheduleController::class, 'index'])->name('schedule.index');
-			Route::post('/schedules/update', [TahfizhScheduleController::class, 'updateGlobal'])->name('schedule.update');
+			// Route::get('/schedules', [TahfizhScheduleController::class, 'index'])->name('schedule.index');
+			// Route::post('/schedules/update', [TahfizhScheduleController::class, 'updateGlobal'])->name('schedule.update');
 			// Monitoring
 			Route::get('/monitoring', [TahfizhMonitoringController::class, 'index'])->name('monitoring.index');
 			Route::get('/monitoring/data', [TahfizhMonitoringController::class, 'getRealtimeData'])->name('monitoring.data');
@@ -293,6 +294,14 @@ Route::middleware('auth')->group(function () {
 			Route::post('/monitoring/approve-permission', [TahfizhMonitoringController::class, 'approvePermission'])->name('monitoring.approve_permission');
 			Route::post('/monitoring/assign-badal', [TahfizhMonitoringController::class, 'assignBadal'])->name('monitoring.assign_badal');
 			Route::delete('/monitoring/remove-badal', [TahfizhMonitoringController::class, 'removeBadal'])->name('monitoring.remove_badal');
+		});
+
+		Route::prefix('tahfizh/admin/schedules')->name('tahfizh.admin.schedules.')->group(function () {
+			Route::get('/', [MasterScheduleController::class, 'index'])->name('index');
+			Route::post('/', [MasterScheduleController::class, 'store'])->name('store');
+			Route::put('/{id}', [MasterScheduleController::class, 'update'])->name('update');
+			Route::delete('/{id}', [MasterScheduleController::class, 'destroy'])->name('destroy');
+			Route::post('/{id}/toggle', [MasterScheduleController::class, 'toggleStatus'])->name('toggle');
 		});
 
 		// Dashboard & Absensi
