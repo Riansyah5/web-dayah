@@ -12,13 +12,9 @@
   <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
       <form action="{{ route('tahfizh.admin.reports.teacher') }}" method="GET" class="row g-3 align-items-end">
-        <div class="col-md-4">
-          <label class="form-label small text-muted fw-bold">Dari Tanggal</label>
-          <input type="date" name="start_date" class="form-control" value="{{ $startDate }}">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label small text-muted fw-bold">Sampai Tanggal</label>
-          <input type="date" name="end_date" class="form-control" value="{{ $endDate }}">
+        <div class="col-md-5">
+          <label class="form-label small text-muted fw-bold">Pilih Bulan</label>
+          <input type="month" name="month" class="form-control" value="{{ request('month', \Carbon\Carbon::now()->format('Y-m')) }}">
         </div>
         <div class="col-md-4 d-flex gap-2">
           <button type="submit" class="btn btn-primary rounded-pill px-4 flex-grow-1">

@@ -17,9 +17,15 @@ class TahfizhAttendanceReportController extends Controller
     // ===========================
     public function teacherRecap(Request $request)
     {
-        // Default: Tanggal 1 s.d Hari ini bulan berjalan
-        $startDate = $request->start_date ?? Carbon::now()->startOfMonth()->format('Y-m-d');
-        $endDate = $request->end_date ?? Carbon::now()->format('Y-m-d');
+        // Handle Filter Bulan (YYYY-MM)
+        if ($request->month) {
+            $date = Carbon::createFromFormat('Y-m', $request->month);
+            $startDate = $date->copy()->startOfMonth()->format('Y-m-d');
+            $endDate = $date->copy()->endOfMonth()->format('Y-m-d');
+        } else {
+            $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        }
 
         // Ambil data Guru beserta relasi Jurnal & Izin pada rentang tanggal
         $teachers = Teacher::where('is_active', true)
