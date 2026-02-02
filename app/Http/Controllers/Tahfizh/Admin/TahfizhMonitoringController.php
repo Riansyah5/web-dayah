@@ -100,6 +100,9 @@ class TahfizhMonitoringController extends Controller
             $statusText = 'BELUM MASUK'; // Atau "ALPHA" jika tanggal masa lalu
             $photoUrl = null;
             $checkInTime = null;
+            $latitude = null;
+            $longitude = null;
+            $shouldBlink = false;
             
             // Penyesuaian Teks jika Masa Lalu
             if (!$isToday && !$journal) {
@@ -113,13 +116,16 @@ class TahfizhMonitoringController extends Controller
                 $statusText = 'SUDAH MASUK';
                 $photoUrl = asset('storage/' . $journal->photo_proof);
                 $checkInTime = $journal->clock_in->format('H:i');
+                $latitude = $journal->latitude ?? null;
+                $longitude = $journal->longitude ?? null;
                 if ($journal->teacher_id != $halaqah->teacher_id) {
                     $statusText .= ' (BADAL)';
                 }
             } elseif ($substitute) {
                 $status = 'badal_assigned';
                 $badgeClass = 'bg-primary';
-                $statusText = 'BADAL: ' . $substitute->substituteTeacher->name;
+                $statusText = 'BADAL: ' . $substitute->substituteTeacher->name . ' (BELUM MASUK)';
+                if ($isToday) $shouldBlink = true;
             } elseif ($permission) {
                 if ($permission->status == 'approved') {
                     $status = 'permission_approved';
@@ -135,6 +141,10 @@ class TahfizhMonitoringController extends Controller
                 $status = 'late';
                 $badgeClass = 'bg-danger';
                 $statusText = 'TERLAMBAT / ALPHA';
+                $shouldBlink = true;
+            } else {
+                // Status Waiting / Belum Masuk
+                if ($isToday) $shouldBlink = true;
             }
 
             $monitoringData[] = [
@@ -147,6 +157,9 @@ class TahfizhMonitoringController extends Controller
                 'status_text' => $statusText,
                 'photo_url' => $photoUrl,
                 'check_in_time' => $checkInTime,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'should_blink' => $shouldBlink,
                 // Is Late hanya true jika hari ini dan lewat jam
                 'is_late' => ($isToday && !$journal && $timeNow > $currentSchedule->start_time), 
                 'permission_reason' => $permission ? $permission->reason : null,

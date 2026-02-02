@@ -93,6 +93,25 @@
   </div>
 </div>
 
+<!-- Modal Bukti & Lokasi -->
+<div class="modal fade" id="proofModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h6 class="modal-title fw-bold">Bukti Kehadiran</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div id="proofContent"></div>
+        <div id="locationContent" class="mt-3"></div>
+      </div>
+      <div class="modal-footer border-0 justify-content-center pt-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="badalModal" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content border-0 rounded-4">
@@ -225,6 +244,7 @@
     let photoDisplay = '';
     let bgCard = 'bg-white';
     let borderClass = 'border-0';
+    const blinkClass = item.should_blink ? 'animate-blink' : '';
 
     const safeName = item.teacher_name.replace(/'/g, "\\'");
 
@@ -235,10 +255,13 @@
     }
 
     // Tampilan Foto
-    if (item.status === 'present' && item.photo_url) {
+    if (item.status === 'present') {
       photoDisplay = `
-                <div class="ratio ratio-1x1 rounded-circle overflow-hidden shadow-sm ms-3" style="width: 50px; height: 50px;">
-                    <img src="${item.photo_url}" class="object-fit-cover" onclick="window.open('${item.photo_url}')" style="cursor: pointer">
+                <div class="ms-2">
+                    <button class="btn btn-sm btn-secondary border d-flex justify-content-between align-items-center shadow-sm rounded" onclick="showProof('${item.photo_url}', '${item.latitude}', '${item.longitude}')" title="Lihat Bukti & Lokasi">
+                        <i class="bi bi-camera me-1"></i>
+                        <i class="bi bi-geo-alt"></i>
+                    </button>
                 </div>
             `;
     }
@@ -288,7 +311,7 @@
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="w-100">
-                                <span class="badge ${item.badge_class} mb-2">${item.status_text}</span>
+                                <span class="badge ${item.badge_class} ${blinkClass} mb-2">${item.status_text}</span>
                                 <h6 class="fw-bold mb-0 text-truncate" title="${item.teacher_name}">${item.teacher_name}</h6>
                                 <small class="text-muted">${item.group_name}</small>
                                 
@@ -308,6 +331,30 @@
   }
 
   // Fungsi JS Pendukung (Modal & Approve)
+  function showProof(photoUrl, lat, lng) {
+    const contentDiv = document.getElementById('proofContent');
+    const locDiv = document.getElementById('locationContent');
+    
+    // Set Foto
+    if (photoUrl && photoUrl !== 'null') {
+        contentDiv.innerHTML = `<img src="${photoUrl}" class="img-fluid rounded shadow-sm" style="max-height: 300px; width: 100%; object-fit: cover;">`;
+    } else {
+        contentDiv.innerHTML = '<p class="text-muted fst-italic">Tidak ada foto bukti.</p>';
+    }
+
+    // Set Lokasi
+    if (lat && lng && lat !== 'null' && lng !== 'null') {
+        locDiv.innerHTML = `
+            <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" class="btn btn-outline-danger rounded-pill w-100">
+                <i class="bi bi-geo-alt-fill me-1"></i> Buka Google Maps
+            </a>`;
+    } else {
+        locDiv.innerHTML = '<small class="text-muted"><i class="bi bi-geo-alt-slash"></i> Lokasi tidak tersedia</small>';
+    }
+
+    new bootstrap.Modal(document.getElementById('proofModal')).show();
+  }
+
   function openBadalModal(halaqahId, scheduleId, teacherId, teacherName, currentSubId) {
     document.getElementById('modalHalaqahId').value = halaqahId;
     document.getElementById('modalScheduleId').value = scheduleId;
