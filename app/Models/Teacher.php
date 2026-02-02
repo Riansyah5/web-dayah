@@ -23,4 +23,28 @@ class Teacher extends Model
     {
         return $this->name . ($this->title ? ', ' . $this->title : '');
     }
+
+    // Relasi ke Halaqah Tahfizh (Sebagai Musyrif)
+    public function tahfizhHalaqahs()
+    {
+        return $this->hasMany(TahfizhHalaqah::class);
+    }
+
+    // Relasi ke Jurnal Tahfizh
+    public function tahfizhJournals()
+    {
+        return $this->hasMany(TahfizhJournal::class);
+    }
+
+    // Relasi ke Izin Guru
+    public function teacherPermissions()
+    {
+        return $this->hasMany(TeacherPermission::class);
+    }
+
+    // Relasi ke Badal (Sebagai Pengganti)
+    public function tahfizhBadalsAsSubstitute()
+    {
+        return $this->hasMany(TahfizhSubstitute::class, 'substitute_teacher_id');
+    }
 }

@@ -47,6 +47,7 @@ use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
 use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Tahfizh\Teacher\TahfizhPermissionController;
 use App\Http\Controllers\Academic\Permission\TeacherPermissionController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhAttendanceReportController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -302,6 +303,12 @@ Route::middleware('auth')->group(function () {
 			Route::put('/{id}', [MasterScheduleController::class, 'update'])->name('update');
 			Route::delete('/{id}', [MasterScheduleController::class, 'destroy'])->name('destroy');
 			Route::post('/{id}/toggle', [MasterScheduleController::class, 'toggleStatus'])->name('toggle');
+		});
+
+		// Group Modul Admin Tahfizh (Laporan)
+		Route::prefix('tahfizh/admin/reports')->name('tahfizh.admin.reports.')->group(function () {
+			Route::get('/teacher', [TahfizhAttendanceReportController::class, 'teacherRecap'])->name('teacher');
+			Route::get('/student', [TahfizhAttendanceReportController::class, 'studentRecap'])->name('student');
 		});
 
 		// Dashboard & Absensi

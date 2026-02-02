@@ -10,7 +10,7 @@
       <h4 class="fw-bold">Laporan Kinerja Guru (Jurnal KBM)</h4>
 
       <form class="d-flex gap-2">
-        <select name="month" class="form-select">
+        <select name="month" class="form-select" style="min-width: 150px;">
           @for ($i = 1; $i <= 12; $i++)
             <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>
               {{ DateTime::createFromFormat('!m', $i)->format('F') }}

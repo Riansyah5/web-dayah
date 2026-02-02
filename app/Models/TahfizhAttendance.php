@@ -2,26 +2,30 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TahfizhAttendance extends Model
 {
+    use HasFactory, HasUlids;
+
     protected $guarded = ['id'];
 
     /**
-     * RELASI
+     * Get the journal that this attendance record belongs to.
      */
-
-    // Ke Header Jurnal
-    public function journal(): BelongsTo
+    public function tahfizhJournal(): BelongsTo
     {
-        return $this->belongsTo(TahfizhJournal::class, 'tahfizh_journal_id');
+        return $this->belongsTo(TahfizhJournal::class);
     }
 
-    // Ke Data Santri
+    /**
+     * Get the student that this attendance record belongs to.
+     */
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'student_id');
+        return $this->belongsTo(Student::class);
     }
 }

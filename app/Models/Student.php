@@ -100,4 +100,10 @@ class Student extends Model
     public function tahfizhHalaqahs() {
         return $this->belongsToMany(TahfizhHalaqah::class, 'tahfizh_students', 'student_id', 'tahfizh_halaqah_id');
     }
+
+    // Relasi ke Absensi Tahfizh
+    public function tahfizhAttendances(): HasMany
+    {
+        return $this->hasMany(TahfizhAttendance::class);
+    }
 }

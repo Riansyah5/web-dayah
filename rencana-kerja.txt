@@ -2,7 +2,6 @@ buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 update input wali di student/edit
 
-cek status kehadiran bagi yang badal di monitoring index
 rekap absen tahfizh: guru dan santri
 maintenance sistem untuk absen tahfizh
 
@@ -11,6 +10,7 @@ maintenance sistem untuk absen tahfizh
 
 
 ============================================================================================
+cek status kehadiran bagi yang badal di monitoring index
 monitoring absen tahfizh
 -rekap absensi santri
     - rekapnya per bulan atau semester?
