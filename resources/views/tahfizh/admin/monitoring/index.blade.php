@@ -249,7 +249,7 @@
     const safeName = item.teacher_name.replace(/'/g, "\\'");
 
     // Styling Kartu
-    if (item.status === 'waiting' && item.is_late) {
+    if ((item.status === 'waiting' && item.is_late) || item.status === 'late' || (item.status === 'badal_assigned' && item.is_late)) {
       bgCard = 'bg-danger bg-opacity-10';
       borderClass = 'border-danger';
     }

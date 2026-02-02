@@ -125,7 +125,19 @@ class TahfizhMonitoringController extends Controller
                 $status = 'badal_assigned';
                 $badgeClass = 'bg-primary';
                 $statusText = 'BADAL: ' . $substitute->substituteTeacher->name . ' (BELUM MASUK)';
-                if ($isToday) $shouldBlink = true;
+                
+                if ($isToday) {
+                    if ($timeNow > $currentSchedule->end_time) {
+                        $statusText = 'BADAL: ' . $substitute->substituteTeacher->name . ' (ALPHA)';
+                        $badgeClass = 'bg-danger';
+                        $shouldBlink = false;
+                    } else {
+                        if ($timeNow > $currentSchedule->start_time) {
+                            $badgeClass = 'bg-danger';
+                        }
+                        $shouldBlink = true;
+                    }
+                }
             } elseif ($permission) {
                 if ($permission->status == 'approved') {
                     $status = 'permission_approved';
@@ -140,8 +152,14 @@ class TahfizhMonitoringController extends Controller
                 // Hanya tampilkan "Terlambat" jika hari ini
                 $status = 'late';
                 $badgeClass = 'bg-danger';
-                $statusText = 'TERLAMBAT / ALPHA';
-                $shouldBlink = true;
+                
+                if ($timeNow > $currentSchedule->end_time) {
+                    $statusText = 'ALPHA';
+                    $shouldBlink = false;
+                } else {
+                    $statusText = 'TERLAMBAT (BELUM MASUK)';
+                    $shouldBlink = true;
+                }
             } else {
                 // Status Waiting / Belum Masuk
                 if ($isToday) $shouldBlink = true;
