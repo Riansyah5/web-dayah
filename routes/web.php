@@ -309,6 +309,8 @@ Route::middleware('auth')->group(function () {
 		Route::prefix('tahfizh/admin/reports')->name('tahfizh.admin.reports.')->group(function () {
 			Route::get('/teacher', [TahfizhAttendanceReportController::class, 'teacherRecap'])->name('teacher');
 			Route::get('/student', [TahfizhAttendanceReportController::class, 'studentRecap'])->name('student');
+			Route::get('/teacher/{id}', [TahfizhAttendanceReportController::class, 'teacherDetail'])->name('teacher_detail');
+			Route::get('/student/{id}', [TahfizhAttendanceReportController::class, 'studentDetail'])->name('student_detail');
 		});
 
 		// Dashboard & Absensi

@@ -14,7 +14,7 @@
       <form action="{{ route('tahfizh.admin.reports.student') }}" method="GET" class="row g-3 align-items-end">
         <div class="col-md-4">
           <label class="form-label small text-muted fw-bold">Pilih Bulan</label>
-          <input type="month" name="month" class="form-control" value="{{ request('month', \Carbon\Carbon::now()->format('Y-m', 'id')) }}">
+          <input type="month" name="month" class="form-control" value="{{ request('month', \Carbon\Carbon::now()->format('Y-m')) }}">
         </div>
         <div class="col-md-5">
           <label class="form-label small text-muted fw-bold">Pilih Halaqah</label>
@@ -63,7 +63,9 @@
               <th class="text-center" width="10%">Sakit</th>
               <th class="text-center" width="10%">Izin</th>
               <th class="text-center" width="10%">Alpha</th>
+              <th class="text-center" width="10%">Telat</th>
               <th class="text-center" width="10%">%</th>
+              <th class="text-center" width="10%">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -77,10 +79,18 @@
               <td class="text-center fw-bold {{ $s->alpha > 0 ? 'text-danger' : 'text-muted' }}">
                 {{ $s->alpha > 0 ? $s->alpha : '-' }}
               </td>
+              <td class="text-center fw-bold {{ $s->telat > 0 ? 'text-secondary' : 'text-muted' }}">
+                {{ $s->telat > 0 ? $s->telat : '-' }}
+              </td>
               <td class="text-center">
                 @php
                 $bg = 'bg-success';
                 if($s->persentase < 50) $bg='bg-danger' ; elseif($s->persentase < 80) $bg='bg-warning text-dark' ; @endphp <span class="badge {{ $bg }}">{{ $s->persentase }}%</span>
+              </td>
+              <td class="text-center">
+                <a href="{{ route('tahfizh.admin.reports.student_detail', ['id' => $s->id, 'start_date' => $startDate, 'end_date' => $endDate]) }}" class="btn btn-sm btn-outline-secondary rounded-pill">
+                  Detail <i class="bi bi-box-arrow-up-right small ms-1"></i>
+                </a>
               </td>
             </tr>
             @empty

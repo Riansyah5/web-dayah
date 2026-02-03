@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Absen Santri')
 @push('link')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 @push('styles')
   
@@ -26,7 +27,7 @@
 
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-0">
-            <form action="{{ route('tahfizh.journal.update_attendance', $journal->id) }}" method="POST">
+            <form id="attendanceForm" action="{{ route('tahfizh.journal.update_attendance', $journal->id) }}" method="POST">
                 @csrf
                 
                 <div class="list-group list-group-flush rounded-4">
@@ -80,4 +81,42 @@
 </div>
 @endsection
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Notifikasi Flash Message
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: @json(session('success')),
+            timer: 2000,
+            showConfirmButton: false
+        });
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: @json(session('error')),
+        });
+    @endif
+
+    // Konfirmasi Submit
+    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Simpan Absensi?',
+            text: "Pastikan data kehadiran santri sudah sesuai.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Simpan',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        });
+    });
+</script>
 @endpush

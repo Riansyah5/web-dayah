@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids; // Wajib untuk ID ULID
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TahfizhJournal extends Model
 {
@@ -45,5 +46,17 @@ class TahfizhJournal extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(TahfizhAttendance::class, 'tahfizh_journal_id');
+    }
+
+    /**
+     * Relasi ke Data Badal
+     * Note: Relasi ini menggunakan composite keys. Eager loading (with) mungkin tidak berjalan sempurna
+     * tanpa package tambahan seperti 'awobaz/compoships'.
+     */
+    public function substitute(): HasOne
+    {
+        return $this->hasOne(TahfizhSubstitute::class, 'tahfizh_halaqah_id', 'tahfizh_halaqah_id')
+                    ->where('tahfizh_schedule_id', $this->tahfizh_schedule_id)
+                    ->where('date', $this->date);
     }
 }

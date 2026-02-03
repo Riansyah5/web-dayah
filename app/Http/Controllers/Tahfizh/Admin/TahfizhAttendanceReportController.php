@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Tahfizh\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Teacher;
-use App\Models\Student;
-use App\Models\TahfizhHalaqah;
-use App\Models\TeacherPermission;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Student;
+use App\Models\Teacher;
+use Illuminate\Http\Request;
+use App\Models\TahfizhHalaqah;
+use App\Models\TahfizhJournal;
+use App\Models\TeacherPermission;
+use App\Http\Controllers\Controller;
 
 class TahfizhAttendanceReportController extends Controller
 {
@@ -106,17 +107,20 @@ class TahfizhAttendanceReportController extends Controller
                 ->get()
                 ->map(function($student) {
                     // Hitung Statistik
-                    $sakit = $student->tahfizhAttendances->where('status', 'sakit')->count();
-                    $izin = $student->tahfizhAttendances->where('status', 'izin')->count();
+                    $sakit = $student->tahfizhAttendances->where('status', 'sick')->count();
+                    $izin = $student->tahfizhAttendances->where('status', 'permission')->count();
                     $alpha = $student->tahfizhAttendances->where('status', 'alpha')->count();
-                    $hadir = $student->tahfizhAttendances->where('status', 'hadir')->count();
+                    $telat = $student->tahfizhAttendances->where('status', 'late')->count();
+                    $hadir = $student->tahfizhAttendances->where('status', 'present')->count() + $telat; // Hitung telat sebagai hadir juga
                     
                     return (object) [
+                        'id' => $student->id,
                         'name' => $student->name,
                         'nis' => $student->nis, // atau id lain
                         'sakit' => $sakit,
                         'izin' => $izin,
                         'alpha' => $alpha,
+                        'telat' => $telat,
                         'hadir' => $hadir,
                         'persentase' => ($hadir + $sakit + $izin + $alpha) > 0 
                                         ? round(($hadir / ($hadir + $sakit + $izin + $alpha)) * 100) 
@@ -127,5 +131,57 @@ class TahfizhAttendanceReportController extends Controller
         }
 
         return view('tahfizh.admin.report.student', compact('halaqahs', 'students', 'startDate', 'endDate', 'halaqahId', 'selectedHalaqah'));
+    }
+
+    // ===========================
+    // 3. DETAIL RIWAYAT GURU
+    // ===========================
+    public function teacherDetail(Request $request, $teacherId)
+    {
+        $startDate = $request->start_date ?? Carbon::now()->startOfMonth()->format('Y-m-d');
+        $endDate = $request->end_date ?? Carbon::now()->format('Y-m-d');
+        
+        $teacher = Teacher::findOrFail($teacherId);
+
+        // Ambil Data Jurnal Harian (Kehadiran)
+        $journals = TahfizhJournal::with(['schedule', 'substitute']) // Load jadwal & data badal
+                    ->where('teacher_id', $teacherId)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->orderBy('date', 'desc')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+        // Ambil Data Izin
+        $permissions = TeacherPermission::where('teacher_id', $teacherId)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->orderBy('date', 'desc')
+                    ->get();
+
+        return view('tahfizh.admin.report.detail_teacher', compact('teacher', 'journals', 'permissions', 'startDate', 'endDate'));
+    }
+
+    // ===========================
+    // 4. DETAIL RIWAYAT SANTRI
+    // ===========================
+    public function studentDetail(Request $request, $id) // Mengubah $studentId menjadi $id
+    {
+        $startDate = $request->start_date ?? Carbon::now()->startOfMonth()->format('Y-m-d');
+        $endDate = $request->end_date ?? Carbon::now()->format('Y-m-d');
+
+        $student = Student::with('tahfizhHalaqahs')->findOrFail($id); // Menggunakan $id
+
+        // Ambil Absensi Santri + Info Jurnalnya (untuk tahu tanggal & sesi)
+        $attendances = \App\Models\TahfizhAttendance::with(['tahfizhJournal.schedule', 'tahfizhJournal.teacher'])
+                    ->where('student_id', $id)
+                    ->whereHas('tahfizhJournal', function($q) use ($startDate, $endDate) {
+                        $q->whereBetween('date', [$startDate, $endDate]);
+                    })
+                    // Mengurutkan berdasarkan tanggal jurnal
+                    ->get()
+                    ->sortByDesc(function($attendance) {
+                        return $attendance->tahfizhJournal->date;
+                    });
+
+        return view('tahfizh.admin.report.detail_student', compact('student', 'attendances', 'startDate', 'endDate'));
     }
 }
