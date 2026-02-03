@@ -33,6 +33,7 @@
             <thead class="bg-light">
               <tr>
                 <th>Tanggal & Sesi</th>
+                <th>Jam Mulai</th>
                 <th>Jam Masuk</th>
                 <th>Status</th>
                 <th class="text-center">Bukti</th>
@@ -46,7 +47,22 @@
                   <small class="text-muted">{{ $j->schedule->session_name }}</small>
                 </td>
                 <td>
+                  <span class="font-monospace fs-6">{{ \Carbon\Carbon::parse($j->schedule->start_time)->format('H:i') }}</span>
+                </td>
+                <td>
                   <span class="font-monospace fs-6">{{ $j->clock_in->format('H:i') }}</span>
+                  @php
+                    $scheduleStart = \Carbon\Carbon::parse($j->date->toDateString() . ' ' . $j->schedule->start_time);
+                  @endphp
+                  @if($j->clock_in->gt($scheduleStart))
+                    @php
+                      // Hitung selisih menit dari jam mulai yang sebenarnya
+                      $lateMinutes = $scheduleStart->diffInMinutes($j->clock_in);
+                    @endphp
+                    <span class="badge bg-danger ms-1" style="font-size: 0.7em;"><i class="bi bi-clock"></i> {{ $lateMinutes }} menit</span>
+                  @else
+                    <span class="badge bg-success ms-1" style="font-size: 0.7em;">Tepat Waktu</span>
+                  @endif
                 </td>
                 <td>
                   @if($j->original_teacher_id && $j->original_teacher_id != $teacher->id)
@@ -59,7 +75,7 @@
                 <td class="text-center">
                   @if ($j->photo_proof || ($j->latitude && $j->longitude))
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#proofModal{{ $j->id }}">
+                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-2" data-bs-toggle="modal" data-bs-target="#proofModal{{ $j->id }}">
                       <i class="bi bi-eye-fill me-1"></i> Lihat
                     </button>
 
