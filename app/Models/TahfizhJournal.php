@@ -23,7 +23,7 @@ class TahfizhJournal extends Model
     /**
      * RELASI
      */
-    
+
     // Ke Kelompok Halaqah
     public function halaqah(): BelongsTo
     {
@@ -55,8 +55,12 @@ class TahfizhJournal extends Model
      */
     public function substitute(): HasOne
     {
-        return $this->hasOne(TahfizhSubstitute::class, 'tahfizh_halaqah_id', 'tahfizh_halaqah_id')
-                    ->where('tahfizh_schedule_id', $this->tahfizh_schedule_id)
-                    ->where('date', $this->date);
+        return $this->hasOne(
+            TahfizhSubstitute::class,
+            'tahfizh_halaqah_id',
+            'tahfizh_halaqah_id'
+        )
+            ->where('tahfizh_schedule_id', $this->tahfizh_schedule_id)
+            ->whereDate('date', $this->date);
     }
 }

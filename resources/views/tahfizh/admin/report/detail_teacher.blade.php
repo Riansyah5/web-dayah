@@ -35,7 +35,7 @@
                 <th>Tanggal & Sesi</th>
                 <th>Jam Masuk</th>
                 <th>Status</th>
-                <th>Bukti Foto</th>
+                <th class="text-center">Bukti</th>
               </tr>
             </thead>
             <tbody>
@@ -56,11 +56,39 @@
                   <span class="badge bg-success">Hadir</span>
                   @endif
                 </td>
-                <td>
-                  @if($j->photo_proof)
-                  <a href="{{ asset('storage/' . $j->photo_proof) }}" target="_blank">
-                    <img src="{{ asset('storage/' . $j->photo_proof) }}" class="rounded shadow-sm object-fit-cover" width="40" height="40">
-                  </a>
+                <td class="text-center">
+                  @if ($j->photo_proof || ($j->latitude && $j->longitude))
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#proofModal{{ $j->id }}">
+                      <i class="bi bi-eye-fill me-1"></i> Lihat
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="proofModal{{ $j->id }}" tabindex="-1" aria-labelledby="proofModalLabel{{ $j->id }}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="proofModalLabel{{ $j->id }}">Bukti Kehadiran</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            @if ($j->photo_proof)
+                              <p class="fw-bold small text-muted mb-2">FOTO BUKTI</p>
+                              <a href="{{ asset('storage/' . $j->photo_proof) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $j->photo_proof) }}" class="img-fluid rounded shadow-sm mb-3" alt="Bukti Foto">
+                              </a>
+                            @endif
+
+                            @if ($j->latitude && $j->longitude)
+                              <p class="fw-bold small text-muted mb-2">LOKASI GPS</p>
+                              <a href="https://www.google.com/maps/search/?api=1&query={{ $j->latitude }},{{ $j->longitude }}" target="_blank" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-geo-alt-fill me-2"></i> Buka di Google Maps
+                              </a>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   @else
                   <span class="text-muted small">-</span>
                   @endif

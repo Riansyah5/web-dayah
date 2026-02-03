@@ -61,7 +61,7 @@ class TahfizhPermissionController extends Controller
             'type' => 'required',
             'reason' => 'required',
             'schedule_ids' => 'required|array|min:1', // Wajib pilih minimal 1 sesi
-            'attachment' => 'nullable|file|max:2048'
+            'attachment' => 'nullable|file|max:10240', // Maks 10MB
         ]);
 
 
