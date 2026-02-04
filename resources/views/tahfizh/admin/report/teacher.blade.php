@@ -7,11 +7,11 @@
 @endpush
 @section('content')
 <div class="container py-4">
-  <h4 class="fw-bold mb-4">Laporan Kehadiran Guru</h4>
+  <h4 class="fw-bold mb-4">Laporan Kehadiran Guru Qur'an</h4>
 
   <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
-      <form action="{{ route('tahfizh.admin.reports.teacher') }}" method="GET" class="row g-3 align-items-end">
+      <form action="{{ route('tahfizh.admin.reports.teacher') }}" method="GET" class="row g-3 align-items-end justify-content-end">
         <div class="col-md-5">
           <label class="form-label small text-muted fw-bold">Pilih Bulan</label>
           <input type="month" name="month" class="form-control" value="{{ request('month', \Carbon\Carbon::now()->format('Y-m')) }}">
