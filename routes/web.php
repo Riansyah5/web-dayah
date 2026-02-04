@@ -40,6 +40,7 @@ use App\Http\Controllers\Tahfizh\Journal\TahfizhJournalController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Journal\TeacherJournalController;
 use App\Http\Controllers\Academic\Schedule\SchedulePrintController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhEvaluationController;
 use App\Http\Controllers\Tahfizh\Admin\TahfizhMonitoringController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
@@ -311,6 +312,14 @@ Route::middleware('auth')->group(function () {
 			Route::get('/student', [TahfizhAttendanceReportController::class, 'studentRecap'])->name('student');
 			Route::get('/teacher/{id}', [TahfizhAttendanceReportController::class, 'teacherDetail'])->name('teacher_detail');
 			Route::get('/student/{id}', [TahfizhAttendanceReportController::class, 'studentDetail'])->name('student_detail');
+		});
+
+		// Group Modul Admin Tahfizh (Evaluasi Bulanan Guru)
+		Route::prefix('tahfizh/admin/evaluations')->name('tahfizh.admin.evaluations.')->group(function () {
+			Route::get('/', [TahfizhEvaluationController::class, 'index'])->name('index');
+			Route::get('/generate', [TahfizhEvaluationController::class, 'create'])->name('create');
+			Route::post('/store', [TahfizhEvaluationController::class, 'store'])->name('store');
+			Route::post('/lock', [TahfizhEvaluationController::class, 'lock'])->name('lock');
 		});
 
 		// Dashboard & Absensi
