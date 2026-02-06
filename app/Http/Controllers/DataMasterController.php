@@ -30,6 +30,18 @@ class DataMasterController extends Controller
         Stage::create($r->all());
         return back()->with('success', 'Jenjang ditambah')->with('active_tab', 'tab-stages');
     }
+
+    public function updateStage(Request $request, Stage $stage)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50',
+        ]);
+
+        $stage->update($request->all());
+        return back()->with('success', 'Jenjang berhasil diperbarui')->with('active_tab', 'tab-stages');
+    }
+
     public function storeLevel(Request $r)
     {
         Level::create($r->all());

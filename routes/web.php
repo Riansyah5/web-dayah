@@ -123,6 +123,7 @@ Route::middleware('auth')->group(function () {
 		Route::prefix('admin/master-data')->name('master.')->group(function () {
 			Route::get('/', [DataMasterController::class, 'index'])->name('index');
 			Route::post('/stages', [DataMasterController::class, 'storeStage'])->name('stages.store');
+			Route::put('/stages/{stage}', [DataMasterController::class, 'updateStage'])->name('stages.update');
 			Route::post('/levels', [DataMasterController::class, 'storeLevel'])->name('levels.store');
 			Route::post('/majors', [DataMasterController::class, 'storeMajor'])->name('majors.store');
 			Route::post('/academic-years', [DataMasterController::class, 'storeAcademicYear'])->name('academic-years.store');

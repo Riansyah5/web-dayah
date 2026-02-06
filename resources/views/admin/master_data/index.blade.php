@@ -54,7 +54,41 @@
                     <td>{{ $s->name }}</td>
                     <td><span class="badge bg-secondary">{{ $s->code }}</span></td>
                     <td class="text-end">
-                      <form action="{{ route('master.stages.destroy', $s->id) }}" method="POST">
+                      <button type="button" class="btn btn-sm btn-outline-warning me-1" data-bs-toggle="modal"
+                        data-bs-target="#editStageModal{{ $s->id }}">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+
+                      <!-- Modal Edit -->
+                      <div class="modal fade" id="editStageModal{{ $s->id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Edit Jenjang</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('master.stages.update', $s->id) }}" method="POST">
+                              @csrf @method('PUT')
+                              <div class="modal-body text-start">
+                                <div class="mb-3">
+                                  <label class="form-label">Nama Jenjang</label>
+                                  <input type="text" name="name" class="form-control" value="{{ $s->name }}" required>
+                                </div>
+                                <div class="mb-3">
+                                  <label class="form-label">Kode</label>
+                                  <input type="text" name="code" class="form-control" value="{{ $s->code }}" required>
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+
+                      <form action="{{ route('master.stages.destroy', $s->id) }}" method="POST" class="d-inline">
                         @csrf @method('DELETE')
                         <button type="button" class="btn btn-sm btn-outline-danger btn-delete"
                           data-text="Hapus Jenjang ini?"><i class="bi bi-trash"></i></button>
