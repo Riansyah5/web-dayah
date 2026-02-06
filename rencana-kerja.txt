@@ -6,12 +6,17 @@ rekap absen tahfizh: guru dan santri
 maintenance sistem untuk absen tahfizh
 tabel evaluasi bulanan rekap tahfizh
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
-hubungkan data tahun masuk dengan chart di dashboard
+tambah kolom total untuk fix penggajian
+tambah modal untuk catatan evaluasi
+buat edit jenjang di data master
+buat fitur untuk aktif/nonaktifkan menu di sidebar
+
 
 
 
 
 ============================================================================================
+hubungkan data tahun masuk dengan chart di dashboard
 cek status kehadiran bagi yang badal di monitoring index
 monitoring absen tahfizh
 -rekap absensi santri

@@ -207,6 +207,21 @@
 @endpush
 @section('content')
 
+  @php
+    // Mengambil data pertumbuhan santri berdasarkan tahun masuk (acceptance_date)
+    // Grouping berdasarkan tahun dan menghitung totalnya
+    $growthData = \App\Models\Student::selectRaw('YEAR(acceptance_date) as year, count(*) as total')
+        ->whereNotNull('acceptance_date')
+        ->groupBy('year')
+        ->orderBy('year', 'desc')
+        ->limit(5) // Ambil 5 tahun terakhir
+        ->get()
+        ->sortBy('year'); // Urutkan kembali dari tahun terlama ke terbaru
+
+    $growthYears = $growthData->pluck('year')->values();
+    $growthTotals = $growthData->pluck('total')->values();
+  @endphp
+
   <div id="dashboard-page" class="container-fluid px-md-4 py-4">
 
     <div class="row align-items-center mb-4">
@@ -415,8 +430,8 @@
     // 1. Bar Chart (Pertumbuhan)
     var optionsGrowth = {
       series: [{
-        name: 'Total Santri',
-        data: [800, 950, 1050, 1150, 1250]
+        name: 'Santri Masuk',
+        data: @json($growthTotals)
       }],
       chart: {
         type: 'bar',
@@ -442,7 +457,7 @@
         colors: ['transparent']
       },
       xaxis: {
-        categories: ['2021', '2022', '2023', '2024', '2025'],
+        categories: @json($growthYears),
         axisBorder: {
           show: false
         },
