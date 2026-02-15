@@ -22,6 +22,69 @@
     Menampilkan data periode: <strong>{{ \Carbon\Carbon::parse($startDate)->translatedFormat('d M Y') }}</strong> s.d <strong>{{ \Carbon\Carbon::parse($endDate)->translatedFormat('d M Y') }}</strong>
   </div>
 
+  <div class="row g-3 mb-4">
+    <div class="col-8">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-body d-flex align-items-center">
+            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 70px; height: 70px;">
+              <i class="bi bi-check-circle-fill text-success fs-3"></i>
+            </div>
+            <div>
+              <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Hadir</h6>
+              <h3 class="mb-0 fw-bold">{{ $journals->filter(fn($j) => !($j->original_teacher_id && $j->original_teacher_id != $teacher->id))->count() }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-body d-flex align-items-center">
+            <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 70px; height: 70px;">
+              <i class="bi bi-envelope-paper-fill text-warning fs-3"></i>
+            </div>
+            <div>
+              <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Izin</h6>
+              <h3 class="mb-0 fw-bold">{{ $permissions->count() }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-body d-flex align-items-center">
+            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 70px; height: 70px;">
+              <i class="bi bi-arrow-repeat text-primary fs-3"></i>
+            </div>
+            <div>
+              <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Badal</h6>
+              <h3 class="mb-0 fw-bold">{{ $journals->filter(fn($j) => $j->original_teacher_id && $j->original_teacher_id != $teacher->id)->count() }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="col-4">
+      <div class="card border-0 shadow-sm rounded-4 h-100 bg-warning text-white">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-1">
+          <h6 class="text-white text-uppercase fw-bold mb-2">Total Jam Halaqah</h6>
+          @if(isset($totalHours))
+          <h2 class="fw-bold mb-3">{{ $totalHours->total_hours ?? 0 }} Jam</h2>
+          <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
+            <i class="bi bi-pencil-square me-1"></i> Edit Jam
+          </button>
+          @else
+          <button type="button" class="btn btn-light btn-lg rounded-pill px-4 text-info fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
+            <i class="bi bi-calculator me-2"></i> Input Jam
+          </button>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row g-4">
     <div class="col-lg-8">
       <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -52,16 +115,16 @@
                 <td>
                   <span class="font-monospace fs-6">{{ $j->clock_in->format('H:i') }}</span>
                   @php
-                    $scheduleStart = \Carbon\Carbon::parse($j->date->toDateString() . ' ' . $j->schedule->start_time);
+                  $scheduleStart = \Carbon\Carbon::parse($j->date->toDateString() . ' ' . $j->schedule->start_time);
                   @endphp
                   @if($j->clock_in->gt($scheduleStart))
-                    @php
-                      // Hitung selisih menit dari jam mulai yang sebenarnya
-                      $lateMinutes = $scheduleStart->diffInMinutes($j->clock_in);
-                    @endphp
-                    <span class="badge bg-danger ms-1" style="font-size: 0.7em;"><i class="bi bi-clock"></i> {{ $lateMinutes }} menit</span>
+                  @php
+                  // Hitung selisih menit dari jam mulai yang sebenarnya
+                  $lateMinutes = $scheduleStart->diffInMinutes($j->clock_in);
+                  @endphp
+                  <span class="badge bg-danger ms-1" style="font-size: 0.7em;"><i class="bi bi-clock"></i> {{ $lateMinutes }} menit</span>
                   @else
-                    <span class="badge bg-success ms-1" style="font-size: 0.7em;">Tepat Waktu</span>
+                  <span class="badge bg-success ms-1" style="font-size: 0.7em;">Tepat Waktu</span>
                   @endif
                 </td>
                 <td>
@@ -74,37 +137,37 @@
                 </td>
                 <td class="text-center">
                   @if ($j->photo_proof || ($j->latitude && $j->longitude))
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-2" data-bs-toggle="modal" data-bs-target="#proofModal{{ $j->id }}">
-                      <i class="bi bi-eye-fill me-1"></i> Lihat
-                    </button>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-2" data-bs-toggle="modal" data-bs-target="#proofModal{{ $j->id }}">
+                    <i class="bi bi-eye-fill me-1"></i> Lihat
+                  </button>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="proofModal{{ $j->id }}" tabindex="-1" aria-labelledby="proofModalLabel{{ $j->id }}" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content rounded-4">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="proofModalLabel{{ $j->id }}">Bukti Kehadiran</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            @if ($j->photo_proof)
-                              <p class="fw-bold small text-muted mb-2">FOTO BUKTI</p>
-                              <a href="{{ asset('storage/' . $j->photo_proof) }}" target="_blank">
-                                <img src="{{ asset('storage/' . $j->photo_proof) }}" class="img-fluid rounded shadow-sm mb-3" alt="Bukti Foto">
-                              </a>
-                            @endif
+                  <!-- Modal -->
+                  <div class="modal fade" id="proofModal{{ $j->id }}" tabindex="-1" aria-labelledby="proofModalLabel{{ $j->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content rounded-4">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="proofModalLabel{{ $j->id }}">Bukti Kehadiran</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          @if ($j->photo_proof)
+                          <p class="fw-bold small text-muted mb-2">FOTO BUKTI</p>
+                          <a href="{{ asset('storage/' . $j->photo_proof) }}" target="_blank">
+                            <img src="{{ asset('storage/' . $j->photo_proof) }}" class="img-fluid rounded shadow-sm mb-3" alt="Bukti Foto">
+                          </a>
+                          @endif
 
-                            @if ($j->latitude && $j->longitude)
-                              <p class="fw-bold small text-muted mb-2">LOKASI GPS</p>
-                              <a href="https://www.google.com/maps/search/?api=1&query={{ $j->latitude }},{{ $j->longitude }}" target="_blank" class="btn btn-outline-primary w-100">
-                                <i class="bi bi-geo-alt-fill me-2"></i> Buka di Google Maps
-                              </a>
-                            @endif
-                          </div>
+                          @if ($j->latitude && $j->longitude)
+                          <p class="fw-bold small text-muted mb-2">LOKASI GPS</p>
+                          <a href="https://www.google.com/maps/search/?api=1&query={{ $j->latitude }},{{ $j->longitude }}" target="_blank" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-geo-alt-fill me-2"></i> Buka di Google Maps
+                          </a>
+                          @endif
                         </div>
                       </div>
                     </div>
+                  </div>
                   @else
                   <span class="text-muted small">-</span>
                   @endif
@@ -147,6 +210,56 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Input Jam Halaqah -->
+<div class="modal fade" id="hoursModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Input Total Jam Halaqah</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ route('tahfizh.admin.reports.store_hours', $teacher->id) }}" method="POST">
+        @csrf
+        <input type="hidden" name="period" value="{{ \Carbon\Carbon::parse($startDate)->format('Y-m') }}">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="total_hours" class="form-label text-muted small fw-bold">TOTAL JAM</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="total_hours" name="total_hours" value="{{ isset($totalHours) ? $totalHours : ($journals->count() + $permissions->count()) }}" required>
+              <span class="input-group-text bg-light">Jam</span>
+            </div>
+            <div class="form-text">Estimasi otomatis (Hadir + Badal + Izin): {{ $journals->count() + $permissions->count() }}. Silakan sesuaikan manual (misal: hanya izin sakit/tugas).</div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-info text-white rounded-pill px-4">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 @endsection
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  @if(session('success'))
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: "{{ session('success') }}",
+      timer: 3000,
+      showConfirmButton: false
+    });
+  @endif
+
+  @if(session('error'))
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal!',
+      text: "{{ session('error') }}",
+    });
+  @endif
+</script>
 @endpush

@@ -2,20 +2,25 @@ buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 update input wali di student/edit
 
-rekap absen tahfizh: guru dan santri
 maintenance sistem untuk absen tahfizh
-tabel evaluasi bulanan rekap tahfizh
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 tambah kolom total untuk fix penggajian
 tambah modal untuk catatan evaluasi
-buat edit jenjang di data master
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 
 
 
 
 
+
+
+
+
+
 ============================================================================================
+buat edit jenjang di data master
+tabel evaluasi bulanan rekap tahfizh
+rekap absen tahfizh: guru dan santri
 hubungkan data tahun masuk dengan chart di dashboard
 cek status kehadiran bagi yang badal di monitoring index
 monitoring absen tahfizh

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Tahfizh\Admin;
 
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 use App\Models\Student;
-use App\Models\Teacher;
-use Illuminate\Http\Request;
 use App\Models\TahfizhHalaqah;
 use App\Models\TahfizhJournal;
+use App\Models\TahfizhMonthlyReport;
+use App\Models\Teacher;
 use App\Models\TeacherPermission;
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class TahfizhAttendanceReportController extends Controller
 {
@@ -157,7 +158,12 @@ class TahfizhAttendanceReportController extends Controller
                     ->orderBy('date', 'desc')
                     ->get();
 
-        return view('tahfizh.admin.report.detail_teacher', compact('teacher', 'journals', 'permissions', 'startDate', 'endDate'));
+        // ambil data total jam halaqah dari tabel tahfizh_monthly_reports
+        $totalHours = TahfizhMonthlyReport::where('teacher_id', $teacherId)
+                        ->where('period', Carbon::parse($startDate)->format('Y-m'))
+                        ->first();
+
+        return view('tahfizh.admin.report.detail_teacher', compact('teacher', 'journals', 'permissions', 'startDate', 'endDate', 'totalHours'));
     }
 
     // ===========================

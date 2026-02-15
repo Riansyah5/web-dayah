@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Tahfizh;
 
 use App\Http\Controllers\Controller;
 use App\Models\Student;
+use App\Models\TahfizhMonthlyReport;
 use App\Models\TahfizhSetoran;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class TahfizhReportController extends Controller
 {
@@ -65,12 +66,36 @@ class TahfizhReportController extends Controller
         // 1. Referensi Standar Jumlah Ayat Per Juz (Estimasi Mushaf Madinah)
         // Array Key = Nomor Juz, Value = Total Ayat
         $juzStandards = [
-            1 => 148, 2 => 111, 3 => 126, 4 => 131, 5 => 124,
-            6 => 110, 7 => 149, 8 => 142, 9 => 159, 10 => 127,
-            11 => 151, 12 => 170, 13 => 154, 14 => 227, 15 => 185,
-            16 => 269, 17 => 190, 18 => 202, 19 => 339, 20 => 171,
-            21 => 178, 22 => 169, 23 => 357, 24 => 175, 25 => 246,
-            26 => 195, 27 => 216, 28 => 137, 29 => 431, 30 => 564
+            1 => 148,
+            2 => 111,
+            3 => 126,
+            4 => 131,
+            5 => 124,
+            6 => 110,
+            7 => 149,
+            8 => 142,
+            9 => 159,
+            10 => 127,
+            11 => 151,
+            12 => 170,
+            13 => 154,
+            14 => 227,
+            15 => 185,
+            16 => 269,
+            17 => 190,
+            18 => 202,
+            19 => 339,
+            20 => 171,
+            21 => 178,
+            22 => 169,
+            23 => 357,
+            24 => 175,
+            25 => 246,
+            26 => 195,
+            27 => 216,
+            28 => 137,
+            29 => 431,
+            30 => 564
         ];
 
         // 2. Hitung Total Ayat yang sudah disetor Siswa per Juz
@@ -89,7 +114,7 @@ class TahfizhReportController extends Controller
         for ($i = 1; $i <= 30; $i++) {
             $collected = $studentProgress[$i] ?? 0;
             $standard = $juzStandards[$i];
-            
+
             $totalVersesHafal += $collected;
 
             // Logika Penentuan Status
@@ -97,7 +122,7 @@ class TahfizhReportController extends Controller
                 // Jika ayat yg disetor >= standar, dianggap KHATAM
                 // (Note: >= untuk antisipasi jika ada overlapping setoran)
                 $juzStatus[$i] = [
-                    'status' => 'khatam', 
+                    'status' => 'khatam',
                     'color' => 'btn-success', // Hijau Pekat
                     'percent' => 100
                 ];
@@ -105,14 +130,14 @@ class TahfizhReportController extends Controller
                 // Jika ada setoran tapi belum mencapai target
                 $percent = round(($collected / $standard) * 100);
                 $juzStatus[$i] = [
-                    'status' => 'process', 
+                    'status' => 'process',
                     'color' => 'btn-warning text-dark', // Kuning/Oranye
                     'percent' => $percent
                 ];
             } else {
                 // Belum disentuh
                 $juzStatus[$i] = [
-                    'status' => 'none', 
+                    'status' => 'none',
                     'color' => 'btn-outline-light text-muted border-0 bg-light', // Abu-abu
                     'percent' => 0
                 ];
@@ -120,12 +145,38 @@ class TahfizhReportController extends Controller
         }
 
         return view('tahfizh.report.show', compact(
-            'student', 'totalSetoran', 'totalZiyadah', 'lastSetoran',
+            'student',
+            'totalSetoran',
+            'totalZiyadah',
+            'lastSetoran',
             // ... Variable chart & history ...
-            'months', 'counts', 'pieData', 'history',
+            'months',
+            'counts',
+            'pieData',
+            'history',
             // Variable Baru:
-            'juzStatus', 'totalVersesHafal'
+            'juzStatus',
+            'totalVersesHafal'
         ));
+    }
 
+    public function storeHours(Request $request, $teacherId)
+    {
+        $request->validate([
+            'total_hours' => 'required|integer|min:0',
+            'period' => 'required|date_format:Y-m',
+        ]);
+
+        TahfizhMonthlyReport::updateOrCreate(
+            [
+                'teacher_id' => $teacherId,
+                'period' => $request->period
+            ],
+            [
+                'total_hours' => $request->total_hours
+            ]
+        );
+
+        return back()->with('success', 'Total jam halaqah berhasil diperbarui.');
     }
 }

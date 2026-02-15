@@ -312,6 +312,7 @@ Route::middleware('auth')->group(function () {
 			Route::get('/student', [TahfizhAttendanceReportController::class, 'studentRecap'])->name('student');
 			Route::get('/teacher/{id}', [TahfizhAttendanceReportController::class, 'teacherDetail'])->name('teacher_detail');
 			Route::get('/student/{id}', [TahfizhAttendanceReportController::class, 'studentDetail'])->name('student_detail');
+			Route::post('/tahfizh/admin/reports/teacher/{teacher}/hours', [TahfizhReportController::class, 'storeHours'])->name('store_hours');
 		});
 
 		// Dashboard & Absensi
