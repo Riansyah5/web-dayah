@@ -69,6 +69,14 @@ class TahfizhAttendanceReportController extends Controller
             ];
         });
 
+        // Ambil data total jam halaqah dari tabel tahfizh_monthly_reports untuk setiap guru
+        foreach ($reportData as $data) {
+            $monthlyReport = TahfizhMonthlyReport::where('teacher_id', $data->id)
+                            ->where('period', Carbon::parse($startDate)->format('Y-m'))
+                            ->first();
+            $data->total_hours = $monthlyReport ? $monthlyReport->total_hours : 0;
+        }
+
         return view('tahfizh.admin.report.teacher', compact('reportData', 'startDate', 'endDate'));
     }
 

@@ -4,28 +4,30 @@
 @endpush
 @push('styles')
 <style>
-.custom-scrollbar {
-  scrollbar-width: thin;              /* Firefox */
-  scrollbar-color: rgba(255,255,255,.4) transparent; /* Firefox */
-}
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: rgba(255, 255, 255, .4) transparent;
+    /* Firefox */
+  }
 
-/* Chrome, Edge, Safari */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
+  /* Chrome, Edge, Safari */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255,255,255,.4);
-  border-radius: 10px;
-}
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, .4);
+    border-radius: 10px;
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255,255,255,.6);
-}
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, .6);
+  }
 
 </style>
 @endpush
@@ -94,20 +96,21 @@
       <div class="card border-0 shadow-sm rounded-4 h-100 bg-warning text-white">
         <div class="card-body d-flex flex-column align-items-center justify-content-center py-0 px-2">
           @if(isset($totalHours))
-            <div class="row">
-              <div class="col-md-6">
-                <h6 class="text-white text-uppercase fw-bold mb-1">Total Jam Halaqah</h6>
-                <h5 class="fw-bold mb-1 display-6">{{ $totalHours->total_hours ?? 0 }} <span class="fs-4">Jam</span></h5>
-                <button type="button" class="btn btn-light btn-sm rounded px-1 text-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
-                  <i class="bi bi-pencil-square me-1"></i> Edit jam
-                </button>
-              </div>
-              <div class="col-md-6">
-                <div class="mt-3 px-2 py-1 rounded bg-black bg-opacity-10 text-white small custom-scrollbar" style="font-size: 0.75em; max-height: 80px; overflow: auto;">
-                  <i class="bi bi-journal-text me-1"></i> {{ $totalHours->notes ?: 'tidak ada catatan.......' }}
-                </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-white text-uppercase fw-bold mb-1">Total Jam Terhitung</h6>
+              <h5 class="fw-bold mb-1 display-6">{{ $totalHours->total_hours ?? 0 }} <span class="fs-4">Jam</span></h5>
+              <button type="button" class="btn btn-info btn-sm rounded px-1 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
+                <i class="bi bi-pencil-square me-1"></i> Edit jam
+              </button>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-white fw-bold">Catatan:</h6>
+              <div class="px-2 py-1 rounded bg-black bg-opacity-10 text-white small custom-scrollbar" style="font-size: 0.75em; max-height: 75px; overflow: auto;">
+                <i class="bi bi-journal-text me-1"></i> {{ $totalHours->notes ?: 'tidak ada catatan.......' }}
               </div>
             </div>
+          </div>
           @else
           <h6 class="text-white text-uppercase fw-bold mb-2">Total Jam Halaqah</h6>
           <button type="button" class="btn btn-light btn-lg rounded-pill px-4 text-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
@@ -260,11 +263,11 @@
           <div class="mb-3">
             <label for="total_hours" class="form-label text-muted small fw-bold">TOTAL JAM</label>
             <div class="input-group">
-              <input type="number" class="form-control" id="total_hours" name="total_hours" value="{{ isset($totalHours) ? $totalHours : ($journals->count() + $permissions->count()) }}" required>
+              <input type="number" class="form-control" id="total_hours" name="total_hours" value="{{ isset($totalHours) ? $totalHours->total_hours : ($journals->count() + $permissions->count()) }}" required>
               <span class="input-group-text bg-light">Jam</span>
             </div>
             <label for="note" class="form-label text-muted small fw-bold">CATATAN</label>
-            <textarea class="form-control" id="note" name="note" rows="2">{{ old('note', $monthlyReport?->notes ?? '') }}</textarea>
+            <textarea class="form-control" id="note" name="note" rows="6">{{ old('note', $totalHours->notes ?? '') }}</textarea>
             <div class="form-text">Estimasi otomatis (Hadir + Badal + Izin): {{ $journals->count() + $permissions->count() }}. Silakan sesuaikan manual (misal: hanya izin sakit/tugas).</div>
           </div>
         </div>

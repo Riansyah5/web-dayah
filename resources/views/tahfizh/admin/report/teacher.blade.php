@@ -40,6 +40,7 @@
               <th class="text-center text-warning">Izin (Approved)</th>
               <th class="text-center text-primary">Jadi Badal</th>
               <th class="text-center fw-bold">Total Log</th>
+              <th class="text-center fw-bold text-danger">Total Terhitung</th>
               <th class="text-center fw-bold">Aksi</th>
             </tr>
           </thead>
@@ -70,6 +71,7 @@
                 @endif
               </td>
               <td class="text-center fw-bold">{{ $data->total_aktivitas }}</td>
+              <td class="text-center"><span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">{{ $data->total_hours }}</span></td>
               <td class="text-center">
                 <a href="{{ route('tahfizh.admin.reports.teacher_detail', ['id' => $data->id, 'start_date' => $startDate, 'end_date' => $endDate]) }}" class="btn btn-outline-secondary rounded-pill btn-sm">
                   Detail <i class="bi bi-box-arrow-up-right small ms-1"></i>
