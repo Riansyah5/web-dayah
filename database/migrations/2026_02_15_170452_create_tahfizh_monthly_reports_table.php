@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignUlid('teacher_id');
             $table->string('period', 7); // Format: YYYY-MM
             $table->integer('total_hours')->default(0);
+            $table->text('notes')->nullable(); // Catatan tambahan untuk bulan tersebut
             // $table->decimal('total_salary', 15, 2)->nullable(); // Persiapan untuk fitur gaji
             $table->timestamps();
 

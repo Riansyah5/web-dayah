@@ -3,7 +3,31 @@
 @push('link')
 @endpush
 @push('styles')
+<style>
+.custom-scrollbar {
+  scrollbar-width: thin;              /* Firefox */
+  scrollbar-color: rgba(255,255,255,.4) transparent; /* Firefox */
+}
 
+/* Chrome, Edge, Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,.4);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255,255,255,.6);
+}
+
+</style>
 @endpush
 @section('content')
 <div class="container py-4">
@@ -24,59 +48,69 @@
 
   <div class="row g-3 mb-4">
     <div class="col-8">
-    <div class="row g-2">
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 70px; height: 70px;">
-              <i class="bi bi-check-circle-fill text-success fs-3"></i>
+      <div class="row g-2">
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+              <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
+                <i class="bi bi-check-circle-fill text-success fs-3"></i>
+              </div>
+              <div>
+                <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Hadir</h6>
+                <h3 class="mb-0 fw-bold">{{ $journals->filter(fn($j) => !($j->original_teacher_id && $j->original_teacher_id != $teacher->id))->count() }}</h3>
+              </div>
             </div>
-            <div>
-              <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Hadir</h6>
-              <h3 class="mb-0 fw-bold">{{ $journals->filter(fn($j) => !($j->original_teacher_id && $j->original_teacher_id != $teacher->id))->count() }}</h3>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+              <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
+                <i class="bi bi-envelope-paper-fill text-warning fs-3"></i>
+              </div>
+              <div>
+                <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Izin</h6>
+                <h3 class="mb-0 fw-bold">{{ $permissions->count() }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+              <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
+                <i class="bi bi-arrow-repeat text-primary fs-3"></i>
+              </div>
+              <div>
+                <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Badal</h6>
+                <h3 class="mb-0 fw-bold">{{ $journals->filter(fn($j) => $j->original_teacher_id && $j->original_teacher_id != $teacher->id)->count() }}</h3>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 70px; height: 70px;">
-              <i class="bi bi-envelope-paper-fill text-warning fs-3"></i>
-            </div>
-            <div>
-              <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Izin</h6>
-              <h3 class="mb-0 fw-bold">{{ $permissions->count() }}</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-          <div class="card-body d-flex align-items-center">
-            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex justify-content-center align-items-center" style="width: 70px; height: 70px;">
-              <i class="bi bi-arrow-repeat text-primary fs-3"></i>
-            </div>
-            <div>
-              <h6 class="text-muted mb-1 small text-uppercase fw-bold">Total Badal</h6>
-              <h3 class="mb-0 fw-bold">{{ $journals->filter(fn($j) => $j->original_teacher_id && $j->original_teacher_id != $teacher->id)->count() }}</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     </div>
     <div class="col-4">
       <div class="card border-0 shadow-sm rounded-4 h-100 bg-warning text-white">
-        <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-1">
-          <h6 class="text-white text-uppercase fw-bold mb-2">Total Jam Halaqah</h6>
+        <div class="card-body d-flex flex-column align-items-center justify-content-center py-0 px-2">
           @if(isset($totalHours))
-          <h2 class="fw-bold mb-3">{{ $totalHours->total_hours ?? 0 }} Jam</h2>
-          <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
-            <i class="bi bi-pencil-square me-1"></i> Edit Jam
-          </button>
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="text-white text-uppercase fw-bold mb-1">Total Jam Halaqah</h6>
+                <h5 class="fw-bold mb-1 display-6">{{ $totalHours->total_hours ?? 0 }} <span class="fs-4">Jam</span></h5>
+                <button type="button" class="btn btn-light btn-sm rounded px-1 text-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
+                  <i class="bi bi-pencil-square me-1"></i> Edit jam
+                </button>
+              </div>
+              <div class="col-md-6">
+                <div class="mt-3 px-2 py-1 rounded bg-black bg-opacity-10 text-white small custom-scrollbar" style="font-size: 0.75em; max-height: 80px; overflow: auto;">
+                  <i class="bi bi-journal-text me-1"></i> {{ $totalHours->notes ?: 'tidak ada catatan.......' }}
+                </div>
+              </div>
+            </div>
           @else
-          <button type="button" class="btn btn-light btn-lg rounded-pill px-4 text-info fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
+          <h6 class="text-white text-uppercase fw-bold mb-2">Total Jam Halaqah</h6>
+          <button type="button" class="btn btn-light btn-lg rounded-pill px-4 text-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#hoursModal">
             <i class="bi bi-calculator me-2"></i> Input Jam
           </button>
           @endif
@@ -229,6 +263,8 @@
               <input type="number" class="form-control" id="total_hours" name="total_hours" value="{{ isset($totalHours) ? $totalHours : ($journals->count() + $permissions->count()) }}" required>
               <span class="input-group-text bg-light">Jam</span>
             </div>
+            <label for="note" class="form-label text-muted small fw-bold">CATATAN</label>
+            <textarea class="form-control" id="note" name="note" rows="2">{{ old('note', $monthlyReport?->notes ?? '') }}</textarea>
             <div class="form-text">Estimasi otomatis (Hadir + Badal + Izin): {{ $journals->count() + $permissions->count() }}. Silakan sesuaikan manual (misal: hanya izin sakit/tugas).</div>
           </div>
         </div>
@@ -245,21 +281,22 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   @if(session('success'))
-    Swal.fire({
-      icon: 'success',
-      title: 'Berhasil!',
-      text: "{{ session('success') }}",
-      timer: 3000,
-      showConfirmButton: false
-    });
+  Swal.fire({
+    icon: 'success'
+    , title: 'Berhasil!'
+    , text: "{{ session('success') }}"
+    , timer: 3000
+    , showConfirmButton: false
+  });
   @endif
 
   @if(session('error'))
-    Swal.fire({
-      icon: 'error',
-      title: 'Gagal!',
-      text: "{{ session('error') }}",
-    });
+  Swal.fire({
+    icon: 'error'
+    , title: 'Gagal!'
+    , text: "{{ session('error') }}"
+  , });
   @endif
+
 </script>
 @endpush

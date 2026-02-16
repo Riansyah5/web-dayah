@@ -7,6 +7,7 @@ aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 tambah kolom total untuk fix penggajian
 tambah modal untuk catatan evaluasi
 buat fitur untuk aktif/nonaktifkan menu di sidebar
+rekap absen pelajaran perhari persantri
 
 
 

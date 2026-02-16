@@ -13,6 +13,7 @@ class TahfizhMonthlyReport extends Model
         'teacher_id',
         'period',
         'total_hours',
+        'notes',
         // 'total_salary'
     ];
 

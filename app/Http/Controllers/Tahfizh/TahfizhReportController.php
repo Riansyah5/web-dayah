@@ -165,18 +165,20 @@ class TahfizhReportController extends Controller
         $request->validate([
             'total_hours' => 'required|integer|min:0',
             'period' => 'required|date_format:Y-m',
+            'note' => 'nullable|string|max:255'
         ]);
 
         TahfizhMonthlyReport::updateOrCreate(
             [
                 'teacher_id' => $teacherId,
-                'period' => $request->period
+                'period' => $request->period,
+                'notes' => $request->note,
             ],
             [
                 'total_hours' => $request->total_hours
             ]
         );
 
-        return back()->with('success', 'Total jam halaqah berhasil diperbarui.');
+        return back()->with('success', 'Total jam halaqah dan catatan berhasil diperbarui.');
     }
 }
