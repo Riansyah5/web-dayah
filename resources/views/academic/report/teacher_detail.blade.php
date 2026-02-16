@@ -308,6 +308,12 @@
               </div>
 
               <div class="mb-3">
+                <div class="card bg-warning border-0 mb-3 shadow-sm bg-opacity-75">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-1">Total Jam Terhitung</h6>
+                    <h2 class="fw-bold mb-0 text-primary">{{ $eval->total_hours }} <span class="fs-6 text-muted">Jam</span></h2>
+                  </div>
+                </div>
                 <label class="small text-muted fw-bold">Rating Diberikan:</label>
                 <div class="text-warning fs-4">
                   @for ($i = 1; $i <= 5; $i++)
@@ -330,6 +336,13 @@
                 <input type="hidden" name="month" value="{{ (int) $month }}">
                 <input type="hidden" name="year" value="{{ (int) $year }}">
                 <input type="hidden" name="action" id="actionInput">
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Total Jam Terhitung</label>
+                  <input type="number" name="total_hours" class="form-control" min="0"
+                    value="{{ $eval->total_hours ?? $summary['total_teaching'] + $summary['total_substitute'] - ($summary['total_absent'] * 2) }}"
+                    required>
+                </div>
 
                 <div class="mb-3">
                   <label class="form-label fw-bold">Berikan Rating Bulanan</label>

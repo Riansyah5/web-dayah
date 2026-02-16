@@ -8,6 +8,7 @@ tambah kolom total untuk fix penggajian
 tambah modal untuk catatan evaluasi
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 rekap absen pelajaran perhari persantri
+tambah input dan card total jam mengajar guru pelajaran untuk penggajian
 
 
 

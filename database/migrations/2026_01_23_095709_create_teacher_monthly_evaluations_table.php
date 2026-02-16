@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('total_substitute_hours')->default(0); // Total Jam Badal
             $table->integer('total_late_minutes')->default(0); // Total menit keterlambatan (Opsional)
             $table->integer('total_absent_days')->default(0); // Total hari izin
+            $table->integer('total_hours')->default(0); // Total jam terhitung
             
             // Data Kualitatif (Inputan Kepala Sekolah)
             $table->text('headmaster_note')->nullable(); // Catatan Evaluasi: "Tingkatkan kedisiplinan"

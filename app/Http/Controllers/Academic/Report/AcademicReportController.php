@@ -231,6 +231,7 @@ class AcademicReportController extends Controller
                 'total_absent_days' => $permissions->count(),
 
                 // Simpan Inputan Kepala Sekolah
+                'total_hours' => $request->total_hours, // Total Jam Terhitung (Input Manual)
                 'rating' => $request->rating,
                 'headmaster_note' => $request->headmaster_note,
             ]
