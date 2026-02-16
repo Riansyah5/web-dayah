@@ -74,7 +74,7 @@ class TahfizhAttendanceReportController extends Controller
             $monthlyReport = TahfizhMonthlyReport::where('teacher_id', $data->id)
                             ->where('period', Carbon::parse($startDate)->format('Y-m'))
                             ->first();
-            $data->total_hours = $monthlyReport ? $monthlyReport->total_hours : 0;
+            $data->total_hours = $monthlyReport ? $monthlyReport->total_hours : 'belum ditentukan';
         }
 
         return view('tahfizh.admin.report.teacher', compact('reportData', 'startDate', 'endDate'));
