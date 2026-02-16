@@ -35,6 +35,7 @@
               <th class="text-center">Tatap Muka (Jam)</th>
               <th class="text-center">Badal (Jam)</th>
               <th class="text-center">Total Mengajar</th>
+              <th class="text-center text-danger">Total Jam Terhitung</th>
               <th class="text-center">Aksi</th>
             </tr>
           </thead>
@@ -48,6 +49,7 @@
                   {{ $row['sub_count'] > 0 ? '+' . $row['sub_count'] : '-' }}
                 </td>
                 <td class="text-center fw-bold fs-5">{{ $row['total_count'] }}</td>
+                <td class="text-center"><span class="badge bg-danger bg-opacity-10 rounded-pill text-danger px-3 fs-5">{{ $row['total_hours'] ?: 'belum ditentukan' }}</span></td>
                 <td class="text-center">
                   <a href="{{ route('academic.report.teacher.detail', ['teacher' => $row['teacher']->id, 'month' => $month, 'year' => $year]) }}"
                     class="btn btn-sm btn-outline-secondary rounded-pill">Detail<i class="bi bi-box-arrow-up-right small ms-1"></i></a>

@@ -36,6 +36,10 @@ class AcademicReportController extends Controller
 
             $mainTeaching = $journals->where('is_substitute', false)->count();
             $substituteTeaching = $journals->where('is_substitute', true)->count();
+            $totalHours = TeacherMonthlyEvaluation::where('teacher_id', $teacher->id)
+                ->where('month', $month)
+                ->where('year', $year)
+                ->value('total_hours');
 
             // Hitung Izin (Dari tabel teacher_permissions Tahap 2)
             // $permits = ... (Query ke tabel permissions)
@@ -45,6 +49,7 @@ class AcademicReportController extends Controller
                 'main_count' => $mainTeaching, // Mengajar jam sendiri
                 'sub_count' => $substituteTeaching, // Mengajar badal
                 'total_count' => $mainTeaching + $substituteTeaching,
+                'total_hours' => $totalHours,
             ];
         });
 
