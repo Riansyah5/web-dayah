@@ -7,9 +7,6 @@
 @endpush
 @section('content')
 <div class="container py-4">
-<pre>{{ print_r($stats, true) }}</pre>
-<pre>{{ $oldDate }}</pre>
-
   <div class="row mb-4">
     <div class="col-md-8">
       <h4 class="fw-bold"><i class="bi bi-shield-lock me-2"></i>Data Pruning & Storage Management</h4>
@@ -37,7 +34,7 @@
             <div class="mb-4">
               <label class="form-label fw-bold small">Batas Waktu (Data yang lebih tua dari):</label>
               <div class="input-group">
-                <input type="number" name="months" class="form-control shadow-none" value="6" min="1">
+                <input type="number" name="months" class="form-control shadow-none" value="2" min="1">
                 <span class="input-group-text">Bulan</span>
               </div>
               <div class="form-text mt-2">
@@ -62,13 +59,13 @@
       <div class="row g-3 mb-4">
         <div class="col-6">
           <div class="p-3 bg-white rounded-4 shadow-sm border-start border-primary border-4">
-            <small class="text-muted d-block">Foto > 6 Bulan</small>
+            <small class="text-muted d-block">Foto > 2 Bulan</small>
             <span class="fs-4 fw-bold">{{ number_format($stats['old_photos']) }}</span> <small>File</small>
           </div>
         </div>
         <div class="col-6">
           <div class="p-3 bg-white rounded-4 shadow-sm border-start border-danger border-4">
-            <small class="text-muted d-block">Record > 6 Bulan</small>
+            <small class="text-muted d-block">Record > 2 Bulan</small>
             <span class="fs-4 fw-bold">{{ number_format($stats['old_records']) }}</span> <small>Baris</small>
           </div>
         </div>
@@ -82,7 +79,7 @@
               <tr class="small text-uppercase">
                 <th class="ps-3">Tanggal</th>
                 <th>Jenis</th>
-                <th>Jumlah</th>
+                <th class="text-center">Jumlah</th>
                 <th>Admin</th>
               </tr>
             </thead>
@@ -95,7 +92,7 @@
                     {{ $log->cleanup_type }}
                   </span>
                 </td>
-                <td class="fw-bold text-danger">-{{ $log->total_deleted }}</td>
+                <td class="fw-bold text-danger text-center">{{ $log->total_deleted }}</td>
                 <td>{{ $log->admin->name }}</td>
               </tr>
               @endforeach

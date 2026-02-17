@@ -2,7 +2,6 @@ buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 update input wali di student/edit
 
-maintenance sistem untuk absen tahfizh
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 
 buat fitur untuk aktif/nonaktifkan menu di sidebar
@@ -18,6 +17,7 @@ rekap absen pelajaran perhari persantri
 
 
 ============================================================================================
+maintenance sistem untuk absen tahfizh
 tambah kolom total untuk fix penggajian
 tambah input dan card total jam mengajar guru pelajaran untuk penggajian
 buat edit jenjang di data master

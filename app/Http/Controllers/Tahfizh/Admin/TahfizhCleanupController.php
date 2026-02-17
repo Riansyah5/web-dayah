@@ -17,8 +17,8 @@ class TahfizhCleanupController extends Controller
     {
         $recentLogs = TahfizhCleanupLog::with('admin')->latest()->take(10)->get();
         
-        // Estimasi data yang bisa dibersihkan (lebih dari 1 bulan)
-        $oldDate = Carbon::now()->subMonths(6);
+        // Estimasi data yang bisa dibersihkan (lebih dari 2 bulan)
+        $oldDate = Carbon::now()->subMonths(2);
         $stats = [
             'old_photos' => TahfizhJournal::whereDate('date', '<', $oldDate)->whereNotNull('photo_proof')->count(),
             'old_records' => TahfizhJournal::whereDate('date', '<', $oldDate)->count(),
