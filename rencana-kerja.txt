@@ -4,11 +4,9 @@ update input wali di student/edit
 
 maintenance sistem untuk absen tahfizh
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
-tambah kolom total untuk fix penggajian
-tambah modal untuk catatan evaluasi
+
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 rekap absen pelajaran perhari persantri
-tambah input dan card total jam mengajar guru pelajaran untuk penggajian
 
 
 
@@ -20,6 +18,8 @@ tambah input dan card total jam mengajar guru pelajaran untuk penggajian
 
 
 ============================================================================================
+tambah kolom total untuk fix penggajian
+tambah input dan card total jam mengajar guru pelajaran untuk penggajian
 buat edit jenjang di data master
 tabel evaluasi bulanan rekap tahfizh
 rekap absen tahfizh: guru dan santri

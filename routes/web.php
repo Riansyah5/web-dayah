@@ -1,53 +1,54 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DormController;
-use App\Http\Controllers\RoomController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\JabatanController;
-use App\Http\Controllers\PegawaiController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\ClassroomController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PromotionController;
-use App\Http\Controllers\ViolationController;
-use App\Http\Controllers\DataMasterController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\StudentExitController;
-use App\Http\Controllers\AcademicYearController;
-use App\Http\Controllers\RoomAssignmentController;
-use App\Http\Controllers\Academic\SyllabusController;
-use App\Http\Controllers\Tahfizh\TahfizhExportController;
-use App\Http\Controllers\Tahfizh\TahfizhReportController;
-use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
-use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
-use App\Http\Controllers\Tahfizh\TahfizhSettingController;
-use App\Http\Controllers\Academic\Grading\CourseController;
-use App\Http\Controllers\Academic\Student\AlumniController;
-use App\Http\Controllers\Academic\Schedule\PicketController;
-use App\Http\Controllers\System\SystemMaintenanceController;
 use App\Http\Controllers\Academic\AcademicCalendarController;
-use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
-use App\Http\Controllers\Academic\Student\GraduationController;
-use App\Http\Controllers\Tahfizh\Admin\MasterScheduleController;
-use App\Http\Controllers\Academic\Report\ReportSettingController;
-use App\Http\Controllers\Tahfizh\Admin\TahfizhScheduleController;
-use App\Http\Controllers\Academic\Report\AcademicReportController;
-use App\Http\Controllers\Academic\Report\StudentHistoryController;
-use App\Http\Controllers\Tahfizh\Journal\TahfizhJournalController;
+use App\Http\Controllers\Academic\Grading\CourseController;
+use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Journal\TeacherJournalController;
-use App\Http\Controllers\Academic\Schedule\SchedulePrintController;
-use App\Http\Controllers\Tahfizh\Admin\TahfizhMonitoringController;
-use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
-use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
-use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
-use App\Http\Controllers\Academic\Grading\GradingDashboardController;
-use App\Http\Controllers\Tahfizh\Teacher\TahfizhPermissionController;
 use App\Http\Controllers\Academic\Permission\TeacherPermissionController;
+use App\Http\Controllers\Academic\Report\AcademicReportController;
+use App\Http\Controllers\Academic\Report\ReportSettingController;
+use App\Http\Controllers\Academic\Report\StudentHistoryController;
+use App\Http\Controllers\Academic\Schedule\LessonScheduleController;
+use App\Http\Controllers\Academic\Schedule\PicketController;
+use App\Http\Controllers\Academic\Schedule\SchedulePrintController;
+use App\Http\Controllers\Academic\Student\AlumniController;
+use App\Http\Controllers\Academic\Student\GraduationController;
+use App\Http\Controllers\Academic\Student\PromoteToSeniorController;
+use App\Http\Controllers\Academic\SyllabusController;
+use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataMasterController;
+use App\Http\Controllers\DormController;
+use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\RoomAssignmentController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentExitController;
+use App\Http\Controllers\System\SystemMaintenanceController;
+use App\Http\Controllers\Tahfizh\Admin\MasterScheduleController;
 use App\Http\Controllers\Tahfizh\Admin\TahfizhAttendanceReportController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhCleanupController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhMonitoringController;
+use App\Http\Controllers\Tahfizh\Admin\TahfizhScheduleController;
+use App\Http\Controllers\Tahfizh\Journal\TahfizhJournalController;
+use App\Http\Controllers\Tahfizh\TahfizhAssessmentController;
+use App\Http\Controllers\Tahfizh\TahfizhExportController;
+use App\Http\Controllers\Tahfizh\TahfizhHalaqahController;
+use App\Http\Controllers\Tahfizh\TahfizhReportController;
+use App\Http\Controllers\Tahfizh\TahfizhSetoranController;
+use App\Http\Controllers\Tahfizh\TahfizhSettingController;
+use App\Http\Controllers\Tahfizh\Teacher\TahfizhPermissionController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ViolationController;
+use Illuminate\Support\Facades\Route;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -282,6 +283,11 @@ Route::middleware('auth')->group(function () {
 		Route::prefix('system')->name('system.')->group(function () {
 			Route::get('/maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
 			Route::post('/maintenance/cleanup', [SystemMaintenanceController::class, 'cleanup'])->name('maintenance.cleanup');
+		});
+		// Group Modul Cleanup Data Tahfizh
+		Route::prefix('tahfizh/admin/cleanup')->name('tahfizh.admin.cleanup.')->group(function () {
+			Route::get('/', [TahfizhCleanupController::class, 'index'])->name('index');
+			Route::post('/run', [TahfizhCleanupController::class, 'runCleanup'])->name('run');
 		});
 
 		// Group Modul Admin Tahfizh (Jadwal)

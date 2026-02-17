@@ -188,11 +188,13 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          @if ($j->photo_proof)
+                          @if ($j->photo_proof != null)
                           <p class="fw-bold small text-muted mb-2">FOTO BUKTI</p>
                           <a href="{{ asset('storage/' . $j->photo_proof) }}" target="_blank">
                             <img src="{{ asset('storage/' . $j->photo_proof) }}" class="img-fluid rounded shadow-sm mb-3" alt="Bukti Foto">
                           </a>
+                          @else
+                          <span class="text-muted small">Foto telah dihapus. Pemeliharaan sistem.</span>
                           @endif
 
                           @if ($j->latitude && $j->longitude)
