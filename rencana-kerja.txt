@@ -1,6 +1,7 @@
 buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 update input wali di student/edit
+lengkapi tampilan data di detail santri
 
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 

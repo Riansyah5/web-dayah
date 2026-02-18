@@ -18,7 +18,7 @@
     <div class="col-lg-5">
       <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-header bg-dark text-white py-3">
-          <h6 class="mb-0">Konfigurasi Cleanup</h6>
+          <h6 class="mb-0 text-white">Konfigurasi Cleanup</h6>
         </div>
         <div class="card-body">
           <form action="{{ route('tahfizh.admin.cleanup.run') }}" method="POST" id="cleanupForm">
