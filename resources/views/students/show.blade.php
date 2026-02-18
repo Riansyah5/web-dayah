@@ -483,6 +483,10 @@
                 <div class="p-3 bg-light rounded-3 h-100">
                   <h6 class="fw-bold text-muted mb-3"><i class="bi bi-gender-male me-1"></i> Ayah</h6>
                   <div class="mb-2">
+                    <div class="info-label">NIK Ayah</div>
+                    <div class="info-value font-monospace">{{ $student->father_nik ?? '-' }}</div>
+                  </div>
+                  <div class="mb-2">
                     <div class="info-label">Nama Lengkap</div>
                     <div class="info-value">
                       {{ $student->father_name ?? '-' }}
@@ -495,7 +499,21 @@
                   </div>
                   <div class="mb-2">
                     <div class="info-label">Pekerjaan</div>
-                    <div class="info-value">{{ $student->father_occupation ?? '-' }}</div>
+                    <div class="info-value">
+                      {{ $student->father_occupation ?? '-' }}
+                      @if ($student->father_occupation_detail)
+                        <a href="javascript:void(0)" class="text-primary ms-1 text-decoration-none btn-detail-occupation"
+                          data-title="Detail Pekerjaan Ayah"
+                          data-detail="{{ $student->father_occupation_detail }}"
+                          title="Lihat Detail">
+                          <i class="bi bi-info-circle-fill"></i>
+                        </a>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <div class="info-label">Pendidikan Ayah</div>
+                    <div class="info-value font-monospace">{{ $student->father_education ?? '-' }}</div>
                   </div>
                   <div>
                     <div class="info-label">No. Telepon</div>
@@ -514,6 +532,10 @@
                 <div class="p-3 bg-light rounded-3 h-100">
                   <h6 class="fw-bold text-muted mb-3"><i class="bi bi-gender-female me-1"></i> Ibu</h6>
                   <div class="mb-2">
+                    <div class="info-label">NIK Ibu</div>
+                    <div class="info-value font-monospace">{{ $student->mother_nik ?? '-' }}</div>
+                  </div>
+                  <div class="mb-2">
                     <div class="info-label">Nama Lengkap</div>
                     <div class="info-value">
                       {{ $student->mother_name ?? '-' }}
@@ -526,7 +548,21 @@
                   </div>
                   <div class="mb-2">
                     <div class="info-label">Pekerjaan</div>
-                    <div class="info-value">{{ $student->mother_occupation ?? '-' }}</div>
+                    <div class="info-value">
+                      {{ $student->mother_occupation ?? '-' }}
+                      @if ($student->mother_occupation_detail)
+                        <a href="javascript:void(0)" class="text-primary ms-1 text-decoration-none btn-detail-occupation"
+                          data-title="Detail Pekerjaan Ibu"
+                          data-detail="{{ $student->mother_occupation_detail }}"
+                          title="Lihat Detail">
+                          <i class="bi bi-info-circle-fill"></i>
+                        </a>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <div class="info-label">Pendidikan Ibu</div>
+                    <div class="info-value font-monospace">{{ $student->mother_education ?? '-' }}</div>
                   </div>
                   <div>
                     <div class="info-label">No. Telepon</div>
@@ -538,6 +574,58 @@
                       @endif
                     </div>
                   </div>
+                </div>
+              </div>
+              
+            </div>
+
+            {{-- Data Wali (Collapsible) --}}
+            <div class="mt-4">
+              <a class="btn btn-light border w-100 text-start fw-semibold d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse" href="#collapseGuardian" role="button" aria-expanded="false"
+                aria-controls="collapseGuardian">
+                <span>
+                  <i class="bi bi-person-badge me-2"></i>
+                  Data Wali (Opsional)
+                </span>
+                <i class="bi bi-chevron-down"></i>
+              </a>
+              <div class="collapse" id="collapseGuardian">
+                <div class="p-3 bg-light rounded-bottom border border-top-0">
+                  @if ($student->guardian_name)
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <div class="info-label">Nama Wali</div>
+                        <div class="info-value">{{ $student->guardian_name }}</div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="info-label">No. Telepon</div>
+                        <div class="info-value text-success">
+                          @if ($student->guardian_phone)
+                            <i class="bi bi-whatsapp me-1"></i> {{ $student->guardian_phone }}
+                          @else
+                            -
+                          @endif
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="info-label">Pekerjaan</div>
+                        <div class="info-value">
+                          {{ $student->guardian_occupation ?? '-' }}
+                          @if ($student->guardian_occupation_detail)
+                            <a href="javascript:void(0)" class="text-primary ms-1 text-decoration-none btn-detail-occupation"
+                              data-title="Detail Pekerjaan Wali"
+                              data-detail="{{ $student->guardian_occupation_detail }}"
+                              title="Lihat Detail">
+                              <i class="bi bi-info-circle-fill"></i>
+                            </a>
+                          @endif
+                        </div>
+                      </div>
+                    </div>
+                  @else
+                    <p class="text-muted text-center mb-0 small fst-italic">Tidak ada data wali yang diisikan.</p>
+                  @endif
                 </div>
               </div>
             </div>
@@ -744,5 +832,19 @@
         showConfirmButton: true
       });
     @endif
+
+    // Event listener untuk tombol detail pekerjaan
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.btn-detail-occupation')) {
+        const btn = e.target.closest('.btn-detail-occupation');
+        Swal.fire({
+          title: btn.getAttribute('data-title'),
+          text: btn.getAttribute('data-detail'),
+          icon: 'info',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Tutup'
+        });
+      }
+    });
   </script>
 @endpush
