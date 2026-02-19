@@ -93,6 +93,21 @@ class StudentController extends Controller
             'room' => 'nullable|string|max:255',
         ]);
 
+        // Logika Mengubah 08 menjadi 62
+        foreach (['father_phone', 'mother_phone', 'guardian_phone'] as $field) {
+            if (!empty($validatedData[$field])) {
+                // 1. Hapus karakter non-angka (spasi, strip, dll)
+                $phone = preg_replace('/[^0-9]/', '', $validatedData[$field]);
+
+                // 2. Cek jika diawali '0', ganti dengan '62'
+                if (strpos($phone, '0') === 0) {
+                    $phone = '62' . substr($phone, 1);
+                }
+
+                $validatedData[$field] = $phone;
+            }
+        }
+
         Student::create($validatedData);
 
         return redirect()->route('students.index')->with('success', 'Data Santri berhasil ditambahkan.');
@@ -105,7 +120,7 @@ class StudentController extends Controller
     {
 
         $all_rooms = \App\Models\Room::with('dorm')->withCount('assignments')->get();
-        
+
         // Load relasi classrooms beserta tahun ajaran, tingkat, dan jenjang
         $student->load(['classrooms.academicYear', 'classrooms.level.stage', 'classrooms.major']);
 
@@ -114,7 +129,7 @@ class StudentController extends Controller
             return $classroom->academicYear->name . ' ' . $classroom->academicYear->semester;
         });
         $student->setRelation('classrooms', $sortedClassrooms);
-        
+
         return view('students.show', compact('student', 'all_rooms'));
     }
 
@@ -187,6 +202,19 @@ class StudentController extends Controller
             'room' => 'nullable|string|max:255',
         ]);
 
+        // Logika Mengubah 08 menjadi 62
+        foreach (['father_phone', 'mother_phone', 'guardian_phone'] as $field) {
+            if (!empty($validatedData[$field])) {
+                $phone = preg_replace('/[^0-9]/', '', $validatedData[$field]);
+
+                if (strpos($phone, '0') === 0) {
+                    $phone = '62' . substr($phone, 1);
+                }
+
+                $validatedData[$field] = $phone;
+            }
+        }
+
         $student->update($validatedData);
 
         return redirect()->route('students.show', $student->id)->with('success', 'Data Santri berhasil diperbarui.');
@@ -214,7 +242,7 @@ class StudentController extends Controller
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             // Bisa redirect kembali dengan pesan error spesifik jika mau
-            return redirect()->back()->with('error', 'Gagal Impor. Cek baris: ' .$failures[0]->row() .'. Error: ' . $failures[0]->errors()[0]);
+            return redirect()->back()->with('error', 'Gagal Impor. Cek baris: ' . $failures[0]->row() . '. Error: ' . $failures[0]->errors()[0]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan format Excel. Pastikan gunakan Template.');
         }
@@ -290,5 +318,4 @@ class StudentController extends Controller
 
         return back()->with('success', 'Santri berhasil dipindahkan.');
     }
-
 }

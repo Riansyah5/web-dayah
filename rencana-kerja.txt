@@ -1,11 +1,11 @@
 buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
-lengkapi tampilan data di detail santri
 
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 rekap absen pelajaran perhari persantri
+tambah role akun superadmin
 
 
 
@@ -17,6 +17,7 @@ rekap absen pelajaran perhari persantri
 
 
 ============================================================================================
+lengkapi tampilan data di detail santri
 update input wali di student/edit
 maintenance sistem untuk absen tahfizh
 tambah kolom total untuk fix penggajian
