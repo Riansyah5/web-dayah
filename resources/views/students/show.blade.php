@@ -490,9 +490,9 @@
                 </div>
               </div>
 
-              <div class="col-12">
-                <hr class="border-light-subtle my-1">
-              </div>
+              {{-- <div class="col-12">
+                <hr class="border-primary my-1">
+              </div> --}}
 
               <div class="col-md-6">
                 <div class="d-flex align-items-start">
@@ -523,7 +523,7 @@
               </div>
             </div>
           </div>
-          
+
         </div>
       </div>
 
