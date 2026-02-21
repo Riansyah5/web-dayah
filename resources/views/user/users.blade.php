@@ -158,9 +158,9 @@
               <tbody id="userTableBody">
                 @foreach ($users as $user)
                   @php
-                    $isSuperAdmin = $user->username === 'superadmin';
-                    $super = $isSuperAdmin && Auth::user()->username !== 'superadmin';
-                    if ($isSuperAdmin && Auth::user()->username !== 'superadmin') {
+                    $isSuperAdmin = $user->role === 'Superadmin';
+                    $super = $isSuperAdmin && Auth::user()->role !== 'Superadmin';
+                    if ($isSuperAdmin && Auth::user()->role !== 'Superadmin') {
                         continue;
                     }
                   @endphp

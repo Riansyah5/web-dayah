@@ -112,7 +112,7 @@
       </li>
 
       {{-- master data, hanya untuk admin --}}
-      @if (Auth::user()->role == 'Admin')
+      @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
       <li class="pc-item pc-caption">
         <label>Master Data</label>
         <i class="ti ti-database"></i>
@@ -153,6 +153,7 @@
         </ul>
       </li>
       {{-- end master data pegawai --}}
+      @if(Auth::user()->role == 'Superadmin')
       {{-- master data User --}}
       <li class="pc-item pc-hasmenu">
         <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Akun</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
@@ -163,6 +164,7 @@
       </ul>
       </li>
       {{-- end master data User --}}
+      @endif
       {{-- master data pengasuhan --}}
       <li class="pc-item pc-hasmenu">
         <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-bed"></i></span><span class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
