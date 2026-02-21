@@ -1,12 +1,9 @@
 buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
-
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
-
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 rekap absen pelajaran perhari persantri
-tambah role akun superadmin
-
+buat fitur CBT
 
 DELETE FROM migrations
 WHERE migration = '2024_01_01_000000_create_users_table';
@@ -18,6 +15,7 @@ WHERE migration = '2024_01_01_000000_create_users_table';
 
 
 ============================================================================================
+tambah role akun superadmin
 lengkapi tampilan data di detail santri
 update input wali di student/edit
 maintenance sistem untuk absen tahfizh
