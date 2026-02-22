@@ -3,6 +3,7 @@
 @push('link')
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 @endpush
 @push('styles')
 @endpush
@@ -13,7 +14,7 @@
         <h4 class="fw-bold mb-1">Direktori Alumni & Mutasi</h4>
         <p class="text-muted small">Arsip data santri yang telah lulus atau pindah sekolah.</p>
       </div>
-      <button class="btn btn-outline-success btn-sm">
+      <button class="btn btn-outline-success btn-sm" id="btnExportExcel">
         <i class="bi bi-file-earmark-excel me-2"></i>Export Excel
       </button>
     </div>
@@ -171,13 +172,33 @@
   <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
   <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+  
+  {{-- DataTables Buttons & JSZip (Wajib untuk Excel) --}}
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
   <script>
     $(document).ready(function() {
-      $('#alumniTable').DataTable({
+      var table = $('#alumniTable').DataTable({
         responsive: true,
+        dom: 'Blfrtip', // B = Buttons, l = Length, f = Filter, etc.
+        buttons: [{
+          extend: 'excel',
+          className: 'd-none', // Sembunyikan tombol bawaan
+          title: 'Data Alumni dan Mutasi',
+          exportOptions: {
+            columns: ':not(:last-child)' // Jangan export kolom Aksi
+          }
+        }],
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json"
         }
+      });
+
+      // Trigger tombol export bawaan DataTables saat tombol custom diklik
+      $('#btnExportExcel').on('click', function() {
+        table.button('.buttons-excel').trigger();
       });
     });
   </script>
