@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Academic\AcademicCalendarController;
 use App\Http\Controllers\Academic\Grading\CourseController;
-use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+// use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Journal\TeacherJournalController;
@@ -61,8 +61,52 @@ Route::middleware('auth')->group(function () {
 	Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-	// KHUSUS ADMIN
+	// KHUSUS ADMIN =========================================
 	Route::middleware('role:Admin')->group(function () {
+		// Group Admin Master Data
+		Route::prefix('admin/master-data')->name('master.')->group(function () {
+			Route::get('/', [DataMasterController::class, 'index'])->name('index');
+			Route::post('/stages', [DataMasterController::class, 'storeStage'])->name('stages.store');
+			Route::put('/stages/{stage}', [DataMasterController::class, 'updateStage'])->name('stages.update');
+			Route::post('/levels', [DataMasterController::class, 'storeLevel'])->name('levels.store');
+			Route::post('/majors', [DataMasterController::class, 'storeMajor'])->name('majors.store');
+			Route::post('/academic-years', [DataMasterController::class, 'storeAcademicYear'])->name('academic-years.store');
+			Route::put('/academic-years/{id}/activate', [DataMasterController::class, 'activateYear'])->name('academic-years.activate');
+			// Route Delete Baru
+			Route::delete('/stages/{stage}', [DataMasterController::class, 'destroyStage'])->name('stages.destroy');
+			Route::delete('/levels/{level}', [DataMasterController::class, 'destroyLevel'])->name('levels.destroy');
+			Route::delete('/majors/{major}', [DataMasterController::class, 'destroyMajor'])->name('majors.destroy');
+			Route::delete('/academic-years/{academicYear}', [DataMasterController::class, 'destroyAcademicYear'])->name('academic-years.destroy');
+			// Subject Routes (mata pelajaran)
+			Route::post('/subjects', [DataMasterController::class, 'storeSubject'])->name('subjects.store');
+			Route::delete('/subjects/{subject}', [DataMasterController::class, 'destroySubject'])->name('subjects.destroy');
+			// Teacher Routes (input nilai)
+			Route::post('/teachers', [DataMasterController::class, 'storeTeacher'])->name('teachers.store');
+			Route::delete('/teachers/{teacher}', [DataMasterController::class, 'destroyTeacher'])->name('teachers.destroy');
+			// Syllabus Routes (batasan materi)
+			Route::prefix('academic/syllabus')->name('syllabus.')->group(function () {
+				// URL: academic/syllabus/1 (dimana 1 adalah ID Mapel)
+				Route::get('/{subject}', [SyllabusController::class, 'index'])->name('index');
+				Route::post('/{subject}', [SyllabusController::class, 'store'])->name('store');
+			});
+		});
+
+		// Group Modul Promosi Siswa
+		Route::prefix('academic/promotion')->name('promotion.')->group(function () {
+			Route::get('/', [PromotionController::class, 'index'])->name('index');
+			Route::post('/process', [PromotionController::class, 'process'])->name('process');
+			// Route Promosi Jenjang SMA
+			Route::get('/promote-to-senior', [PromoteToSeniorController::class, 'index'])->name('promote_to_senior');
+			Route::post('/promotion', [PromoteToSeniorController::class, 'store'])->name('promote_to_senior.store');
+			Route::get('/api/search-alumni', [PromoteToSeniorController::class, 'searchAlumni'])->name('promote_to_senior.search');
+		});
+
+		
+		
+	});
+
+	// KHUSUS ADMIN & GURU
+	Route::middleware('role:Admin,Guru')->group(function () {
 		// student routes
 		Route::put('students/{student}/move-room', [StudentController::class, 'moveRoom'])->name('students.moveRoom');
 		Route::get('/students/rooms', [StudentController::class, 'rooms'])->name('students.rooms');
@@ -116,35 +160,6 @@ Route::middleware('auth')->group(function () {
 		Route::get('students/{student}/violations', [ViolationController::class, 'index'])->name('violations.index');
 		Route::post('violations', [ViolationController::class, 'store'])->name('violations.store');
 
-
-		// Group Admin Master Data
-		Route::prefix('admin/master-data')->name('master.')->group(function () {
-			Route::get('/', [DataMasterController::class, 'index'])->name('index');
-			Route::post('/stages', [DataMasterController::class, 'storeStage'])->name('stages.store');
-			Route::put('/stages/{stage}', [DataMasterController::class, 'updateStage'])->name('stages.update');
-			Route::post('/levels', [DataMasterController::class, 'storeLevel'])->name('levels.store');
-			Route::post('/majors', [DataMasterController::class, 'storeMajor'])->name('majors.store');
-			Route::post('/academic-years', [DataMasterController::class, 'storeAcademicYear'])->name('academic-years.store');
-			Route::put('/academic-years/{id}/activate', [DataMasterController::class, 'activateYear'])->name('academic-years.activate');
-			// Route Delete Baru
-			Route::delete('/stages/{stage}', [DataMasterController::class, 'destroyStage'])->name('stages.destroy');
-			Route::delete('/levels/{level}', [DataMasterController::class, 'destroyLevel'])->name('levels.destroy');
-			Route::delete('/majors/{major}', [DataMasterController::class, 'destroyMajor'])->name('majors.destroy');
-			Route::delete('/academic-years/{academicYear}', [DataMasterController::class, 'destroyAcademicYear'])->name('academic-years.destroy');
-			// Subject Routes (mata pelajaran)
-			Route::post('/subjects', [DataMasterController::class, 'storeSubject'])->name('subjects.store');
-			Route::delete('/subjects/{subject}', [DataMasterController::class, 'destroySubject'])->name('subjects.destroy');
-			// Teacher Routes (input nilai)
-			Route::post('/teachers', [DataMasterController::class, 'storeTeacher'])->name('teachers.store');
-			Route::delete('/teachers/{teacher}', [DataMasterController::class, 'destroyTeacher'])->name('teachers.destroy');
-			// Syllabus Routes (batasan materi)
-			Route::prefix('academic/syllabus')->name('syllabus.')->group(function () {
-				// URL: academic/syllabus/1 (dimana 1 adalah ID Mapel)
-				Route::get('/{subject}', [SyllabusController::class, 'index'])->name('index');
-				Route::post('/{subject}', [SyllabusController::class, 'store'])->name('store');
-			});
-		});
-
 		// Group Akademik Kelas
 		Route::resource('academic/classrooms', ClassroomController::class);
 		Route::post('academic/classrooms/{classroom}/add', [ClassroomController::class, 'addStudent'])->name('classrooms.addStudent');
@@ -152,16 +167,6 @@ Route::middleware('auth')->group(function () {
 		Route::put('academic/classrooms/{classroom}/move/{studentId}', [ClassroomController::class, 'moveStudent'])->name('classrooms.moveStudent');
 		// Route Cetak Absen Kelas (PDF)
 		Route::get('academic/classrooms/{classroom}/print-attendance', [ClassroomController::class, 'printAttendance'])->name('classrooms.print-attendance');
-
-		// Group Modul Promosi Siswa
-		Route::prefix('academic/promotion')->name('promotion.')->group(function () {
-			Route::get('/', [PromotionController::class, 'index'])->name('index');
-			Route::post('/process', [PromotionController::class, 'process'])->name('process');
-			// Route Promosi Jenjang SMA
-			Route::get('/promote-to-senior', [PromoteToSeniorController::class, 'index'])->name('promote_to_senior');
-			Route::post('/promotion', [PromoteToSeniorController::class, 'store'])->name('promote_to_senior.store');
-			Route::get('/api/search-alumni', [PromoteToSeniorController::class, 'searchAlumni'])->name('promote_to_senior.search');
-		});
 
 		// Group Modul Rapor / Grading
 		Route::prefix('academic/grading')->name('grading.')->group(function () {
@@ -277,6 +282,15 @@ Route::middleware('auth')->group(function () {
 			Route::post('/setting', [TahfizhSettingController::class, 'update'])->name('setting.update');
 		});
 
+		// Group Modul Admin Tahfizh (Laporan)
+		Route::prefix('tahfizh/admin/reports')->name('tahfizh.admin.reports.')->group(function () {
+			Route::get('/teacher', [TahfizhAttendanceReportController::class, 'teacherRecap'])->name('teacher');
+			Route::get('/student', [TahfizhAttendanceReportController::class, 'studentRecap'])->name('student');
+			Route::get('/teacher/{id}', [TahfizhAttendanceReportController::class, 'teacherDetail'])->name('teacher_detail');
+			Route::get('/student/{id}', [TahfizhAttendanceReportController::class, 'studentDetail'])->name('student_detail');
+			Route::post('/tahfizh/admin/reports/teacher/{teacher}/hours', [TahfizhReportController::class, 'storeHours'])->name('store_hours');
+		});
+
 		// routes maintenance system
 		Route::prefix('system')->name('system.')->group(function () {
 			Route::get('/maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
@@ -310,15 +324,6 @@ Route::middleware('auth')->group(function () {
 			Route::post('/{id}/toggle', [MasterScheduleController::class, 'toggleStatus'])->name('toggle');
 		});
 
-		// Group Modul Admin Tahfizh (Laporan)
-		Route::prefix('tahfizh/admin/reports')->name('tahfizh.admin.reports.')->group(function () {
-			Route::get('/teacher', [TahfizhAttendanceReportController::class, 'teacherRecap'])->name('teacher');
-			Route::get('/student', [TahfizhAttendanceReportController::class, 'studentRecap'])->name('student');
-			Route::get('/teacher/{id}', [TahfizhAttendanceReportController::class, 'teacherDetail'])->name('teacher_detail');
-			Route::get('/student/{id}', [TahfizhAttendanceReportController::class, 'studentDetail'])->name('student_detail');
-			Route::post('/tahfizh/admin/reports/teacher/{teacher}/hours', [TahfizhReportController::class, 'storeHours'])->name('store_hours');
-		});
-
 		// Dashboard & Absensi
 		Route::prefix('tahfizh')->name('tahfizh.')->group(function () {
 			// Dashboard
@@ -341,73 +346,4 @@ Route::middleware('auth')->group(function () {
 		});
 	});
 
-
-
-
-	// KHUSUS GURU
-	Route::middleware('role:Guru')->group(function () {
-		// // Route untuk assign kamar
-		// Route::get('assignments/create', [RoomAssignmentController::class, 'create'])->name('assignments.create');
-		// Route::post('assignments', [RoomAssignmentController::class, 'store'])->name('assignments.store');
-
-		// // student routes
-		// Route::put('students/{student}/move-room', [StudentController::class, 'moveRoom'])->name('students.moveRoom');
-		// Route::get('/students/rooms', [StudentController::class, 'rooms'])->name('students.rooms');
-		// Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
-		// Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
-		// Route::get('/students/template', [StudentController::class, 'downloadTemplate'])->name('students.template');
-		// Route::get('/student/{student}/history', [StudentHistoryController::class, 'show'])->name('student.history');
-		// Route::get('/student/{student}/biodata', [StudentHistoryController::class, 'printBiodata'])->name('student.biodata.print');
-		// Route::get('/student/{student}/biodatashow', [StudentHistoryController::class, 'showBiodata'])->name('student.biodata.show');
-		// Route::resource('/students', StudentController::class);
-
-		// // Group Akademik Kelas
-		// Route::resource('academic/classrooms', ClassroomController::class);
-		// Route::post('academic/classrooms/{classroom}/add', [ClassroomController::class, 'addStudent'])->name('classrooms.addStudent');
-		// Route::delete('academic/classrooms/{classroom}/remove/{studentId}', [ClassroomController::class, 'removeStudent'])->name('classrooms.removeStudent');
-		// Route::put('academic/classrooms/{classroom}/move/{studentId}', [ClassroomController::class, 'moveStudent'])->name('classrooms.moveStudent');
-
-		// // Group Modul Rapor / Grading
-		// Route::prefix('academic/grading')->name('grading.')->group(function () {
-		// 	// DASHBOARD UTAMA (INDEX)
-		// 	// Route::get('/', [GradingDashboardController::class, 'index'])->name('dashboard');
-		// 	// 1. Plotting Mapel & Guru (KBM)
-		// 	Route::get('/plotting', [CourseController::class, 'index'])->name('plotting.index');
-		// 	Route::post('/plotting/update', [CourseController::class, 'update'])->name('plotting.update');
-
-		// 	// Nanti disini kita tambah route Import Excel, Input Nilai, dll.
-		// 	// 2. Input Nilai (Guru)
-		// 	Route::get('/teacher', [TeacherGradingController::class, 'index'])->name('teacher.index');
-		// 	Route::get('/teacher/{course}', [TeacherGradingController::class, 'show'])->name('teacher.show');
-		// 	Route::post('/teacher/{course}', [TeacherGradingController::class, 'update'])->name('teacher.update');
-
-		// 	// Excel Features
-		// 	Route::get('/teacher/{course}/export', [TeacherGradingController::class, 'exportExcel'])->name('teacher.export');
-		// 	Route::post('/teacher/{course}/import', [TeacherGradingController::class, 'importExcel'])->name('teacher.import');
-
-		// 	// 3. Wali Kelas (Leger & Cetak)
-		// 	Route::get('/homeroom', [HomeroomGradingController::class, 'index'])->name('homeroom.index');
-		// 	Route::get('/homeroom/{classroom}', [HomeroomGradingController::class, 'show'])->name('homeroom.show');
-		// 	Route::post('/homeroom/update', [HomeroomGradingController::class, 'update'])->name('homeroom.update');
-		// 	Route::get('/homeroom/print/{studentId}/{classroomId}', [HomeroomGradingController::class, 'print'])->name('homeroom.print');
-		// 	Route::get('/homeroom/preview/{studentId}/{classroomId}', [HomeroomGradingController::class, 'preview'])->name('homeroom.preview');
-		// });
-
-		// // Group Modul Pengaturan Rapor
-		// Route::prefix('academic/report/settings')->name('report.settings.')->group(function () {
-		// 	Route::get('/report/settings', [ReportSettingController::class, 'index'])->name('index');
-		// 	Route::post('/report/settings', [ReportSettingController::class, 'store'])->name('store');
-		// });
-	});
 });
-
-
-// Route::resource('/kategori', KategoriController::class);
-		// Route::resource('/jabatan', JabatanController::class);
-		// Route::resource('/pegawai', PegawaiController::class);
-		// // User Routes
-		// Route::resource('/user', UserController::class);
-		// Route::get('/user/create/{pegawai}', [UserController::class, 'create'])->name('tambah-akun');
-		// Route::post('/user/create/{pegawai}', [UserController::class, 'store'])->name('simpan-akun');
-		// // Route untuk update status user
-		// Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])->name('users.updateStatus');
