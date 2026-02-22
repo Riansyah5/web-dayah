@@ -148,14 +148,14 @@
                   </td>
                 </tr>
               @empty
-                <tr>
+                {{-- <tr>
                   <td colspan="5" class="text-center py-5">
                     <div class="text-muted opacity-50 mb-2">
                       <i class="bi bi-archive display-4"></i>
                     </div>
                     <h6 class="text-muted">Data alumni tidak ditemukan.</h6>
                   </td>
-                </tr>
+                </tr> --}}
               @endforelse
             </tbody>
           </table>

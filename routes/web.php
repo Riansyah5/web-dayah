@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Academic\AcademicCalendarController;
 use App\Http\Controllers\Academic\Grading\CourseController;
-// use App\Http\Controllers\Academic\Grading\GradingDashboardController;
+use App\Http\Controllers\Academic\Grading\GradingDashboardController;
 use App\Http\Controllers\Academic\Grading\HomeroomGradingController;
 use App\Http\Controllers\Academic\Grading\TeacherGradingController;
 use App\Http\Controllers\Academic\Journal\TeacherJournalController;

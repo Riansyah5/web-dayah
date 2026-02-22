@@ -43,7 +43,7 @@
         <li class="pc-item pc-hasmenu">
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="{{ route('academic.journal.dashboard') }}">Jurnal</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.journal.dashboard') }}">Absensi</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('academic.permission.index') }}">Riwayat Izin</a></li>
           </ul>
         </li>
@@ -92,7 +92,7 @@
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.halaqah.index') }}">Halaqah</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.journal.dashboard') }}">Jurnal</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.journal.dashboard') }}">Absensi</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.create') }}">Pengajuan Izin</a></li>
             <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.index') }}">Riwayat Izin</a></li>
         </li>

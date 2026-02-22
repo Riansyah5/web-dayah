@@ -6,6 +6,7 @@ rekap absen pelajaran perhari persantri
 buat fitur CBT
 
 tambah kolom input email di tambah user
+aktifkan tombol export excel di halaman alumni
 
 
 DELETE FROM migrations

@@ -102,7 +102,7 @@
     <div class="row justify-content-center">
 
       <div class="col-12 col-xl-11">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
           <div>
             <h4 class="mb-1 fw-bold text-dark">Data Santri</h4>
             <p class="text-muted mb-0 small">Manajemen data seluruh santri aktif dan alumni.</p>
@@ -152,8 +152,8 @@
                     placeholder="Cari Nama, NIS, dll...">
                 </div>
               </div>
-              <div class="col-md-3">
-                {{-- Filter Status Custom --}}
+              {{-- Filter Status Custom --}}
+              {{-- <div class="col-md-3">
                 <select id="customStatusFilter" class="form-select rounded-3">
                   <option value="">Semua Status</option>
                   <option value="Aktif">Aktif</option>
@@ -161,7 +161,7 @@
                   <option value="Pindah">Pindah</option>
                   <option value="Skorsing">Skorsing</option>
                 </select>
-              </div>
+              </div> --}}
               <div class="col-md-2">
                 {{-- Length Change Custom --}}
                 <select id="customLengthChange" class="form-select rounded-3">
