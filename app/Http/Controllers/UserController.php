@@ -38,6 +38,7 @@ class UserController extends Controller
             'username' => 'required|string|max:20|unique:users,username',
             'password' => 'required',
             'role' => 'required|in:Admin,Guru',
+            'email' => 'nullable',
             'status' => 'required|in:Aktif,Nonaktif',
             'updated_by' => 'required|string',
         ], [
