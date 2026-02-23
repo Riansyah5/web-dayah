@@ -38,7 +38,7 @@
 
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label for="nik" class="form-label">NIK (Nomor Induk Kependudukan)</label>
+                  <label for="nik" class="form-label">NIK (Nomor Induk Kependudukan) <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
                     <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik"
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="nama" class="form-label">Nama Lengkap</label>
+                  <label for="nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                     <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama"
@@ -62,7 +62,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                  <label for="jenis_kelamin" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
                   <select class="form-select @error('jenis_kelamin') is-invalid @enderror" id="jenis_kelamin"
                     name="jenis_kelamin" required>
                     <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="status_perkawinan" class="form-label">Status Perkawinan</label>
+                  <label for="status_perkawinan" class="form-label">Status Perkawinan <span class="text-danger">*</span></label>
                   <select class="form-select @error('status_perkawinan') is-invalid @enderror" id="status_perkawinan"
                     name="status_perkawinan" required>
                     <option value="" disabled selected>-- Pilih Status --</option>
@@ -91,7 +91,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                  <label for="tempat_lahir" class="form-label">Tempat Lahir <span class="text-danger">*</span></label>
                   <input type="text" class="form-control @error('tempat_lahir') is-invalid @enderror" id="tempat_lahir"
                     name="tempat_lahir" value="{{ old('tempat_lahir') }}" placeholder="Contoh: Jakarta" required>
                   @error('tempat_lahir')
@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                  <label for="tanggal_lahir" class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
                   <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror"
                     id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" required>
                   @error('tanggal_lahir')
@@ -164,7 +164,7 @@
 
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label for="kategori_pegawai" class="form-label">Kategori Pegawai</label>
+                  <label for="kategori_pegawai" class="form-label">Kategori Pegawai <span class="text-danger">*</span></label>
                   <select class="form-select @error('kategori_pegawai') is-invalid @enderror" id="kategori_pegawai"
                     name="kategori_pegawai" required>
                     <option value="" disabled selected>-- Pilih Kategori --</option>
@@ -181,7 +181,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="status_pegawai" class="form-label">Status Pegawai</label>
+                  <label for="status_pegawai" class="form-label">Status Pegawai <span class="text-danger">*</span></label>
                   <select class="form-select @error('status_pegawai') is-invalid @enderror" id="status_pegawai"
                     name="status_pegawai" required>
                     <option value="" disabled selected>-- Pilih Status --</option>
@@ -197,7 +197,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="jabatan" class="form-label">Jabatan</label>
+                  <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
                   <select name="jabatan" class="form-select @error('jabatan') is-invalid @enderror" id="jabatan"
                     required>
                     <option value="" disabled selected>-- Pilih Jabatan --</option>
@@ -213,7 +213,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="terhitung_mulai_tanggal" class="form-label">Terhitung Mulai Tanggal (TMT)</label>
+                  <label for="terhitung_mulai_tanggal" class="form-label">Terhitung Mulai Tanggal (TMT) <span class="text-danger">*</span></label>
                   <input type="date" class="form-control @error('terhitung_mulai_tanggal') is-invalid @enderror"
                     id="terhitung_mulai_tanggal" name="terhitung_mulai_tanggal"
                     value="{{ old('terhitung_mulai_tanggal') }}" required>

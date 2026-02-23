@@ -11,7 +11,25 @@ class Pegawai extends Model
 {
     use HasFactory, HasUlids;
 
-    protected $fillable = ['user_id', 'nik', 'nama', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_perkawinan', 'no_kk', 'no_hp', 'desa', 'kecamatan', 'kabupaten', 'provinsi', 'status_pegawai', 'jabatan', 'terhitung_mulai_tanggal'];
+    protected $fillable = [
+        'user_id',
+        'nik',
+        'nama',
+        'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'status_perkawinan',
+        'no_kk',
+        'no_hp',
+        'desa',
+        'kecamatan',
+        'kabupaten',
+        'provinsi',
+        'kategori_pegawai', // ← TAMBAHKAN INI
+        'status_pegawai',
+        'jabatan',
+        'terhitung_mulai_tanggal'
+    ];
 
     /**
      * Atribut yang harus di-cast ke tipe data tertentu.
@@ -23,11 +41,13 @@ class Pegawai extends Model
         'terhitung_mulai_tanggal' => 'date',
     ];
 
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function roomsAsWarden() {
+    public function roomsAsWarden()
+    {
         return $this->hasMany(Room::class, 'warden_id', 'id');
     }
 }
