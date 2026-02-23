@@ -105,7 +105,7 @@ class PegawaiController extends Controller
         ]);
 
         $pegawai->update($request->all());
-        return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diperbarui.');
+        return redirect()->route('pegawai.show', $pegawai)->with('success', 'Data pegawai berhasil diperbarui.');
     }
 
     /**

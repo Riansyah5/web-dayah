@@ -195,7 +195,7 @@
                   <select class="form-select @error('status_pegawai') is-invalid @enderror" id="status_pegawai"
                     name="status_pegawai" required>
                     <option value="" disabled>-- Pilih Status --</option>
-                    @foreach (['Aktif', 'Non-aktif', 'Cuti', 'Keluar'] as $status)
+                    @foreach (['Aktif', 'Non-Aktif', 'Cuti', 'Keluar'] as $status)
                       <option value="{{ $status }}"
                         {{ old('status_pegawai', $pegawai->status_pegawai) == $status ? 'selected' : '' }}>
                         {{ $status }}
