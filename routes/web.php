@@ -30,6 +30,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\SidebarSettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentExitController;
 use App\Http\Controllers\System\SystemMaintenanceController;
@@ -61,6 +62,12 @@ Route::middleware('auth')->group(function () {
 	Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+	// KHUSUS SUPERADMIN =========================================
+	Route::middleware('role:Superadmin')->group(function () {
+		Route::get('/settings/sidebar', [SidebarSettingController::class, 'index'])->name('sidebar-settings.index');
+		Route::post('/settings/sidebar/update', [SidebarSettingController::class, 'update'])->name('sidebar-settings.update');
+	});
+	
 	// KHUSUS ADMIN =========================================
 	Route::middleware('role:Admin')->group(function () {
 		// Group Admin Master Data
@@ -100,9 +107,6 @@ Route::middleware('auth')->group(function () {
 			Route::post('/promotion', [PromoteToSeniorController::class, 'store'])->name('promote_to_senior.store');
 			Route::get('/api/search-alumni', [PromoteToSeniorController::class, 'searchAlumni'])->name('promote_to_senior.search');
 		});
-
-		
-		
 	});
 
 	// KHUSUS ADMIN & GURU
@@ -345,5 +349,4 @@ Route::middleware('auth')->group(function () {
 			Route::get('/get-schedules', [TahfizhPermissionController::class, 'getSchedules'])->name('get_schedules');
 		});
 	});
-
 });

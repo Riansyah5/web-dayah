@@ -1,10 +1,9 @@
 buat surat aktif
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
-buat fitur untuk aktif/nonaktifkan menu di sidebar
 rekap absen pelajaran perhari persantri
 buat fitur CBT
-
+buat fitur edit rapor sekolah perorangan
 
 
 DELETE FROM migrations
@@ -17,6 +16,7 @@ WHERE migration = '2024_01_01_000000_create_users_table';
 
 
 ============================================================================================
+buat fitur untuk aktif/nonaktifkan menu di sidebar
 tambah kolom input email di tambah user
 aktifkan tombol export excel di halaman alumni
 tambah role akun superadmin
