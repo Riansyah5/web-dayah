@@ -21,7 +21,7 @@ class SuperAdminTest extends Seeder
             'name' => 'Rian',
             'username' => 'rian',
             'email' => 'rian@gmail.com',
-            'password' => Hash::make('123'),
+            'password' => Hash::make('bismillah@24434'),
             'role' => 'Superadmin',
             'status' => 'Aktif',
             'updated_by' => 'Rian',

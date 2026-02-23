@@ -24,8 +24,9 @@ class DatabaseSeeder extends Seeder
             QuranSurahSeeder::class,
             StageSeeder::class,
             DormSeeder::class,
-            SuperAdminSeeder::class,
+            SuperAdminTest::class,
             TahfizhScheduleSeeder::class,
+            SidebarSettingSeeder::class,
         ]);
     }
 }
