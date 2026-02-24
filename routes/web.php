@@ -173,6 +173,8 @@ Route::middleware('auth')->group(function () {
 		Route::put('academic/classrooms/{classroom}/move/{studentId}', [ClassroomController::class, 'moveStudent'])->name('classrooms.moveStudent');
 		// Route Cetak Absen Kelas (PDF)
 		Route::get('academic/classrooms/{classroom}/print-attendance', [ClassroomController::class, 'printAttendance'])->name('classrooms.print-attendance');
+		Route::get('academic/classrooms/{classroom}/print-attendance2', [ClassroomController::class, 'printAttendance2'])->name('classrooms.print-attendance2');
+		Route::get('classrooms/{classroom}/export', [App\Http\Controllers\ClassroomController::class, 'export'])->name('classrooms.export');
 
 		// Group Modul Rapor / Grading
 		Route::prefix('academic/grading')->name('grading.')->group(function () {

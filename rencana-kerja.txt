@@ -4,7 +4,8 @@ aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 rekap absen pelajaran perhari persantri
 buat fitur CBT
 buat fitur edit rapor sekolah perorangan
-buat tombol lihat password di halaman login
+perbaiki import excel student
+
 
 DELETE FROM migrations
 WHERE migration = '2024_01_01_000000_create_users_table';
@@ -16,6 +17,7 @@ WHERE migration = '2024_01_01_000000_create_users_table';
 
 
 ============================================================================================
+buat tombol lihat password di halaman login
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 tambah kolom input email di tambah user
 aktifkan tombol export excel di halaman alumni

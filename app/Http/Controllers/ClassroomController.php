@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Exports\ClassroomStudentExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class ClassroomController extends Controller
@@ -231,5 +233,17 @@ class ClassroomController extends Controller
         $classroom->load(['students', 'level.stage', 'major']);
         $pdf = PDF::loadView('academic.classrooms.print_attendance', compact('classroom'));
         return $pdf->setPaper('a4', 'portrait')->stream('Absensi_Kelas_' . $classroom->name . '.pdf');
+    }
+    public function printAttendance2(Classroom $classroom)
+    {
+        $classroom->load(['students', 'level.stage', 'major']);
+        $pdf = PDF::loadView('academic.classrooms.print_attendance2', compact('classroom'));
+        return $pdf->setPaper('a4', 'portrait')->stream('Absensi_Kedatangan_' . $classroom->name . '.pdf');
+    }
+
+    public function export(Classroom $classroom)
+    {
+        $fileName = 'Data_Siswa_Kelas_' . str_replace([' ', '/'], '_', $classroom->name) . '.xlsx';
+        return Excel::download(new ClassroomStudentExport($classroom), $fileName);
     }
 }
