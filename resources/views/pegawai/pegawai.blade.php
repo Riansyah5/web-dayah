@@ -103,6 +103,38 @@
       border: none !important;
       border-radius: 8px !important;
     }
+
+    /* Efek hover pada tombol utama */
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3) !important;
+        opacity: 0.9;
+    }
+
+    /* Mempercantik input file */
+    input[type="file"]::file-selector-button {
+        background: #f1f3f5;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+        font-weight: 600;
+        color: #495057;
+        transition: 0.2s;
+    }
+
+    input[type="file"]:hover::file-selector-button {
+        background: #e9ecef;
+    }
+
+    /* Animasi masuk modal */
+    .modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out;
+        transform: scale(0.95);
+    }
+    .modal.show .modal-dialog {
+        transform: scale(1);
+    }
   </style>
 @endpush
 
@@ -118,10 +150,15 @@
               <p class="mb-0 opacity-75 small">Kelola data pegawai anda dengan mudah dan efisien.</p>
             </div>
 
-            <a href="{{ route('pegawai.create') }}" class="btn btn-light text-primary fw-semibold px-4 py-2 shadow-sm"
-              style="border-radius: 10px;">
-              <i class="bi bi-plus-lg me-1"></i> Tambah Pegawai
-            </a>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-success fw-semibold px-4 py-2 shadow-sm" style="border-radius: 10px;" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Import Excel
+              </button>
+              <a href="{{ route('pegawai.create') }}" class="btn btn-light text-primary fw-semibold px-4 py-2 shadow-sm"
+                style="border-radius: 10px;">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Pegawai
+              </a>
+            </div>
           </div>
 
           <div class="card-body p-4">
@@ -230,6 +267,96 @@
       </div>
     </div>
   </div>
+
+  {{-- Modal Import Excel --}}
+  {{-- <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="importModalLabel">Import Data Pegawai</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ route('pegawai.import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-3">
+              <label for="file" class="form-label small text-muted">Pilih File Excel (.xlsx, .xls)</label>
+              <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls">
+            </div>
+            <div class="alert alert-info d-flex align-items-center small" role="alert">
+              <i class="bi bi-info-circle me-2 fs-5"></i>
+              <div>
+                Gunakan template yang telah disediakan agar format data sesuai.
+                <a href="{{ route('pegawai.template') }}" class="fw-bold text-decoration-none">Download Template</a>
+              </div>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Upload & Import</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div> --}}
+
+  {{-- Modal Import Excel Premium --}}
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            
+            <div style="height: 6px; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);"></div>
+
+            <div class="modal-header border-0 pt-4 px-4">
+                <div>
+                    <h5 class="modal-title fw-bolder text-dark mb-1" id="importModalLabel" style="letter-spacing: -0.5px;">
+                        Import Data Pegawai
+                    </h5>
+                    <p class="text-muted small mb-0">Perbarui database Anda secara instan.</p>
+                </div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <form action="{{ route('pegawai.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    
+                    <div class="mb-4">
+                        <label for="file" class="form-label fw-semibold small text-secondary ml-1">Pilih File Excel</label>
+                        <div class="input-group custom-file-upload">
+                            <input type="file" class="form-control form-control-lg border-2 shadow-none" 
+                                   id="file" name="file" required accept=".xlsx, .xls"
+                                   style="border-radius: 12px; font-size: 0.95rem; border-style: dashed;">
+                        </div>
+                    </div>
+
+                    <div class="alert border-0 d-flex align-items-center mb-4" 
+                         style="background-color: #f8f9fa; border-radius: 16px; padding: 1.2rem;">
+                        <div class="icon-box me-3 bg-white shadow-sm d-flex align-items-center justify-content-center" 
+                             style="width: 45px; height: 45px; border-radius: 12px; min-width: 45px;">
+                            <i class="bi bi-file-earmark-arrow-down text-primary fs-4"></i>
+                        </div>
+                        <div class="small">
+                            <span class="text-dark d-block fw-bold">Belum punya formatnya?</span>
+                            <a href="{{ route('pegawai.template') }}" class="text-primary text-decoration-none fw-semibold">
+                                Unduh Template Excel <i class="bi bi-chevron-right small"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary border-0 py-3 fw-bold shadow-sm" 
+                                style="border-radius: 12px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); transition: all 0.3s ease;">
+                            <i class="bi bi-cloud-upload me-2"></i> Mulai Proses Import
+                        </button>
+                        <button type="button" class="btn btn-link text-muted text-decoration-none small py-2" data-bs-dismiss="modal">
+                            Batalkan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -358,6 +485,15 @@
           timer: 1800,
           timerProgressBar: true,
           showConfirmButton: false
+        });
+      @endif
+
+      @if (session('error'))
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: '{{ session('error') }}',
+          customClass: { popup: 'rounded-4' }
         });
       @endif
     });

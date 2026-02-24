@@ -131,6 +131,8 @@ Route::middleware('auth')->group(function () {
 		// pegawai routes
 		Route::resource('/kategori', KategoriController::class);
 		Route::resource('/jabatan', JabatanController::class);
+		Route::get('/pegawai/template', [PegawaiController::class, 'downloadTemplate'])->name('pegawai.template');
+		Route::post('/pegawai/import', [PegawaiController::class, 'import'])->name('pegawai.import');
 		Route::resource('/pegawai', PegawaiController::class);
 		// User Routes
 		Route::resource('/user', UserController::class);

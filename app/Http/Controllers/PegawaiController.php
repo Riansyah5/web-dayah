@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PegawaiTemplateExport;
+use App\Imports\PegawaiImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Jabatan;
 use App\Models\Kategori;
 use App\Models\Pegawai;
@@ -33,7 +36,7 @@ class PegawaiController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nik' => 'required|string|max:16|unique:pegawais,nik',
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
@@ -52,7 +55,18 @@ class PegawaiController extends Controller
             'terhitung_mulai_tanggal' => 'required|date',
         ]);
 
-        Pegawai::create($request->all());
+        // Konversi nomor HP jika diawali dengan '08'
+        if (!empty($validatedData['no_hp'])) {
+            // 1. Hapus karakter non-angka
+            $phone = preg_replace('/[^0-9]/', '', $validatedData['no_hp']);
+            // 2. Cek jika diawali '0', ganti '0' dengan '62'
+            if (strpos($phone, '0') === 0) {
+                $phone = '62' . substr($phone, 1);
+            }
+            $validatedData['no_hp'] = $phone;
+        }
+
+        Pegawai::create($validatedData);
         return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan.');
     }
 
@@ -67,7 +81,6 @@ class PegawaiController extends Controller
 
         // Langsung kirim ke view
         return view('pegawai.detail-data-pegawai', compact('pegawai'));
-
     }
 
     /**
@@ -85,7 +98,7 @@ class PegawaiController extends Controller
      */
     public function update(Request $request, Pegawai $pegawai)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nik' => 'required|string|max:16|unique:pegawais,nik,' . $pegawai->id,
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
@@ -104,7 +117,18 @@ class PegawaiController extends Controller
             'terhitung_mulai_tanggal' => 'required|date',
         ]);
 
-        $pegawai->update($request->all());
+        // Konversi nomor HP jika diawali dengan '08'
+        if (!empty($validatedData['no_hp'])) {
+            // 1. Hapus karakter non-angka
+            $phone = preg_replace('/[^0-9]/', '', $validatedData['no_hp']);
+            // 2. Cek jika diawali '0', ganti '0' dengan '62'
+            if (strpos($phone, '0') === 0) {
+                $phone = '62' . substr($phone, 1);
+            }
+            $validatedData['no_hp'] = $phone;
+        }
+
+        $pegawai->update($validatedData);
         return redirect()->route('pegawai.show', $pegawai)->with('success', 'Data pegawai berhasil diperbarui.');
     }
 
@@ -120,5 +144,37 @@ class PegawaiController extends Controller
 
         $pegawai->delete();
         return redirect()->route('pegawai.index')->with('success', 'Data pegawai dan akun terkait berhasil dihapus.');
+    }
+
+    /**
+     * Fungsi untuk mendownload template Excel untuk import data pegawai
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new PegawaiTemplateExport, 'template_pegawai.xlsx');
+    }
+
+    /**
+     * Fungsi untuk mengimport data pegawai dari file Excel
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        try {
+            Excel::import(new PegawaiImport, $request->file('file'));
+            return back()->with('success', 'Data pegawai berhasil diimport.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = '';
+            foreach ($failures as $failure) {
+                $messages .= 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors()) . '. ';
+            }
+            return back()->with('error', 'Gagal Import: ' . $messages);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }
