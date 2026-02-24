@@ -78,9 +78,11 @@
                 <input type="text" class="form-control" id="login" name="login" value="{{ old('login') }}" placeholder="Email address / Username" />
                 <label for="login">Email address / Username</label>
               </div>
-              <div class="form-floating mb-3">
+              <div class="form-floating mb-3 position-relative">
                 <input type="password" class="form-control" id="password" name="password" placeholder="Password" />
                 <label for="password">Password</label>
+                <i class="ti ti-eye position-absolute top-50 end-0 translate-middle-y me-3 fs-4 text-secondary" 
+                   id="togglePassword" style="cursor: pointer; z-index: 10;"></i>
               </div>
               <div class="d-flex mt-1 justify-content-between">
                 <div class="form-check">
@@ -135,6 +137,20 @@
   <script src="{{ asset('assets/js/theme.js') }}"></script>
   <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
 
+  <script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+
+    togglePassword.addEventListener('click', function (e) {
+      // toggle the type attribute
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      
+      // toggle the eye slash icon
+      this.classList.toggle('ti-eye-off');
+      this.classList.toggle('ti-eye');
+    });
+  </script>
 
   <script>
     layout_change('light');
