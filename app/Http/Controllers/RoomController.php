@@ -12,8 +12,10 @@ class RoomController extends Controller
     public function index(){
         // Kita gunakan 'with' untuk Eager Loading agar query lebih ringan
         // Mengambil data kamar beserta data gedungnya
-        $rooms = Room::with('dorm')->latest()->paginate(10);
-        return view('rooms.index', compact('rooms'));
+        $rooms = Room::with(['dorm', 'warden'])->latest()->paginate(10);
+        $dorms = Dorm::all();
+        $wardens = Pegawai::all();
+        return view('rooms.index', compact('rooms', 'dorms', 'wardens'));
     }
 
     public function create(){
@@ -32,5 +34,24 @@ class RoomController extends Controller
 
         Room::create($request->all());
         return redirect()->route('rooms.index')->with('success', 'Kamar berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, Room $room)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'dorm_id' => 'required|exists:dorms,id',
+            'capacity' => 'required|integer|min:1',
+            'warden_id' => 'nullable|exists:pegawais,id',
+        ]);
+
+        $room->update($request->all());
+        return redirect()->route('rooms.index')->with('success', 'Data kamar berhasil diperbarui.');
+    }
+
+    public function destroy(Room $room)
+    {
+        $room->delete();
+        return redirect()->route('rooms.index')->with('success', 'Data kamar berhasil dihapus.');
     }
 }
