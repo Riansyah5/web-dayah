@@ -93,6 +93,18 @@ class JabatanSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        Jabatan::create([
+            'name' => 'Operator',
+            'description' => 'Assists the head in management tasks',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Jabatan::create([
+            'name' => 'Tata Usaha',
+            'description' => 'Assists the head in management tasks',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         // Jabatan::create([]);
         // Jabatan::create([]);
     }
