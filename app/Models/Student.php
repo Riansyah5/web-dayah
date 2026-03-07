@@ -61,7 +61,8 @@ class Student extends Model
             ->exists();
     }
 
-    public function violations() {
+    public function violations()
+    {
         return $this->hasMany(Violation::class)->orderBy('violation_date', 'desc');
     }
 
@@ -77,7 +78,7 @@ class Student extends Model
     }
 
     // 2. SCOPE (Filter Cepat)
-    
+
     // Cara pakai: Student::active()->get();
     public function scopeActive($query)
     {
@@ -89,15 +90,16 @@ class Student extends Model
     {
         return $query->whereIn('status', ['graduated', 'moved', 'suspended']);
     }
-    
+
     // Cara pakai: Student::graduated()->get();
     public function scopeGraduated($query)
     {
         return $query->where('status', 'graduated');
     }
-    
+
     // 3. RELASI MANY-TO-MANY KE TAHFIZH HALAQAH
-    public function tahfizhHalaqahs() {
+    public function tahfizhHalaqahs()
+    {
         return $this->belongsToMany(TahfizhHalaqah::class, 'tahfizh_students', 'student_id', 'tahfizh_halaqah_id');
     }
 
@@ -105,5 +107,11 @@ class Student extends Model
     public function tahfizhAttendances(): HasMany
     {
         return $this->hasMany(TahfizhAttendance::class);
+    }
+
+    // Relasi ke CBT Account
+    public function cbtAccount()
+    {
+        return $this->hasOne(CbtAccount::class);
     }
 }

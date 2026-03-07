@@ -1,5 +1,4 @@
 buat surat aktif
-UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 aktif dan nonaktifkan tombol absen tahfizh 15 menit sebelum mulai halaqah
 rekap absen pelajaran perhari persantri
 buat fitur CBT
@@ -17,6 +16,7 @@ WHERE migration = '2024_01_01_000000_create_users_table';
 
 
 ============================================================================================
+UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 buat tombol lihat password di halaman login
 buat fitur untuk aktif/nonaktifkan menu di sidebar
 tambah kolom input email di tambah user
