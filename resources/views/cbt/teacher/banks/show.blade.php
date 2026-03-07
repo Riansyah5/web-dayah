@@ -3,6 +3,7 @@
 @push('link')
 @endpush
 @push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
   /* Font fallback agar tulisan Arab terbaca indah dan besar */
   .text-dynamic {
@@ -63,25 +64,53 @@
     <div class="card-body p-4">
       <div class="d-flex gap-3">
         <div class="fw-bold fs-5 text-primary">{{ $index + 1 }}.</div>
-
+        {{-- teks soal --}}
         <div class="w-100">
           <div class="text-dynamic mb-3" dir="auto">
             {!! nl2br(e($q->question_text)) !!}
           </div>
+
+          {{-- media soal (gambar/audio) --}}
+          @if($q->image_file || $q->audio_file)
+          <div class="p-3 mb-3 bg-light rounded-4 border border-dashed text-center">
+            @if($q->image_file)
+            <img src="{{ asset('storage/' . $q->image_file) }}" alt="Gambar Soal" class="img-fluid rounded mb-2 shadow-sm" style="max-height: 250px;">
+            @endif
+
+            @if($q->audio_file)
+            <div class="mt-2 w-100 d-flex justify-content-center">
+              <audio controls class="w-75 shadow-sm rounded-pill">
+                <source src="{{ asset('storage/' . $q->audio_file) }}" type="audio/mpeg">
+                Browser Anda tidak mendukung elemen audio.
+              </audio>
+            </div>
+            @endif
+          </div>
+          @endif
 
           @if($q->type == 'multiple_choice')
           <div class="row g-3 mt-2">
             @php $labels = ['A', 'B', 'C', 'D']; @endphp
             @foreach($q->options as $optIndex => $option)
             <div class="col-md-6">
-              <div class="p-3 border rounded-3 {{ $option->is_correct ? 'correct-answer text-success' : 'bg-light text-muted' }}">
-                <div class="d-flex gap-2 align-items-start">
-                  <strong class="{{ $option->is_correct ? 'text-success' : 'text-dark' }}">{{ $labels[$optIndex] ?? '-' }}.</strong>
-                  <div class="text-dynamic flex-grow-1" dir="auto">
-                    {{ $option->option_text }}
+              <div class="p-3 border rounded-4 h-100 {{ $option->is_correct ? 'correct-answer text-success border-success' : 'bg-light text-muted' }}">
+                <div class="d-flex gap-2 align-items-start h-100">
+                  <strong class="{{ $option->is_correct ? 'text-success' : 'text-dark' }} fs-5">{{ $labels[$optIndex] ?? '-' }}.</strong>
+
+                  <div class="flex-grow-1">
+                    @if($option->option_text)
+                    <div class="text-dynamic mb-2" dir="auto">
+                      {{ $option->option_text }}
+                    </div>
+                    @endif
+
+                    @if($option->image_file)
+                    <img src="{{ asset('storage/' . $option->image_file) }}" alt="Gambar Opsi" class="img-fluid rounded border shadow-sm" style="max-height: 120px;">
+                    @endif
                   </div>
+
                   @if($option->is_correct)
-                  <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                  <i class="bi bi-check-circle-fill text-success fs-4"></i>
                   @endif
                 </div>
               </div>
@@ -90,15 +119,16 @@
           </div>
           @endif
         </div>
+
       </div>
     </div>
 
     <div class="card-footer bg-white border-top-0 text-end py-3">
-      <form action="{{ route('teacher.cbt.questions.destroy', $q->id) }}" method="POST" class="d-inline">
+      <form action="{{ route('teacher.cbt.questions.destroy', $q->id) }}" method="POST" class="d-inline form-delete">
         @csrf
         @method('DELETE')
-        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Yakin ingin menghapus soal ini?');">
-          <i class="bi bi-trash me-1"></i> Hapus Soal
+        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 btn-delete">
+          <i class="bi bi-trash me-1"></i> Hapus
         </button>
       </form>
     </div>
@@ -115,8 +145,53 @@
     </div>
   </div>
   @endforelse
-
 </div>
 @endsection
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. Konfirmasi Hapus Soal
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const form = this.closest('.form-delete');
+        Swal.fire({
+          title: 'Hapus Soal Ini?'
+          , text: "Soal yang sudah dihapus tidak dapat dikembalikan lagi."
+          , icon: 'warning'
+          , showCancelButton: true
+          , confirmButtonColor: '#dc3545'
+          , cancelButtonColor: '#6c757d'
+          , confirmButtonText: 'Ya, Hapus Saja'
+          , cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+
+    // 2. Flash Message
+    @if(session('success'))
+    Swal.fire({
+      icon: 'success'
+      , title: 'Berhasil'
+      , text: "{{ session('success') }}"
+      , timer: 3000
+      , showConfirmButton: false
+    });
+    @endif
+    @if(session('error'))
+    Swal.fire({
+      icon: 'error'
+      , title: 'Gagal'
+      , text: "{{ session('error') }}"
+    });
+    @endif
+
+  });
+
+</script>
 @endpush
