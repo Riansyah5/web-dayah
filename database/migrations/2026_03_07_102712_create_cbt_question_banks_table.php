@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('cbt_question_banks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('teacher_id')->constrained()->cascadeOnDelete(); // Guru pembuat soal
+            $table->foreignUlid('teacher_id')->constrained()->cascadeOnDelete(); // Guru pembuat soal
             $table->string('subject_name'); // Nama Mata Pelajaran (Misal: Nahwu, Fiqih)
             $table->string('level'); // Kelas (Misal: 1 Utsman, 2 Ali)
             $table->string('bank_code')->unique(); // Kode Bank Soal (Misal: NHW-01)

@@ -40,6 +40,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // [BARU] Guard khusus portal CBT
+        'cbt' => [
+            'driver' => 'session',
+            'provider' => 'cbt_accounts',
+        ],
     ],
 
     /*
@@ -69,6 +75,12 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+        // [BARU] Provider untuk menghubungkan guard dengan Model CbtAccount
+        'cbt_accounts' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\CbtAccount::class,
+        ],
     ],
 
     /*

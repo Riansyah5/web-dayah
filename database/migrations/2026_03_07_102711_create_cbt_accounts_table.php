@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('cbt_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete(); // Relasi ke tabel students utama
+            $table->foreignUlid('student_id')->constrained()->cascadeOnDelete(); // Relasi ke tabel students utama
             $table->string('username')->unique(); // Misal: CBT-250199
             $table->string('password'); // Password yang sudah di-hash
             $table->string('raw_pin')->nullable(); // PIN asli (hanya untuk dicetak di kartu, bisa dikosongkan setelah ujian)

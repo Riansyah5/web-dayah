@@ -50,6 +50,7 @@ use App\Http\Controllers\Tahfizh\Teacher\TahfizhPermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViolationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Cbt\Admin\CbtAccountController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -67,7 +68,7 @@ Route::middleware('auth')->group(function () {
 		Route::get('/settings/sidebar', [SidebarSettingController::class, 'index'])->name('sidebar-settings.index');
 		Route::post('/settings/sidebar/update', [SidebarSettingController::class, 'update'])->name('sidebar-settings.update');
 	});
-	
+
 	// KHUSUS ADMIN =========================================
 	Route::middleware('role:Admin')->group(function () {
 		// Group Admin Master Data
@@ -352,5 +353,40 @@ Route::middleware('auth')->group(function () {
 			Route::post('/store', [TahfizhPermissionController::class, 'store'])->name('store');
 			Route::get('/get-schedules', [TahfizhPermissionController::class, 'getSchedules'])->name('get_schedules');
 		});
+
+
+		// ==========================================
+		// ADMIN PANEL - MODUL CBT
+		// ==========================================
+		Route::prefix('admin/cbt')->name('admin.cbt.')->group(function () {
+
+			// Manajemen Akun Santri
+			Route::get('/accounts', [CbtAccountController::class, 'index'])->name('accounts.index');
+			Route::post('/accounts/generate', [CbtAccountController::class, 'generateMassal'])->name('accounts.generate');
+			Route::post('/accounts/{account}/reset', [CbtAccountController::class, 'resetPin'])->name('accounts.reset');
+			Route::post('/accounts/{account}/toggle', [CbtAccountController::class, 'toggleStatus'])->name('accounts.toggle');
+		});
+	});
+});
+
+
+// ==========================================
+// PORTAL UJIAN (CBT) SANTRI
+// ==========================================
+use App\Http\Controllers\Cbt\CbtAuthController;
+use App\Http\Controllers\Cbt\CbtDashboardController;
+
+Route::prefix('cbt')->name('cbt.')->group(function () {
+
+	// Rute yang bisa diakses tanpa login (Guest)
+	Route::middleware('guest:cbt')->group(function () {
+		Route::get('/login', [CbtAuthController::class, 'showLoginForm'])->name('login');
+		Route::post('/login', [CbtAuthController::class, 'login'])->name('login.post');
+	});
+
+	// Rute yang wajib login sebagai santri (Auth)
+	Route::middleware('auth:cbt')->group(function () {
+		Route::get('/dashboard', [CbtDashboardController::class, 'index'])->name('dashboard');
+		Route::post('/logout', [CbtAuthController::class, 'logout'])->name('logout');
 	});
 });

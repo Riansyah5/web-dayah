@@ -116,6 +116,18 @@ $sidebar = \App\Models\SidebarSetting::pluck('is_active', 'menu_key');
         </li>
         @endif
 
+        @if($sidebar['menu_cbt'] ?? true)
+        {{-- CBT Admin--}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">CBT Admin</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.accounts.index') }}">Manajemen Akun</a></li>
+            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.questions.index') }}">Manajemen Soal</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.exams.index') }}">Manajemen Ujian</a></li> --}}
+          </ul>
+        </li>
+        @endif
+
 
       {{-- master data, hanya untuk admin --}}
       @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
