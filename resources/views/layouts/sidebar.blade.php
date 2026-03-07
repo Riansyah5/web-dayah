@@ -102,7 +102,7 @@ $sidebar = \App\Models\SidebarSetting::pluck('is_active', 'menu_key');
           </ul>
         </li>
         @endif
-      
+
         @if($sidebar['menu_pengasuhan'] ?? true)
         {{-- pengasuhan --}}
         <li class="pc-item pc-hasmenu">
@@ -116,123 +116,133 @@ $sidebar = \App\Models\SidebarSetting::pluck('is_active', 'menu_key');
         </li>
         @endif
 
-        @if($sidebar['menu_cbt'] ?? true)
-        {{-- CBT Admin--}}
+        @if($sidebar['menu_cbt_guru'] ?? true)
+        {{-- CBT Guru --}}
         <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">CBT Admin</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">CBT Guru</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.accounts.index') }}">Manajemen Akun</a></li>
-            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.questions.index') }}">Manajemen Soal</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.exams.index') }}">Manajemen Ujian</a></li> --}}
+            <li class="pc-item"><a class="pc-link" href="{{ route('teacher.cbt.banks.index') }}">Bank Soal</a></li>
+            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('teacher.cbt.banks.index') }}">Bank Soal</a></li> --}}
           </ul>
         </li>
         @endif
 
 
-      {{-- master data, hanya untuk admin --}}
-      @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-      <li class="pc-item pc-caption">
-        <label>Master Data</label>
-        <i class="ti ti-database"></i>
-      </li>
 
-      @if($sidebar['menu_kbm_admin'] ?? true)
-      {{-- menu KBM --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
-          <span class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.student_subject') }}">Rekap Absensi Santri</a></li>
-        </ul>
-      </li>
-      @endif
+        {{-- master data, hanya untuk admin --}}
+        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+        <li class="pc-item pc-caption">
+          <label>Master Data</label>
+          <i class="ti ti-database"></i>
+        </li>
 
-      @if($sidebar['menu_tahfizh_admin'] ?? true)
-      {{-- menu tahfizh --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
-          <span class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.schedules.index') }}">Jadwal Halaqah</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.monitoring.index') }}">Monitoring</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.reports.teacher') }}">Rekap Absensi Guru</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.reports.student') }}">Rekap Absensi Santri</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.setting.index') }}">Setting Rapor</a></li>
-        </ul>
-      </li>
-      @endif
+        @if($sidebar['menu_kbm_admin'] ?? true)
+        {{-- menu KBM --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
+            <span class="pc-mtext">KBM</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.schedule.index') }}">Jadwal Pelajaran</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.picket.index') }}">Monitoring</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.teacher') }}">Rekap Absensi Guru</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('academic.report.student_subject') }}">Rekap Absensi Santri</a></li>
+          </ul>
+        </li>
+        @endif
 
-      @if($sidebar['menu_pegawai_admin'] ?? true)
-      {{-- master data pegawai --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">Pegawai</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('kategori.index') }}">Kategori</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li>
-        </ul>
-      </li>
-      @endif
-      {{-- end master data pegawai --}}
+        @if($sidebar['menu_tahfizh_admin'] ?? true)
+        {{-- menu tahfizh --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span>
+            <span class="pc-mtext">Tahfizh</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.schedules.index') }}">Jadwal Halaqah</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.monitoring.index') }}">Monitoring</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.reports.teacher') }}">Rekap Absensi Guru</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.reports.student') }}">Rekap Absensi Santri</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.setting.index') }}">Setting Rapor</a></li>
+          </ul>
+        </li>
+        @endif
 
-      @if(Auth::user()->role == 'Superadmin')
-      {{-- master data User --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Akun</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('user.index') }}">Manajemen Akun</a></li>
-        </ul>
-      </li>
-      {{-- end master data User --}}
-      @endif
+        @if($sidebar['menu_cbt_admin'] ?? true)
+        {{-- CBT Admin--}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">CBT Admin</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.accounts.index') }}">Manajemen Akun</a></li>
+          </ul>
+        </li>
+        @endif
 
-      @if($sidebar['menu_pengasuhan_admin'] ?? true)
-      {{-- master data pengasuhan --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-bed"></i></span><span class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('dorms.index') }}">Asrama</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li>
-        </ul>
-      </li>
-      {{-- end master data pengasuhan --}}
-      @endif
+        @if($sidebar['menu_pegawai_admin'] ?? true)
+        {{-- master data pegawai --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-id"></i></span><span class="pc-mtext">Pegawai</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('kategori.index') }}">Kategori</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('jabatan.index') }}">Jabatan</a></li>
+          </ul>
+        </li>
+        @endif
+        {{-- end master data pegawai --}}
 
-      @if($sidebar['menu_akademik_admin'] ?? true)
-      {{-- master data sekolah --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-certificate"></i></span><span class="pc-mtext">Akademik</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('promotion.index') }}">Migrasi</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut SMA</a></li>
-        </ul>
-      </li>
-      {{-- end master data sekolah --}}
-      @endif
+        @if(Auth::user()->role == 'Superadmin')
+        {{-- master data User --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Akun</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('user.index') }}">Manajemen Akun</a></li>
+          </ul>
+        </li>
+        {{-- end master data User --}}
+        @endif
 
-      @if(Auth::user()->role == 'Superadmin')
-      {{-- Maintenance --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-certificate"></i></span><span class="pc-mtext">Maintenance Sistem</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('system.maintenance.index') }}">Cleanup Akademik</a></li>
-          <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.cleanup.index') }}">Cleanup Tahfizh</a></li>
-        </ul>
-      </li>
-      {{-- end Maintenance --}}
+        @if($sidebar['menu_pengasuhan_admin'] ?? true)
+        {{-- master data pengasuhan --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-bed"></i></span><span class="pc-mtext">Pengasuhan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('dorms.index') }}">Asrama</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('rooms.index') }}">Kamar</a></li>
+          </ul>
+        </li>
+        {{-- end master data pengasuhan --}}
+        @endif
 
-      {{-- Pengaturan Sidebar --}}
-      <li class="pc-item pc-hasmenu">
-        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Pengaturan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-        <ul class="pc-submenu">
-          <li class="pc-item"><a class="pc-link" href="{{ route('sidebar-settings.index') }}">Pengaturan Sidebar</a></li>
-        </ul>
-      </li>
-      @endif
-      @endif
+        @if($sidebar['menu_akademik_admin'] ?? true)
+        {{-- master data sekolah --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-certificate"></i></span><span class="pc-mtext">Akademik</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('master.index') }}">Data Master</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('promotion.index') }}">Migrasi</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('promotion.promote_to_senior') }}">Lanjut SMA</a></li>
+          </ul>
+        </li>
+        {{-- end master data sekolah --}}
+        @endif
+
+        @if(Auth::user()->role == 'Superadmin')
+        {{-- Maintenance --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-certificate"></i></span><span class="pc-mtext">Maintenance Sistem</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('system.maintenance.index') }}">Cleanup Akademik</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.cleanup.index') }}">Cleanup Tahfizh</a></li>
+          </ul>
+        </li>
+        {{-- end Maintenance --}}
+
+        {{-- Pengaturan Sidebar --}}
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-settings"></i></span><span class="pc-mtext">Pengaturan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('sidebar-settings.index') }}">Pengaturan Sidebar</a></li>
+          </ul>
+        </li>
+        @endif
+        @endif
       </ul>
       <div class="w-100 text-center">
         <div class="badge theme-version badge rounded-pill bg-light text-dark f-12"></div>

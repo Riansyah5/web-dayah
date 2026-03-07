@@ -51,6 +51,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViolationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Cbt\Admin\CbtAccountController;
+use App\Http\Controllers\Cbt\Teacher\QuestionBankController;
+use App\Http\Controllers\Cbt\Teacher\QuestionController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -365,6 +367,22 @@ Route::middleware('auth')->group(function () {
 			Route::post('/accounts/generate', [CbtAccountController::class, 'generateMassal'])->name('accounts.generate');
 			Route::post('/accounts/{account}/reset', [CbtAccountController::class, 'resetPin'])->name('accounts.reset');
 			Route::post('/accounts/{account}/toggle', [CbtAccountController::class, 'toggleStatus'])->name('accounts.toggle');
+		});
+
+		// ==========================================
+		// PANEL GURU - MODUL CBT
+		// ==========================================
+		Route::prefix('teacher/cbt')->name('teacher.cbt.')->middleware(['auth'])->group(function () {
+
+			// Bank Soal
+			Route::get('/banks', [QuestionBankController::class, 'index'])->name('banks.index');
+			Route::post('/banks', [QuestionBankController::class, 'store'])->name('banks.store');
+			Route::get('/banks/{bank}', [QuestionBankController::class, 'show'])->name('banks.show');
+
+			// Kelola Soal
+			Route::get('/banks/{bank}/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+			Route::post('/banks/{bank}/questions', [QuestionController::class, 'store'])->name('questions.store');
+			Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 		});
 	});
 });
