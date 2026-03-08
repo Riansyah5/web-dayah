@@ -9,6 +9,7 @@ use App\Models\CbtQuestion;
 use App\Models\CbtOption;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage; // Tambahkan ini untuk mengelola file media
+use Mews\Purifier\Facades\Purifier;
 
 class QuestionController extends Controller
 {
@@ -46,7 +47,7 @@ class QuestionController extends Controller
             $question = CbtQuestion::create([
                 'cbt_question_bank_id' => $bank->id,
                 'type' => $request->type,
-                'question_text' => $request->question_text,
+                'question_text' => Purifier::clean($request->question_text),
                 'score_weight' => $request->score_weight,
                 'image_file' => $imagePath,
                 'audio_file' => $audioPath,
@@ -132,7 +133,7 @@ class QuestionController extends Controller
             // 2. UPDATE TEKS SOAL
             $question->update([
                 'type' => $request->type,
-                'question_text' => $request->question_text,
+                'question_text' => Purifier::clean($request->question_text),
                 'score_weight' => $request->score_weight,
             ]);
 
@@ -196,4 +197,5 @@ class QuestionController extends Controller
         $question->delete(); // Opsi (cbt_options) akan ikut terhapus karena cascadeOnDelete di database
         return back()->with('success', 'Soal berhasil dihapus.');
     }
+
 }

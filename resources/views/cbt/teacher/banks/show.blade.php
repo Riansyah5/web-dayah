@@ -66,8 +66,20 @@
         <div class="fw-bold fs-5 text-primary">{{ $index + 1 }}.</div>
         {{-- teks soal --}}
         <div class="w-100">
-          <div class="text-dynamic mb-3" dir="auto">
+          {{-- untuk menampilkan teks soal dengan format yang lebih baik, 
+          termasuk jika ada teks Arab. Fungsi nl2br akan mengubah newlines 
+          menjadi <br> agar format paragraf tetap terjaga, 
+          dan fungsi e() akan memastikan bahwa teks aman dari XSS. 
+          Atribut dir="auto" akan membantu browser menentukan arah teks secara otomatis 
+          berdasarkan kontennya, sehingga teks Arab akan ditampilkan 
+          dengan benar dari kanan ke kiri. --}}
+
+          {{-- <div class="text-dynamic mb-3" dir="auto">
             {!! nl2br(e($q->question_text)) !!}
+          </div> --}} 
+
+          <div class="text-dynamic mb-3" dir="auto">
+            {!! $q->question_text !!}
           </div>
 
           {{-- media soal (gambar/audio) --}}

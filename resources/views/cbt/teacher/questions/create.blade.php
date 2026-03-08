@@ -20,6 +20,10 @@
     font-weight: bold;
   }
 
+  /* CKEditor Height */
+  .ck-editor__editable_inline {
+    min-height: 200px;
+  }
 </style>
 @endpush
 @section('content')
@@ -60,7 +64,7 @@
               <i class="bi bi-translate me-1"></i> Arab / Indo
             </span>
           </div>
-          <textarea name="question_text" id="q_text" class="form-control" rows="4" placeholder="Ketik soal di sini..." required></textarea>
+          <textarea name="question_text" id="q_text" class="form-control" rows="4" placeholder="Ketik soal di sini..."></textarea>
         </div>
 
         <div class="row g-3 bg-light p-3 rounded border border-dashed">
@@ -182,7 +186,26 @@
 </div>
 @endsection
 @push('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
 <script>
+  let questionEditor;
+
+  ClassicEditor
+    .create(document.querySelector('#q_text'))
+    .then(editor => {
+      questionEditor = editor;
+    })
+    .catch(error => {
+      console.error(error);
+    });
+
+  // Pastikan data CKEditor tersimpan ke textarea saat tombol submit ditekan
+  document.querySelector('form').addEventListener('submit', function() {
+    if (questionEditor) {
+      questionEditor.updateSourceElement();
+    }
+  });
+
   // Fungsi untuk menyembunyikan opsi A,B,C,D jika soal Essay
   function toggleQuestionType() {
     const type = document.getElementById('questionType').value;
@@ -197,6 +220,23 @@
 
   // Fungsi canggih untuk toggle input teks biasa ke teks Arab (RTL)
   function toggleRtl(elementId) {
+    // Handle CKEditor untuk q_text
+    if (elementId === 'q_text' && questionEditor) {
+      const editingView = questionEditor.editing.view;
+      const root = editingView.document.getRoot();
+
+      editingView.change(writer => {
+        if (root.hasClass('arabic-input')) {
+          writer.removeClass('arabic-input', root);
+          writer.setAttribute('dir', 'ltr', root);
+        } else {
+          writer.addClass('arabic-input', root);
+          writer.setAttribute('dir', 'rtl', root);
+        }
+      });
+      return;
+    }
+
     const el = document.getElementById(elementId);
     if (el.classList.contains('arabic-input')) {
       // Ubah ke Latin (Kiri ke Kanan)
