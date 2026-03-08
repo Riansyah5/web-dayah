@@ -403,6 +403,7 @@ Route::middleware('auth')->group(function () {
 // ==========================================
 use App\Http\Controllers\Cbt\CbtAuthController;
 use App\Http\Controllers\Cbt\CbtDashboardController;
+use App\Http\Controllers\Cbt\Student\ExamEngineController;
 
 
 Route::prefix('cbt')->name('cbt.')->group(function () {
@@ -414,8 +415,19 @@ Route::prefix('cbt')->name('cbt.')->group(function () {
 	});
 
 	// Rute yang wajib login sebagai santri (Auth)
+	// Route::middleware('auth:cbt')->group(function () {
+	// 	Route::get('/dashboard', [CbtDashboardController::class, 'index'])->name('dashboard');
+	// 	Route::post('/logout', [CbtAuthController::class, 'logout'])->name('logout');
+	// });
 	Route::middleware('auth:cbt')->group(function () {
-		Route::get('/dashboard', [CbtDashboardController::class, 'index'])->name('dashboard');
+		// Hapus rute dashboard lama, ganti dengan ini:
+		Route::get('/dashboard', [ExamEngineController::class, 'dashboard'])->name('dashboard');
 		Route::post('/logout', [CbtAuthController::class, 'logout'])->name('logout');
+
+		// Rute Mesin Ujian
+		Route::post('/exam/{exam}/start', [ExamEngineController::class, 'startExam'])->name('engine.start');
+		Route::get('/exam/engine/{studentExamId}', [ExamEngineController::class, 'showEngine'])->name('engine.show');
+		Route::post('/exam/autosave/{answerId}', [ExamEngineController::class, 'autosave'])->name('engine.autosave');
+		Route::post('/exam/finish/{studentExamId}', [ExamEngineController::class, 'finishExam'])->name('engine.finish');
 	});
 });
