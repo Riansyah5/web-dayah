@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Cbt\Admin\CbtAccountController;
 use App\Http\Controllers\Cbt\Teacher\QuestionBankController;
 use App\Http\Controllers\Cbt\Teacher\QuestionController;
+use App\Http\Controllers\Cbt\Admin\CbtExamController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -367,6 +368,12 @@ Route::middleware('auth')->group(function () {
 			Route::post('/accounts/generate', [CbtAccountController::class, 'generateMassal'])->name('accounts.generate');
 			Route::post('/accounts/{account}/reset', [CbtAccountController::class, 'resetPin'])->name('accounts.reset');
 			Route::post('/accounts/{account}/toggle', [CbtAccountController::class, 'toggleStatus'])->name('accounts.toggle');
+			// Manajemen Jadwal Ujian
+			Route::get('/exams', [CbtExamController::class, 'index'])->name('exams.index');
+			Route::get('/exams/create', [CbtExamController::class, 'create'])->name('exams.create');
+			Route::post('/exams', [CbtExamController::class, 'store'])->name('exams.store');
+			Route::post('/exams/{exam}/refresh-token', [CbtExamController::class, 'refreshToken'])->name('exams.refresh_token');
+			Route::delete('/exams/{exam}', [CbtExamController::class, 'destroy'])->name('exams.destroy');
 		});
 
 		// ==========================================
@@ -396,6 +403,7 @@ Route::middleware('auth')->group(function () {
 // ==========================================
 use App\Http\Controllers\Cbt\CbtAuthController;
 use App\Http\Controllers\Cbt\CbtDashboardController;
+
 
 Route::prefix('cbt')->name('cbt.')->group(function () {
 
