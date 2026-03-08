@@ -36,7 +36,7 @@
 
   <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-4">
-      <form action="{{ route('teacher.cbt.questions.store', $bank->id) }}" method="POST">
+      <form action="{{ route('teacher.cbt.questions.store', $bank->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="row mb-4 bg-light p-3 rounded">
@@ -60,7 +60,7 @@
               <i class="bi bi-translate me-1"></i> Arab / Indo
             </span>
           </div>
-          <textarea name="question_text" id="q_text" class="form-control arabic-input" rows="4" placeholder="Ketik soal di sini..." required></textarea>
+          <textarea name="question_text" id="q_text" class="form-control" rows="4" placeholder="Ketik soal di sini..." required></textarea>
         </div>
 
         <div class="row g-3 bg-light p-3 rounded border border-dashed">
@@ -93,7 +93,7 @@
             <div class="flex-grow-1">
               <div class="input-group">
                 <span class="input-group-text fw-bold">{{ $label }}</span>
-                <input type="text" name="options[{{ $index }}]" id="opt_{{ $index }}" class="form-control arabic-input" placeholder="Jawaban {{ $label }}">
+                <input type="text" name="options[{{ $index }}]" id="opt_{{ $index }}" class="form-control" placeholder="Jawaban {{ $label }}">
                 <button type="button" class="btn btn-outline-secondary" onclick="toggleRtl('opt_{{ $index }}')" title="Ubah Arab/Indo">
                   <i class="bi bi-translate"></i>
                 </button>

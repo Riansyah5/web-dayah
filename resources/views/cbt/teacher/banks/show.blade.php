@@ -124,6 +124,9 @@
     </div>
 
     <div class="card-footer bg-white border-top-0 text-end py-3">
+      <a href="{{ route('teacher.cbt.questions.edit', $q->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+        <i class="bi bi-pencil me-1"></i> Edit Soal
+      </a>
       <form action="{{ route('teacher.cbt.questions.destroy', $q->id) }}" method="POST" class="d-inline form-delete">
         @csrf
         @method('DELETE')

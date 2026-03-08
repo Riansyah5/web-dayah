@@ -383,6 +383,9 @@ Route::middleware('auth')->group(function () {
 			Route::get('/banks/{bank}/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 			Route::post('/banks/{bank}/questions', [QuestionController::class, 'store'])->name('questions.store');
 			Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+			// Tambahkan dua baris ini di bawah route questions.store
+			Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+			Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
 		});
 	});
 });
