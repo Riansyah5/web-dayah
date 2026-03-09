@@ -122,7 +122,7 @@ $sidebar = \App\Models\SidebarSetting::pluck('is_active', 'menu_key');
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">CBT Guru</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('teacher.cbt.banks.index') }}">Bank Soal</a></li>
-            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('teacher.cbt.banks.index') }}">Bank Soal</a></li> --}}
+            <li class="pc-item"><a class="pc-link" href="{{ route('teacher.cbt.results.index') }}">Rekap Nilai & Koreksi Essay</a></li>
           </ul>
         </li>
         @endif
@@ -171,7 +171,7 @@ $sidebar = \App\Models\SidebarSetting::pluck('is_active', 'menu_key');
           <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-home"></i></span><span class="pc-mtext">CBT Admin</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.accounts.index') }}">Manajemen Akun</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.exams.index') }}">Manajemen Jadwal Ujian</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('admin.cbt.exams.index') }}">Jadwal Ujian</a></li>
           </ul>
         </li>
         @endif

@@ -163,7 +163,8 @@
             font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
             color: var(--c-2);
         }
-        .text-dynamic { 
+        .text-dynamic,
+        .text-dynamic p { 
             font-family: 'Amiri', 'Inter', serif; font-size: 1.4rem; line-height: 2; 
             color: var(--text-main); font-weight: 500;
         }
@@ -272,6 +273,14 @@
         }
         .theme-option:hover { transform: scale(1.1); }
         .theme-option.active-theme { border-color: var(--text-main); }
+
+        /* Disabled Button State */
+        .btn-disabled-custom {
+            background: var(--border-soft) !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body class="unselectable" oncontextmenu="return false;">
@@ -340,7 +349,8 @@
                     
                     <div class="mb-5">
                         <div class="text-dynamic" dir="auto">
-                            {!! nl2br(e($currentAnswer->question->question_text)) !!}
+                            {{-- {!! nl2br(e($currentAnswer->question->question_text)) !!} --}}
+                            {!! $currentAnswer->question->question_text !!}
                         </div>
 
                         @if($currentAnswer->question->image_file)
@@ -379,7 +389,7 @@
                     @else
                         <div class="form-group">
                             <label class="q-badge mb-3 d-block"><i class="bi bi-pencil-square me-2"></i>Lembar Jawaban Essay</label>
-                            <textarea id="essayInput" class="form-control text-dynamic premium-textarea w-100" rows="8" dir="auto" placeholder="Mulai mengetik jawaban Anda di sini..." onblur="autosaveEssay({{ $currentAnswer->id }})">{{ $currentAnswer->essay_answer }}</textarea>
+                            <textarea id="essayInput" class="form-control text-dynamic premium-textarea w-100" rows="8" dir="auto" placeholder="Mulai mengetik jawaban Anda di sini..." onkeyup="debouncedAutosaveEssay({{ $currentAnswer->id }})">{{ $currentAnswer->essay_answer }}</textarea>
                         </div>
                     @endif
 
@@ -537,6 +547,23 @@
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const saveIndicator = document.getElementById('saveIndicator');
 
+        // --- LOGIC TOMBOL SELESAI ---
+        const currentPage = {{ $page }};
+        const totalQuestions = {{ $totalQuestions }};
+        // Ambil daftar soal yang sudah dijawab dari server saat load
+        const answeredOrders = @json($studentExam->answers->filter(fn($a) => $a->cbt_option_id || $a->essay_answer)->pluck('question_order'));
+        const answeredQuestions = new Set(answeredOrders);
+
+        function updateFinishButtonState() {
+            const btns = document.querySelectorAll('.btn-finish');
+            const isComplete = answeredQuestions.size >= totalQuestions;
+            
+            btns.forEach(btn => {
+                if (!isComplete) btn.classList.add('btn-disabled-custom');
+                else btn.classList.remove('btn-disabled-custom');
+            });
+        }
+
         function updateNavBoxToAnswered() {
             const navbox = document.getElementById('navbox_{{ $page }}');
             if(!navbox.classList.contains('nav-current')){
@@ -568,8 +595,20 @@
                 if(data.status === 'success') {
                     showSavingStatus(false);
                     updateNavBoxToAnswered();
+                    answeredQuestions.add(currentPage);
+                    updateFinishButtonState();
                 }
             });
+        }
+
+        // --- DEBOUNCE HELPER ---
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
         }
 
         function autosaveEssay(answerId) {
@@ -582,12 +621,37 @@
             }).then(res => res.json()).then(data => {
                 if(data.status === 'success') {
                     showSavingStatus(false);
-                    if(text.trim() !== '') updateNavBoxToAnswered();
+                    if(text.trim() !== '') {
+                        updateNavBoxToAnswered();
+                        answeredQuestions.add(currentPage);
+                    } else {
+                        answeredQuestions.delete(currentPage);
+                    }
+                    updateFinishButtonState();
                 }
             });
         }
 
+        // Buat versi debounced dari fungsi autosave essay
+        const debouncedAutosaveEssay = debounce(autosaveEssay, 1500); // Simpan setelah 1.5 detik tidak mengetik
+
         function confirmFinish() {
+            // Cek kelengkapan jawaban
+            if (answeredQuestions.size < totalQuestions) {
+                Swal.fire({
+                    title: 'Belum Selesai!',
+                    text: `Anda baru menjawab ${answeredQuestions.size} dari ${totalQuestions} soal. Mohon lengkapi semua jawaban sebelum mengumpulkan.`,
+                    icon: 'warning',
+                    confirmButtonText: 'Lanjutkan Mengerjakan',
+                    customClass: {
+                        popup: 'rounded-4',
+                        confirmButton: 'btn btn-primary-custom rounded-pill px-4 mx-2 py-2'
+                    },
+                    buttonsStyling: false
+                });
+                return;
+            }
+
             Swal.fire({
                 title: 'Akhiri Ujian?',
                 text: "Pastikan Anda telah memeriksa kembali semua jawaban.",
@@ -636,6 +700,9 @@
                 }
             });
         }
+
+        // Inisialisasi status tombol saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', updateFinishButtonState);
     </script>
 </body>
 </html>

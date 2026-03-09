@@ -5,6 +5,10 @@ buat fitur CBT
 buat fitur edit rapor sekolah perorangan
 perbaiki import excel student
 
+CBT
+- halaman rekap nilai dan koreksi essay.show: buat per kelas 
+- export nilai excel
+- buat halaman admin monitoring dashboard untuk memantau yang sedang dan atau sudah selesai ujian
 
 DELETE FROM migrations
 WHERE migration = '2024_01_01_000000_create_users_table';

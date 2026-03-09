@@ -54,6 +54,7 @@ use App\Http\Controllers\Cbt\Admin\CbtAccountController;
 use App\Http\Controllers\Cbt\Teacher\QuestionBankController;
 use App\Http\Controllers\Cbt\Teacher\QuestionController;
 use App\Http\Controllers\Cbt\Admin\CbtExamController;
+use App\Http\Controllers\Cbt\Teacher\ExamResultController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -393,6 +394,11 @@ Route::middleware('auth')->group(function () {
 			// Tambahkan dua baris ini di bawah route questions.store
 			Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 			Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+			// Koreksi & Hasil Ujian
+    Route::get('/results', [ExamResultController::class, 'index'])->name('results.index');
+    Route::get('/results/{exam}', [ExamResultController::class, 'show'])->name('results.show');
+    Route::get('/results/correct/{studentExam}', [ExamResultController::class, 'correct'])->name('results.correct');
+    Route::post('/results/correct/{studentExam}', [ExamResultController::class, 'storeCorrection'])->name('results.store_correction');
 		});
 	});
 });

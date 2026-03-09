@@ -9,4 +9,9 @@ class CbtStudentExam extends Model {
 
     public function exam() { return $this->belongsTo(CbtExam::class, 'cbt_exam_id'); }
     public function answers() { return $this->hasMany(CbtStudentAnswer::class)->orderBy('question_order'); }
+
+    public function cbtAccount()
+    {
+        return $this->belongsTo(CbtAccount::class, 'cbt_account_id');
+    }
 }

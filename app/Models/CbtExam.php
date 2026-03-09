@@ -21,4 +21,9 @@ class CbtExam extends Model
     {
         return $this->belongsTo(CbtQuestionBank::class, 'cbt_question_bank_id');
     }
+
+    public function studentExams()
+    {
+        return $this->hasMany(CbtStudentExam::class, 'cbt_exam_id');
+    }
 }

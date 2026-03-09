@@ -1,15 +1,27 @@
 @extends('layouts.app')
 @section('title', 'Detail Bank Soal CBT')
 @push('link')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 @endpush
 @push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+ 
 <style>
   /* Font fallback agar tulisan Arab terbaca indah dan besar */
-  .text-dynamic {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Traditional Arabic', 'Amiri', serif;
+  .text-dynamic,
+  .text-dynamic p {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Amiri', serif;
     font-size: 1.25rem;
     line-height: 1.8;
+  }
+
+  .font-arabic,
+  .font-arabic * {
+    font-family: 'Amiri', serif !important;
+    font-size: 1.6rem !important;
+    line-height: 2.2 !important;
   }
 
   .correct-answer {
@@ -61,7 +73,7 @@
       <span class="badge bg-secondary rounded-pill ms-1">Poin: {{ $q->score_weight }}</span>
     </div>
 
-    <div class="card-body p-4">
+    <div class="card-body p-4 mt-3">
       <div class="d-flex gap-3">
         <div class="fw-bold fs-5 text-primary">{{ $index + 1 }}.</div>
         {{-- teks soal --}}
@@ -78,7 +90,11 @@
             {!! nl2br(e($q->question_text)) !!}
           </div> --}} 
 
-          <div class="text-dynamic mb-3" dir="auto">
+          @php
+            // Cek apakah teks mengandung karakter Arab
+            $isArabic = preg_match('/\p{Arabic}/u', strip_tags($q->question_text));
+          @endphp
+          <div class="text-dynamic mb-3 {{ $isArabic ? 'font-arabic' : '' }}" dir="auto">
             {!! $q->question_text !!}
           </div>
 
@@ -111,7 +127,10 @@
 
                   <div class="flex-grow-1">
                     @if($option->option_text)
-                    <div class="text-dynamic mb-2" dir="auto">
+                    @php
+                      $isOptArabic = preg_match('/\p{Arabic}/u', $option->option_text);
+                    @endphp
+                    <div class="text-dynamic mb-2 {{ $isOptArabic ? 'font-arabic' : '' }}" dir="auto">
                       {{ $option->option_text }}
                     </div>
                     @endif

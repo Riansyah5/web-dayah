@@ -178,10 +178,10 @@
                       <i class="bi bi-translate"></i>
                     </button>
                   </div>
-                  <div class="d-flex align-items-center">
+                  {{-- <div class="d-flex align-items-center">
                     <input type="file" name="option_images[{{ $index }}]" class="form-control form-control-sm border-0 bg-transparent w-auto" style="font-size: 11px;">
                     <span class="text-muted ms-2" style="font-size: 11px;">*Opsional Gambar Jawaban</span>
-                  </div>
+                  </div> --}}
                 </div>
               </div>
             </div>
@@ -209,7 +209,7 @@
                 <label class="form-label small fw-bold">Bobot Skor (Point)</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light"><i class="bi bi-star-fill text-warning"></i></span>
-                  <input type="number" name="score_weight" class="form-control" value="1" min="1">
+                  <input type="number" name="score_weight" class="form-control" value="10" min="1">
                 </div>
               </div>
             </div>
