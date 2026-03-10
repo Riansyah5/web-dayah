@@ -395,10 +395,13 @@ Route::middleware('auth')->group(function () {
 			Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 			Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
 			// Koreksi & Hasil Ujian
-    Route::get('/results', [ExamResultController::class, 'index'])->name('results.index');
-    Route::get('/results/{exam}', [ExamResultController::class, 'show'])->name('results.show');
-    Route::get('/results/correct/{studentExam}', [ExamResultController::class, 'correct'])->name('results.correct');
-    Route::post('/results/correct/{studentExam}', [ExamResultController::class, 'storeCorrection'])->name('results.store_correction');
+			Route::get('/results', [ExamResultController::class, 'index'])->name('results.index');
+			Route::get('/results/{exam}', [ExamResultController::class, 'show'])->name('results.show');
+			Route::get('/results/correct/{studentExam}', [ExamResultController::class, 'correct'])->name('results.correct');
+			Route::post('/results/correct/{studentExam}', [ExamResultController::class, 'storeCorrection'])->name('results.store_correction');
+			// Export Nilai
+			Route::get('/results/{exam}/export/pdf', [ExamResultController::class, 'exportPdf'])->name('results.export.pdf');
+			Route::get('/results/{exam}/export/excel', [ExamResultController::class, 'exportExcel'])->name('results.export.excel');
 		});
 	});
 });

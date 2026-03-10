@@ -6,8 +6,7 @@ buat fitur edit rapor sekolah perorangan
 perbaiki import excel student
 
 CBT
-- halaman rekap nilai dan koreksi essay.show: buat per kelas 
-- export nilai excel
+- ubah pola generate akun cbt agar usernamenya tidak terlalu panjang dan agar mudah dibaca
 - buat halaman admin monitoring dashboard untuk memantau yang sedang dan atau sudah selesai ujian
 
 DELETE FROM migrations
@@ -20,6 +19,8 @@ WHERE migration = '2024_01_01_000000_create_users_table';
 
 
 ============================================================================================
+- halaman rekap nilai dan koreksi essay.show: buat per kelas 
+- export nilai excel
 UBAH TAMPILAN ABSEN PDF DI KELAS/SHOW
 buat tombol lihat password di halaman login
 buat fitur untuk aktif/nonaktifkan menu di sidebar

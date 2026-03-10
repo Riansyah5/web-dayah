@@ -10,6 +10,9 @@ use App\Models\CbtStudentAnswer;
 use App\Models\Teacher;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CbtResultExport;
 
 class ExamResultController extends Controller
 {
@@ -22,13 +25,13 @@ class ExamResultController extends Controller
         if (!$teacher && !in_array($user->role, ['Admin', 'Superadmin'])) {
             abort(403, 'Akun Anda tidak terhubung dengan data guru.');
         }
-        
+
         $query = CbtExam::with('questionBank')
-                    ->withCount('studentExams') // Hitung jumlah santri yang mengerjakan
-                    ->orderBy('start_time', 'desc');
+            ->withCount('studentExams') // Hitung jumlah santri yang mengerjakan
+            ->orderBy('start_time', 'desc');
 
         if (!in_array($user->role, ['Admin', 'Superadmin'])) {
-            $query->whereHas('questionBank', function($q) use ($teacher) {
+            $query->whereHas('questionBank', function ($q) use ($teacher) {
                 $q->where('teacher_id', $teacher->id);
             });
         }
@@ -55,30 +58,90 @@ class ExamResultController extends Controller
             }
         }
 
-        $studentExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
-                        ->with('cbtAccount.student')
-                        ->orderBy('score', 'desc')
-                        ->get();
+        // $studentExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
+        //                 ->with('cbtAccount.student')
+        //                 ->orderBy('score', 'desc')
+        //                 ->get();
 
-        return view('cbt.teacher.results.show', compact('exam', 'studentExams'));
+        // $studentExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
+        //     ->with('cbtAccount.student')
+        //     ->get()
+        //     ->groupBy(function ($item) {
+        //         return $item->cbtAccount->student->class_group ?? 'Tanpa Kelas';
+        //     });
+
+        // Mengambil data dan mengelompokkan (GroupBy)
+        $groupedExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
+            ->with(['cbtAccount.student.classrooms']) // Sesuaikan relasi kelas Anda
+            ->orderBy('score', 'desc')
+            ->get()
+            ->groupBy(function($item) {
+                // Mengambil nama kelas. Jika tidak ada, masuk ke 'Tanpa Kelas'
+                $classrooms = $item->cbtAccount->student->classrooms ?? null;
+                return ($classrooms && $classrooms->isNotEmpty()) ? $classrooms->last()->name : 'Tanpa Kelas';
+            });
+
+        // Urutkan nama kelas sesuai abjad (1A, 1B, 2A, dst)
+        $groupedExams = $groupedExams->sortKeys();
+        
+
+        return view('cbt.teacher.results.show', compact('exam', 'groupedExams'));
     }
+
+    // 2. METHOD EXPORT PDF
+    public function exportPdf(CbtExam $exam)
+    {
+        $groupedExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
+            ->with(['cbtAccount.student.classrooms'])
+            ->orderBy('score', 'desc')
+            ->get()
+            ->groupBy(function($item) {
+                $classrooms = $item->cbtAccount->student->classrooms ?? null;
+                return ($classrooms && $classrooms->isNotEmpty()) ? $classrooms->last()->name : 'Tanpa Kelas';
+            })->sortKeys();
+
+        $pdf = Pdf::loadView('cbt.teacher.results.export_template', compact('exam', 'groupedExams'));
+        
+        // Atur ukuran kertas ke A4 Portrait
+        $pdf->setPaper('a4', 'portrait');
+        
+        return $pdf->download('Nilai_CBT_'.$exam->name.'.pdf');
+    }
+
+    // 3. METHOD EXPORT EXCEL
+    public function exportExcel(CbtExam $exam)
+    {
+        $groupedExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
+            ->with(['cbtAccount.student.classrooms'])
+            ->orderBy('score', 'desc')
+            ->get()
+            ->groupBy(function($item) {
+                $classrooms = $item->cbtAccount->student->classrooms ?? null;
+                return ($classrooms && $classrooms->isNotEmpty()) ? $classrooms->last()->name : 'Tanpa Kelas';
+            })->sortKeys();
+
+        return Excel::download(new CbtResultExport($exam, $groupedExams), 'Nilai_CBT_'.$exam->name.'.xlsx');
+    }
+
 
     // 3. Form Koreksi Essay Santri
     public function correct($studentExamId)
     {
         $studentExam = CbtStudentExam::with(['exam.questionBank', 'cbtAccount.student', 'answers.question'])->findOrFail($studentExamId);
-        
+
         // Ambil HANYA jawaban essay
-        $essayAnswers = $studentExam->answers->filter(function($ans) {
+        $essayAnswers = $studentExam->answers->filter(function ($ans) {
             return $ans->question->type == 'essay';
         });
 
         // Hitung nilai PG saat ini (sebagai info untuk guru)
-        $pgAnswers = $studentExam->answers->filter(function($ans) {
+        $pgAnswers = $studentExam->answers->filter(function ($ans) {
             return $ans->question->type == 'multiple_choice' && $ans->is_correct;
         });
-        
-        $pgScore = $pgAnswers->sum(function($ans) { return $ans->question->score_weight; });
+
+        $pgScore = $pgAnswers->sum(function ($ans) {
+            return $ans->question->score_weight;
+        });
 
         return view('cbt.teacher.results.correct', compact('studentExam', 'essayAnswers', 'pgScore'));
     }
@@ -88,8 +151,8 @@ class ExamResultController extends Controller
     {
         $studentExam = CbtStudentExam::with('answers.question')->findOrFail($studentExamId);
 
-        DB::transaction(function() use ($request, $studentExam) {
-            
+        DB::transaction(function () use ($request, $studentExam) {
+
             $totalEarnedPoints = 0;
             $maxPossiblePoints = 0;
 
@@ -105,14 +168,13 @@ class ExamResultController extends Controller
                     } else {
                         $ans->update(['score' => 0]);
                     }
-                } 
-                elseif ($ans->question->type == 'essay') {
+                } elseif ($ans->question->type == 'essay') {
                     // Essay: Ambil skor dari form input Guru
                     $inputScore = $request->scores[$ans->id] ?? 0;
-                    
+
                     // Pastikan guru tidak kasih nilai melebihi bobot maksimal soal tersebut
                     $inputScore = min($inputScore, $ans->question->score_weight);
-                    
+
                     $totalEarnedPoints += $inputScore;
                     $ans->update(['score' => $inputScore, 'is_correct' => ($inputScore > 0)]);
                 }
@@ -125,11 +187,11 @@ class ExamResultController extends Controller
             $studentExam->update([
                 'score' => $finalScore,
                 // Status finished dipastikan agar nilai fix
-                'status' => 'finished' 
+                'status' => 'finished'
             ]);
         });
 
         return redirect()->route('teacher.cbt.results.show', $studentExam->cbt_exam_id)
-                         ->with('success', 'Koreksi essay berhasil disimpan. Nilai akhir santri telah diperbarui.');
+            ->with('success', 'Koreksi essay berhasil disimpan. Nilai akhir santri telah diperbarui.');
     }
 }
