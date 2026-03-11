@@ -380,6 +380,7 @@ Route::middleware('auth')->group(function () {
 			Route::get('/exams/{exam}/monitor', [CbtMonitorController::class, 'index'])->name('exams.monitor');
 			Route::get('/exams/{exam}/monitor/api', [CbtMonitorController::class, 'apiData'])->name('exams.monitor.api');
 			Route::post('/exams/{exam}/force-finish/{studentExamId}', [CbtMonitorController::class, 'forceFinish'])->name('exams.force_finish');
+			Route::post('/exams/{exam}/send-message/{studentExamId}', [CbtMonitorController::class, 'sendMessage'])->name('exams.send_message');
 		});
 
 		// ==========================================

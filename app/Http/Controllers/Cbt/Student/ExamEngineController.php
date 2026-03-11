@@ -182,8 +182,23 @@ class ExamEngineController extends Controller
     {
         $studentExam = CbtStudentExam::find($studentExamId);
         if ($studentExam && $studentExam->status == 'working') {
-            $studentExam->update(['last_active_at' => Carbon::now()]);
-            return response()->json(['status' => 'alive']);
+            
+            // Simpan pesan jika ada
+            $message = $studentExam->warning_message;
+            
+            // Jika ada pesan, segera hapus dari database agar tidak terbaca 2x
+            if ($message) {
+                $studentExam->warning_message = null;
+            }
+            
+            // Update waktu aktif
+            $studentExam->last_active_at = Carbon::now();
+            $studentExam->save();
+
+            return response()->json([
+                'status' => 'alive',
+                'warning_message' => $message // Kirim pesan ke browser santri
+            ]);
         }
         return response()->json(['status' => 'dead_or_finished']);
     }

@@ -143,4 +143,24 @@ class CbtMonitorController extends Controller
 
         return back()->with('success', 'Ujian santri berhasil diakhiri paksa. Nilai Pilihan Ganda telah dihitung.');
     }
+
+    // 4. Aksi Darurat: Kirim Pesan Teguran
+    public function sendMessage(Request $request, CbtExam $exam, $studentExamId)
+    {
+        $request->validate([
+            'message' => 'required|string|max:500'
+        ]);
+
+        $se = CbtStudentExam::findOrFail($studentExamId);
+        
+        // Simpan pesan ke database
+        $se->update([
+            'warning_message' => $request->message
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => 'Pesan berhasil dikirim ke layar santri.'
+        ]);
+    }
 }

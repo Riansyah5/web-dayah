@@ -79,7 +79,7 @@
                             <th>Status Terkini</th>
                             <th width="30%">Progress Mengerjakan</th>
                             <th>Aktivitas Terakhir</th>
-                            <th class="text-end pe-4">Aksi Darurat</th>
+                            <th class="text-center pe-4">Aksi Darurat</th>
                         </tr>
                     </thead>
                     <tbody id="studentGrid">
@@ -92,6 +92,31 @@
 </div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100" id="toastContainer"></div>
+{{-- pesan teguran --}}
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-warning text-dark border-0 rounded-top-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Kirim Pesan Peringatan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="mb-2">Pesan akan muncul sebagai *Pop-up* di layar ujian: <strong id="msgStudentName" class="text-primary">...</strong></p>
+                
+                <input type="hidden" id="msgStudentExamId">
+                <textarea id="msgContent" class="form-control" rows="3" placeholder="Contoh: Harap fokus ke layar komputer Anda dan jangan menoleh ke belakang!" required></textarea>
+                
+                <div class="mt-2 text-muted" style="font-size: 11px;">
+                    *Pesan akan terkirim dalam waktu maksimal 15 detik mengikuti siklus heartbeat santri.
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-warning rounded-pill fw-bold px-4" onclick="submitMessage()">Kirim Pesan <i class="bi bi-send ms-1"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @push('styles')
 <style>
@@ -229,8 +254,12 @@
                                 </div>
                             </td>
                             <td><small class="text-muted fst-italic">${student.last_active}</small></td>
+                            
                             <td class="text-end pe-4">
                                 ${student.status !== 'finished' ? `
+                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 me-1" onclick="openMessageModal(${student.id}, '${student.name}')">
+                                        <i class="bi bi-chat-dots"></i> Tegur
+                                    </button>
                                     <form action="/admin/cbt/exams/{{ $exam->id }}/force-finish/${student.id}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="button" onclick="confirmForceFinish(this.closest('form'), '${student.name}')" class="btn btn-sm btn-outline-danger rounded-pill px-3">Force Finish</button>
@@ -254,6 +283,43 @@
         fetchMonitorData();
         setInterval(fetchMonitorData, 10000); // Polling setiap 10 detik
     });
+
+    // FUNGSI UNTUK MEMBUKA MODAL PESAN
+    // Buka Modal
+    function openMessageModal(studentExamId, studentName) {
+        document.getElementById('msgStudentExamId').value = studentExamId;
+        document.getElementById('msgStudentName').innerText = studentName;
+        document.getElementById('msgContent').value = ''; // Kosongkan form
+        new bootstrap.Modal(document.getElementById('messageModal')).show();
+    }
+
+    // Kirim Pesan via AJAX
+    function submitMessage() {
+        const studentExamId = document.getElementById('msgStudentExamId').value;
+        const message = document.getElementById('msgContent').value;
+        const btn = event.target;
+
+        if(message.trim() === '') { alert('Pesan tidak boleh kosong!'); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengirim...';
+
+        fetch(`/admin/cbt/exams/{{ $exam->id }}/send-message/${studentExamId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+            showToast(data.msg, 'success');
+            btn.disabled = false;
+            btn.innerHTML = 'Kirim Pesan <i class="bi bi-send ms-1"></i>';
+        });
+    }
 </script>
 @endpush
 @endsection
