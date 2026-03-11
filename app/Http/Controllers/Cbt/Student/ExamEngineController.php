@@ -120,7 +120,7 @@ class ExamEngineController extends Controller
         return view('cbt.student.engine', compact('studentExam', 'currentAnswer', 'totalQuestions', 'page', 'remainingSeconds'));
     }
 
-    // 4. AUTOSAVE VIA AJAX
+    // [UPDATE] Pastikan autosave juga memperbarui last_active_at
     public function autosave(Request $request, $answerId)
     {
         $answer = CbtStudentAnswer::findOrFail($answerId);
@@ -134,6 +134,9 @@ class ExamEngineController extends Controller
             $answer->essay_answer = $request->essay_text;
         }
         $answer->save();
+
+        // Update detak jantung karena santri beraktivitas
+        $exam->update(['last_active_at' => Carbon::now()]);
 
         return response()->json(['status' => 'success']);
     }
@@ -172,5 +175,16 @@ class ExamEngineController extends Controller
         ]);
 
         return redirect()->route('cbt.dashboard')->with('success', 'Alhamdulillah, ujian telah selesai dan jawaban Anda berhasil dikirim.');
+    }
+
+    // [BARU] Menerima sinyal detak jantung dari browser santri
+    public function heartbeat($studentExamId)
+    {
+        $studentExam = CbtStudentExam::find($studentExamId);
+        if ($studentExam && $studentExam->status == 'working') {
+            $studentExam->update(['last_active_at' => Carbon::now()]);
+            return response()->json(['status' => 'alive']);
+        }
+        return response()->json(['status' => 'dead_or_finished']);
     }
 }

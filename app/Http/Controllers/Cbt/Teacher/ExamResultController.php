@@ -63,13 +63,6 @@ class ExamResultController extends Controller
         //                 ->orderBy('score', 'desc')
         //                 ->get();
 
-        // $studentExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
-        //     ->with('cbtAccount.student')
-        //     ->get()
-        //     ->groupBy(function ($item) {
-        //         return $item->cbtAccount->student->class_group ?? 'Tanpa Kelas';
-        //     });
-
         // Mengambil data dan mengelompokkan (GroupBy)
         $groupedExams = CbtStudentExam::where('cbt_exam_id', $exam->id)
             ->with(['cbtAccount.student.classrooms']) // Sesuaikan relasi kelas Anda

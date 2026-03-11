@@ -55,6 +55,7 @@ use App\Http\Controllers\Cbt\Teacher\QuestionBankController;
 use App\Http\Controllers\Cbt\Teacher\QuestionController;
 use App\Http\Controllers\Cbt\Admin\CbtExamController;
 use App\Http\Controllers\Cbt\Teacher\ExamResultController;
+use App\Http\Controllers\Cbt\Admin\CbtMonitorController;
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -375,6 +376,10 @@ Route::middleware('auth')->group(function () {
 			Route::post('/exams', [CbtExamController::class, 'store'])->name('exams.store');
 			Route::post('/exams/{exam}/refresh-token', [CbtExamController::class, 'refreshToken'])->name('exams.refresh_token');
 			Route::delete('/exams/{exam}', [CbtExamController::class, 'destroy'])->name('exams.destroy');
+			// Live Monitoring Ujian
+			Route::get('/exams/{exam}/monitor', [CbtMonitorController::class, 'index'])->name('exams.monitor');
+			Route::get('/exams/{exam}/monitor/api', [CbtMonitorController::class, 'apiData'])->name('exams.monitor.api');
+			Route::post('/exams/{exam}/force-finish/{studentExamId}', [CbtMonitorController::class, 'forceFinish'])->name('exams.force_finish');
 		});
 
 		// ==========================================
@@ -438,5 +443,7 @@ Route::prefix('cbt')->name('cbt.')->group(function () {
 		Route::get('/exam/engine/{studentExamId}', [ExamEngineController::class, 'showEngine'])->name('engine.show');
 		Route::post('/exam/autosave/{answerId}', [ExamEngineController::class, 'autosave'])->name('engine.autosave');
 		Route::post('/exam/finish/{studentExamId}', [ExamEngineController::class, 'finishExam'])->name('engine.finish');
+		// Rute untuk heartbeat (deteksi koneksi)
+		Route::post('/exam/heartbeat/{studentExamId}', [ExamEngineController::class, 'heartbeat'])->name('engine.heartbeat');
 	});
 });

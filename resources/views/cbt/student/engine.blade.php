@@ -703,6 +703,17 @@
 
         // Inisialisasi status tombol saat halaman dimuat
         document.addEventListener('DOMContentLoaded', updateFinishButtonState);
+
+        // --- 3. HEARTBEAT (Kirim sinyal online ke server tiap 30 detik) ---
+        setInterval(() => {
+            fetch(`/cbt/exam/heartbeat/{{ $studentExam->id }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            }).catch(err => console.log('Koneksi internet mungkin terputus.'));
+        }, 30000); // 30000 ms = 30 Detik
     </script>
 </body>
 </html>

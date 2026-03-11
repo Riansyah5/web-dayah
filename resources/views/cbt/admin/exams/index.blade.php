@@ -93,6 +93,9 @@
               @endif
             </td>
             <td class="text-end pe-4">
+              <a href="{{ route('admin.cbt.exams.monitor', $exam->id) }}" class="btn btn-sm btn-primary rounded-pill px-3 me-1">
+                <i class="bi bi-display"></i> Live Monitor
+              </a>
               <form action="{{ route('admin.cbt.exams.destroy', $exam->id) }}" method="POST" class="d-inline">
                 @csrf
                 @method('DELETE')
@@ -117,24 +120,24 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   @if(session('success'))
-    Swal.fire({
-      icon: 'success',
-      title: 'Berhasil!',
-      text: "{{ session('success') }}",
-      timer: 3000,
-      showConfirmButton: false
-    });
+  Swal.fire({
+    icon: 'success'
+    , title: 'Berhasil!'
+    , text: "{{ session('success') }}"
+    , timer: 3000
+    , showConfirmButton: false
+  });
   @endif
 
   function confirmRefresh(form) {
     Swal.fire({
-      title: 'Ganti Token?',
-      text: "Santri yang sedang login tidak terpengaruh, tapi yang baru mau login butuh token baru.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya, Ganti Token!'
+      title: 'Ganti Token?'
+      , text: "Santri yang sedang login tidak terpengaruh, tapi yang baru mau login butuh token baru."
+      , icon: 'warning'
+      , showCancelButton: true
+      , confirmButtonColor: '#3085d6'
+      , cancelButtonColor: '#d33'
+      , confirmButtonText: 'Ya, Ganti Token!'
     }).then((result) => {
       if (result.isConfirmed) {
         form.submit();
@@ -144,18 +147,19 @@
 
   function confirmDelete(form) {
     Swal.fire({
-      title: 'Hapus Jadwal?',
-      text: "Data yang dihapus tidak dapat dikembalikan!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Ya, Hapus!'
+      title: 'Hapus Jadwal?'
+      , text: "Data yang dihapus tidak dapat dikembalikan!"
+      , icon: 'warning'
+      , showCancelButton: true
+      , confirmButtonColor: '#d33'
+      , cancelButtonColor: '#3085d6'
+      , confirmButtonText: 'Ya, Hapus!'
     }).then((result) => {
       if (result.isConfirmed) {
         form.submit();
       }
     })
   }
+
 </script>
 @endpush

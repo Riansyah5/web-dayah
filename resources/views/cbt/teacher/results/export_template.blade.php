@@ -35,7 +35,7 @@
         <tr>
             <td>Tanggal</td>
             <td>:</td>
-            <td>{{ \Carbon\Carbon::parse($exam->start_time)->translatedFormat('d F Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($exam->start_time)->locale('id')->translatedFormat('d F Y') }}</td>
             <td>Guru Pengampu</td>
             <td>:</td>
             <td>{{ $exam->questionBank->teacher->name }}</td>
