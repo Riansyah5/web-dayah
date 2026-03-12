@@ -22,9 +22,9 @@
       <button class="btn btn-outline-success rounded-pill shadow-sm ms-1" onclick="Swal.fire('Info', 'Fitur cetak kartu akan segera hadir!', 'info')">
         <i class="bi bi-printer me-1"></i> Cetak Kartu
       </button> --}}
-      <form action="{{ route('admin.cbt.accounts.generate') }}" method="POST" class="d-inline" onsubmit="return confirm('Sistem akan membuatkan akun untuk santri yang belum punya. Lanjutkan?');">
+      <form action="{{ route('admin.cbt.generate.batch') }}" method="POST" class="d-inline" id="form-generate">
         @csrf
-        <button type="submit" class="btn btn-primary rounded-pill shadow-sm" {{ $missingAccounts == 0 ? 'disabled' : '' }}>
+        <button type="button" id="btnGenerate" class="btn btn-primary rounded-pill shadow-sm">
           <i class="bi bi-magic me-1"></i> Generate
         </button>
       </form>
@@ -33,9 +33,9 @@
         <i class="bi bi-printer me-1"></i> Cetak Kartu
       </a>
 
-      <form action="{{ route('admin.cbt.accounts.reset_massal') }}" method="POST" class="d-inline ms-1" id="form-reset-massal">
+      <form action="{{ route('admin.cbt.reset.batch') }}" method="POST" class="d-inline ms-1" id="form-reset-massal">
         @csrf
-        <button type="button" class="btn btn-danger rounded-pill shadow-sm btn-reset-massal">
+        <button type="button" id="btnReset" class="btn btn-danger rounded-pill shadow-sm">
           <i class="bi bi-arrow-clockwise me-1"></i> Reset Massal
         </button>
       </form>
@@ -165,21 +165,21 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // 1. Konfirmasi Generate Akun
-    const btnGenerate = document.querySelector('.btn-generate');
+    const btnGenerate = document.getElementById('btnGenerate');
     if (btnGenerate) {
       btnGenerate.addEventListener('click', function() {
         Swal.fire({
-          title: 'Generate Akun?'
-          , text: "Sistem akan membuatkan akun otomatis untuk santri yang belum memiliki akun."
+          title: 'Generate Akun Otomatis?'
+          , text: "Sistem akan membuatkan akun untuk santri yang belum memiliki akun secara bertahap."
           , icon: 'question'
           , showCancelButton: true
           , confirmButtonColor: '#0d6efd'
           , cancelButtonColor: '#6c757d'
-          , confirmButtonText: 'Ya, Generate Sekarang'
+          , confirmButtonText: 'Ya, Mulai Generate'
           , cancelButtonText: 'Batal'
         }).then((result) => {
           if (result.isConfirmed) {
-            document.getElementById('form-generate').submit();
+            startGeneration();
           }
         });
       });
@@ -234,21 +234,21 @@
     });
 
     // 5. Konfirmasi Reset Massal
-    const btnResetMassal = document.querySelector('.btn-reset-massal');
-    if (btnResetMassal) {
-      btnResetMassal.addEventListener('click', function() {
+    const btnReset = document.getElementById('btnReset');
+    if (btnReset) {
+      btnReset.addEventListener('click', function() {
         Swal.fire({
-          title: 'RESET MASSAL?',
-          text: "PERHATIAN KRITIKAL! Ini akan MENGACAK ULANG seluruh PIN dan MENONAKTIFKAN semua akun. Lakukan HANYA JIKA seluruh ujian semester ini telah selesai!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#dc3545',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Ya, Reset Semua',
-          cancelButtonText: 'Batal'
+          title: 'RESET MASSAL?'
+          , text: "PERHATIAN KRITIKAL! Ini akan MENGACAK ULANG seluruh PIN dan MENONAKTIFKAN semua akun. Lakukan HANYA JIKA seluruh ujian semester ini telah selesai!"
+          , icon: 'warning'
+          , showCancelButton: true
+          , confirmButtonColor: '#dc3545'
+          , cancelButtonColor: '#6c757d'
+          , confirmButtonText: 'Ya, Reset Semua'
+          , cancelButtonText: 'Batal'
         }).then((result) => {
           if (result.isConfirmed) {
-            document.getElementById('form-reset-massal').submit();
+            startReset();
           }
         });
       });
@@ -259,14 +259,14 @@
     if (btnActivateMassal) {
       btnActivateMassal.addEventListener('click', function() {
         Swal.fire({
-          title: 'Aktifkan Semua Akun?',
-          text: "Seluruh santri akan diizinkan login menggunakan kartu ujian mereka.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#198754',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Ya, Aktifkan Semua',
-          cancelButtonText: 'Batal'
+          title: 'Aktifkan Semua Akun?'
+          , text: "Seluruh santri akan diizinkan login menggunakan kartu ujian mereka."
+          , icon: 'question'
+          , showCancelButton: true
+          , confirmButtonColor: '#198754'
+          , cancelButtonColor: '#6c757d'
+          , confirmButtonText: 'Ya, Aktifkan Semua'
+          , cancelButtonText: 'Batal'
         }).then((result) => {
           if (result.isConfirmed) {
             document.getElementById('form-activate-massal').submit();
@@ -280,14 +280,14 @@
     if (btnDeactivateMassal) {
       btnDeactivateMassal.addEventListener('click', function() {
         Swal.fire({
-          title: 'Nonaktifkan Semua Akun?',
-          text: "Seluruh santri akan dinonaktifkan dan tidak dapat login menggunakan kartu ujian mereka.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#ff1a1a',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Ya, Nonaktifkan Semua',
-          cancelButtonText: 'Batal'
+          title: 'Nonaktifkan Semua Akun?'
+          , text: "Seluruh santri akan dinonaktifkan dan tidak dapat login menggunakan kartu ujian mereka."
+          , icon: 'question'
+          , showCancelButton: true
+          , confirmButtonColor: '#ff1a1a'
+          , cancelButtonColor: '#6c757d'
+          , confirmButtonText: 'Ya, Nonaktifkan Semua'
+          , cancelButtonText: 'Batal'
         }).then((result) => {
           if (result.isConfirmed) {
             document.getElementById('form-deactivate-massal').submit();
@@ -314,6 +314,122 @@
     });
     @endif
   });
+
+  async function startGeneration() {
+    Swal.fire({
+      title: 'Sedang Memproses...'
+      , html: 'Mohon tunggu, sedang membuat akun santri.<br><b>Jangan tutup halaman ini.</b>'
+      , allowOutsideClick: false
+      , showConfirmButton: false
+      , didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    let isDone = false;
+
+    while (!isDone) {
+      try {
+        const response = await fetch("{{ route('admin.cbt.generate.batch') }}", {
+          method: 'POST'
+          , headers: {
+            'Content-Type': 'application/json'
+            , 'X-CSRF-TOKEN': "{{ csrf_token() }}" // Wajib di Laravel
+          }
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'done' || data.remaining === 0) {
+          isDone = true;
+          Swal.fire({
+            icon: 'success'
+            , title: 'Selesai!'
+            , text: 'Semua akun santri berhasil dibuat.'
+            , timer: 2000
+            , showConfirmButton: false
+          }).then(() => {
+            window.location.reload();
+          });
+        } else {
+          const content = Swal.getHtmlContainer();
+          if (content) {
+            const b = content.querySelector('b');
+            if (b) b.textContent = `Sisa santri: ${data.remaining}`;
+          }
+        }
+      } catch (error) {
+        isDone = true;
+        Swal.fire({
+          icon: 'error'
+          , title: 'Terjadi Kesalahan'
+          , text: 'Gagal menghubungi server. Silakan coba lagi.'
+        });
+        break;
+      }
+    }
+  }
+
+  async function startReset() {
+    Swal.fire({
+      title: 'Sedang Memproses...',
+      html: 'Mohon tunggu, sedang mereset PIN dan menonaktifkan akun.<br><b>Jangan tutup halaman ini.</b>',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    let isDone = false;
+    let currentLastId = 0; // Mulai dari ID 0
+
+    while (!isDone) {
+      try {
+        const response = await fetch("{{ route('admin.cbt.reset.batch') }}", {
+          method: 'POST'
+          , headers: {
+            'Content-Type': 'application/json'
+            , 'X-CSRF-TOKEN': "{{ csrf_token() }}"
+          },
+          // Kirim ID terakhir ke server
+          body: JSON.stringify({
+            last_id: currentLastId
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'done' || data.remaining === 0) {
+          isDone = true;
+          Swal.fire({
+            icon: 'success',
+            title: 'Selesai!',
+            text: 'Seluruh akun telah direset dan dinonaktifkan.',
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.reload();
+          });
+        } else {
+          const content = Swal.getHtmlContainer();
+          if (content) {
+            const b = content.querySelector('b');
+            if (b) b.textContent = `Sisa antrean: ${data.remaining} akun`;
+          }
+          currentLastId = data.last_id;
+        }
+      } catch (error) {
+        isDone = true;
+        Swal.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan',
+          text: 'Gagal menghubungi server. Silakan coba lagi.'
+        });
+        break;
+      }
+    }
+  }
 
 </script>
 @endpush
