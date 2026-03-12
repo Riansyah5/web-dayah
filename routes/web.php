@@ -370,6 +370,13 @@ Route::middleware('auth')->group(function () {
 			Route::post('/accounts/generate', [CbtAccountController::class, 'generateMassal'])->name('accounts.generate');
 			Route::post('/accounts/{account}/reset', [CbtAccountController::class, 'resetPin'])->name('accounts.reset');
 			Route::post('/accounts/{account}/toggle', [CbtAccountController::class, 'toggleStatus'])->name('accounts.toggle');
+			// [BARU] Route Cetak Kartu & Reset Massal
+			Route::get('/accounts/print', [CbtAccountController::class, 'printCards'])->name('accounts.print');
+			Route::post('/accounts/reset-massal', [CbtAccountController::class, 'resetMassal'])->name('accounts.reset_massal');
+			Route::post('/accounts/activate-massal', [CbtAccountController::class, 'activateMassal'])->name('accounts.activate_massal');
+			Route::post('/accounts/deactivate-massal', [CbtAccountController::class, 'deactivateMassal'])->name('accounts.deactivate_massal');
+			Route::post('/accounts/{account}/reset', [CbtAccountController::class, 'resetPin'])->name('accounts.reset');
+			Route::post('/accounts/{account}/toggle', [CbtAccountController::class, 'toggleStatus'])->name('accounts.toggle');
 			// Manajemen Jadwal Ujian
 			Route::get('/exams', [CbtExamController::class, 'index'])->name('exams.index');
 			Route::get('/exams/create', [CbtExamController::class, 'create'])->name('exams.create');

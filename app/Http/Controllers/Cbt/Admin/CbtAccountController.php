@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\CbtAccount;
 use Illuminate\Support\Facades\Hash;
+use App\Jobs\GenerateCbtAccountsJob; // Tambahkan ini
+use App\Jobs\ResetCbtAccountsJob; // Tambahkan ini
 use Illuminate\Support\Str;
 
 class CbtAccountController extends Controller
@@ -29,35 +31,10 @@ class CbtAccountController extends Controller
     // Generate akun massal untuk santri yang belum punya
     public function generateMassal()
     {
-        // Cari santri yang BELUM punya akun CBT
-        $students = Student::doesntHave('cbtAccount')->get();
-        $count = 0;
+        // Kirim tugas ke background job
+        GenerateCbtAccountsJob::dispatch();
 
-        foreach ($students as $student) {
-            // Generate PIN 6 digit acak (Contoh: 847291)
-            $pin = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-            
-            // Generate Username (Format: CBT-[Tahun]-[ID Santri 4 digit])
-            // Contoh: CBT-26-0015
-            $username = 'CBT-' . date('y') . '-' . str_pad($student->id, 4, '0', STR_PAD_LEFT);
-
-            // Simpan ke database
-            CbtAccount::create([
-                'student_id' => $student->id,
-                'username' => $username,
-                'password' => Hash::make($pin), // Di-hash agar aman
-                'raw_pin' => $pin, // Disimpan mentah untuk dicetak di kartu
-                'is_active' => true,
-            ]);
-
-            $count++;
-        }
-
-        if ($count > 0) {
-            return back()->with('success', "Alhamdulillah, berhasil meng-generate $count akun CBT baru.");
-        }
-
-        return back()->with('info', "Semua santri sudah memiliki akun CBT.");
+        return back()->with('success', "Proses generate akun massal telah dimulai di latar belakang. Halaman ini akan diperbarui setelah selesai.");
     }
 
     // Reset PIN individu (Jika santri lupa / kartunya hilang dan disalahgunakan)
@@ -83,4 +60,49 @@ class CbtAccountController extends Controller
         $status = $account->is_active ? 'diaktifkan' : 'dinonaktifkan (diblokir)';
         return back()->with('success', "Akun {$account->username} berhasil $status.");
     }
+
+    // [BARU] Cetak Kartu Ujian Semua Santri
+    public function printCards()
+    {
+        // Ambil santri yang sudah memiliki akun CBT
+        // Asumsi ada relasi classRoom di model Student, jika tidak ada sesuaikan saja
+        $students = Student::whereHas('cbtAccount')
+            ->with(['cbtAccount', 'classrooms']) // Load relasi kelas jika ada
+            ->orderBy('name')
+            ->get();
+
+        if ($students->isEmpty()) {
+            return back()->with('error', 'Belum ada akun yang di-generate. Silakan generate terlebih dahulu.');
+        }
+
+        return view('cbt.admin.accounts.print_cards', compact('students'));
+    }
+
+    // [BARU] Reset Massal Pasca Ujian Selesai
+    public function resetMassal()
+    {
+        // Kirim tugas ke background job
+        ResetCbtAccountsJob::dispatch();
+
+        return back()->with('success', "Proses reset PIN massal telah dimulai di latar belakang. Akun akan dinonaktifkan setelah PIN baru dibuat.");
+    }
+
+    // [BARU] Aktifkan Semua Akun Massal
+    public function activateMassal()
+    {
+        // Ubah status is_active menjadi true untuk semua akun
+        CbtAccount::query()->update(['is_active' => true]);
+
+        return back()->with('success', 'Alhamdulillah, semua akun CBT berhasil diaktifkan. Santri sekarang bisa login menggunakan kartu ujian.');
+    }
+
+    // [BARU] Nonaktifkan Semua Akun Massal
+    public function deactivateMassal()
+    {
+        // Ubah status is_active menjadi false untuk semua akun
+        CbtAccount::query()->update(['is_active' => false]);
+
+        return back()->with('success', 'Alhamdulillah, semua akun CBT berhasil dinonaktifkan.');
+    }
+    
 }
