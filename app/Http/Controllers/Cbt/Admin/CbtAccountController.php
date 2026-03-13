@@ -31,6 +31,20 @@ class CbtAccountController extends Controller
             });
         }
 
+        if ($request->filled('status')) {
+            if ($request->status == 'active') {
+                $query->whereHas('cbtAccount', function ($q) {
+                    $q->where('is_active', true);
+                });
+            } elseif ($request->status == 'inactive') {
+                $query->whereHas('cbtAccount', function ($q) {
+                    $q->where('is_active', false);
+                });
+            } elseif ($request->status == 'none') {
+                $query->doesntHave('cbtAccount');
+            }
+        }
+
         $students = $query->orderBy('name')->paginate(50);
 
         // Menghitung statistik

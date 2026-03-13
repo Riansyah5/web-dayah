@@ -166,10 +166,16 @@
         <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
             <h5 class="fw-bold mb-3 mb-md-0 text-dark">Data Akun Ujian Santri</h5>
             
-            <form action="{{ url()->current() }}" method="GET" class="d-flex" style="min-width: 300px;">
+            <form action="{{ url()->current() }}" method="GET" class="d-flex" style="min-width: 400px;">
                 <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0 search-input" placeholder="Cari nama atau username..." value="{{ request('search') }}">
+                    <select name="status" class="form-select bg-light border-end-0 text-muted" style="max-width: 150px; font-size: 0.9rem;" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Akun Aktif</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Non-Aktif</option>
+                        <option value="none" {{ request('status') == 'none' ? 'selected' : '' }}>Belum Ada</option>
+                    </select>
+                    <span class="input-group-text bg-white border-start-0 border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0 ps-0 search-input" placeholder="Cari nama..." value="{{ request('search') }}">
                     <button class="btn border search-btn" type="submit">Cari</button>
                 </div>
             </form>
@@ -253,7 +259,7 @@
             </div>
         </div>
         <div class="card-footer bg-white border-top-0 py-3 px-4">
-            {{ $students->appends(['search' => request('search')])->links('pagination::bootstrap-5') }}
+            {{ $students->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>
