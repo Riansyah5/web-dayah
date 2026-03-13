@@ -19,7 +19,19 @@ class CbtAccountController extends Controller
     {
         // Mengambil semua data santri beserta relasi akun CBT-nya
         // Jika Anda punya filter kelas/halaqah, bisa ditambahkan di sini
-        $students = Student::where('status', 'active')->with('cbtAccount')->orderBy('name')->paginate(50);
+        $query = Student::where('status', 'active')->with('cbtAccount');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('cbtAccount', function ($q2) use ($search) {
+                      $q2->where('username', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $students = $query->orderBy('name')->paginate(50);
 
         // Menghitung statistik
         $totalStudents = Student::where('status', 'active')->count();
