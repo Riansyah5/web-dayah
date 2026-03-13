@@ -57,13 +57,13 @@
 </div>
 
 <div class="row mb-4 g-3">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="p-3 bg-white border-start border-primary border-4 rounded shadow-sm">
       <div class="text-muted small fw-bold">Total Santri</div>
       <h3 class="fw-bold mb-0">{{ number_format($totalStudents) }}</h3>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="p-3 bg-white border-start border-success border-4 rounded shadow-sm d-flex justify-content-between align-items-center">
       <div>
         <div class="text-muted small fw-bold">Akun Santri Aktif</div>
@@ -73,14 +73,21 @@
         <div class="text-muted small fw-bold">Bukan Santri Aktif</div>
         <h3 class="fw-bold mb-0 text-danger">{{ number_format($totalInactiveStudentAccounts) }}</h3>
       </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="p-3 bg-white border-start border-info border-4 rounded shadow-sm d-flex justify-content-between align-items-center">
       <div>
-        <div class="text-muted small fw-bold">Status Akun</div>
-        <span>Aktif: {{ number_format($activeAccounts) }}</span><br>
-        <span>Tidak Aktif: {{ number_format($inactiveAccounts) }}</span>
+        <div class="text-muted small fw-bold">Akun Aktif</div>
+        <h3 class="fw-bold mb-0">{{ number_format($activeAccounts) }}</h3>
+      </div>
+      <div>
+        <div class="text-muted small fw-bold">Akun Tidak Aktif</div>
+        <h3 class="fw-bold mb-0">{{ number_format($inactiveAccounts) }}</h3>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="p-3 bg-white border-start border-danger border-4 rounded shadow-sm">
       <div class="text-muted small fw-bold">Belum Punya Akun</div>
       <h3 class="fw-bold mb-0 text-danger">{{ number_format($missingAccounts) }}</h3>
