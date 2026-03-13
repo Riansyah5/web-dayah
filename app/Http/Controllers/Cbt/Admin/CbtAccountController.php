@@ -19,14 +19,26 @@ class CbtAccountController extends Controller
     {
         // Mengambil semua data santri beserta relasi akun CBT-nya
         // Jika Anda punya filter kelas/halaqah, bisa ditambahkan di sini
-        $students = Student::with('cbtAccount')->orderBy('name')->paginate(50);
+        $students = Student::where('status', 'active')->with('cbtAccount')->orderBy('name')->paginate(50);
 
         // Menghitung statistik
-        $totalStudents = Student::count();
+        $totalStudents = Student::where('status', 'active')->count();
         $totalAccounts = CbtAccount::count();
-        $missingAccounts = $totalStudents - $totalAccounts;
+        $activeAccounts = CbtAccount::where('is_active', true)->whereHas('student', function ($q) {
+            $q->where('status', 'active');
+        })->count();
+        $inactiveAccounts = CbtAccount::where('is_active', false)->whereHas('student', function ($q) {
+            $q->where('status', 'active');
+        })->count();
+        $totalActiveStudentAccounts = CbtAccount::whereHas('student', function ($q) {
+            $q->where('status', 'active');
+        })->count();
+        $totalInactiveStudentAccounts = CbtAccount::whereHas('student', function ($q) {
+            $q->whereNot('status', 'active');
+        })->count();
+        $missingAccounts = $totalStudents - $totalActiveStudentAccounts;
 
-        return view('cbt.admin.accounts.index', compact('students', 'totalStudents', 'totalAccounts', 'missingAccounts'));
+        return view('cbt.admin.accounts.index', compact('students', 'totalStudents', 'totalAccounts', 'missingAccounts', 'totalActiveStudentAccounts', 'totalInactiveStudentAccounts', 'activeAccounts', 'inactiveAccounts'));
     }
 
     // Generate akun massal untuk santri yang belum punya
@@ -34,7 +46,7 @@ class CbtAccountController extends Controller
     {
         // Ambil maksimal 20 santri per request agar ringan dan aman dari timeout
         $limit = 20;
-        $students = Student::doesntHave('cbtAccount')->limit($limit)->get();
+        $students = Student::where('status', 'active')->doesntHave('cbtAccount')->limit($limit)->get();
 
         // Jika sudah tidak ada santri yang butuh akun, beritahu JavaScript untuk berhenti
         if ($students->isEmpty()) {
@@ -77,7 +89,7 @@ class CbtAccountController extends Controller
         });
 
         // Hitung sisa santri untuk ditampilkan di layar
-        $remaining = Student::doesntHave('cbtAccount')->count();
+        $remaining = Student::where('status', 'active')->doesntHave('cbtAccount')->count();
 
         return response()->json([
             'status' => 'processing',

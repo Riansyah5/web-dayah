@@ -54,25 +54,6 @@
         </button>
       </form>
     </div>
-    {{-- <div class="col-md-7 text-md-end mt-3 mt-md-0">
-    <form action="{{ route('admin.cbt.accounts.generate') }}" method="POST" class="d-inline" onsubmit="return confirm('Sistem akan membuatkan akun untuk santri yang belum punya. Lanjutkan?');">
-    @csrf
-    <button type="submit" class="btn btn-primary rounded-pill shadow-sm" {{ $missingAccounts == 0 ? 'disabled' : '' }}>
-      <i class="bi bi-magic me-1"></i> Generate
-    </button>
-    </form>
-
-    <a href="{{ route('admin.cbt.accounts.print') }}" target="_blank" class="btn btn-outline-success rounded-pill shadow-sm ms-1">
-      <i class="bi bi-printer me-1"></i> Cetak Kartu
-    </a>
-
-    <form action="{{ route('admin.cbt.accounts.reset_massal') }}" method="POST" class="d-inline ms-1" onsubmit="return confirm('PERHATIAN KRITIKAL!\n\nIni akan MENGACAK ULANG seluruh PIN dan MENONAKTIFKAN semua akun.\n\nLakukan HANYA JIKA seluruh ujian semester ini telah selesai!');">
-      @csrf
-      <button type="submit" class="btn btn-danger rounded-pill shadow-sm">
-        <i class="bi bi-arrow-clockwise me-1"></i> Reset Massal
-      </button>
-    </form>
-  </div> --}}
 </div>
 
 <div class="row mb-4 g-3">
@@ -83,9 +64,20 @@
     </div>
   </div>
   <div class="col-md-4">
-    <div class="p-3 bg-white border-start border-success border-4 rounded shadow-sm">
-      <div class="text-muted small fw-bold">Sudah Punya Akun</div>
-      <h3 class="fw-bold mb-0">{{ number_format($totalAccounts) }}</h3>
+    <div class="p-3 bg-white border-start border-success border-4 rounded shadow-sm d-flex justify-content-between align-items-center">
+      <div>
+        <div class="text-muted small fw-bold">Akun Santri Aktif</div>
+        <h3 class="fw-bold mb-0">{{ number_format($totalActiveStudentAccounts) }}</h3>
+      </div>
+      <div>
+        <div class="text-muted small fw-bold">Bukan Santri Aktif</div>
+        <h3 class="fw-bold mb-0 text-danger">{{ number_format($totalInactiveStudentAccounts) }}</h3>
+      </div>
+      <div>
+        <div class="text-muted small fw-bold">Status Akun</div>
+        <span>Aktif: {{ number_format($activeAccounts) }}</span><br>
+        <span>Tidak Aktif: {{ number_format($inactiveAccounts) }}</span>
+      </div>
     </div>
   </div>
   <div class="col-md-4">
