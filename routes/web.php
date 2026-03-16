@@ -404,9 +404,13 @@ Route::middleware('auth')->group(function () {
 			Route::get('/banks/{bank}/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 			Route::post('/banks/{bank}/questions', [QuestionController::class, 'store'])->name('questions.store');
 			Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
-			// Tambahkan dua baris ini di bawah route questions.store
+			// Route untuk edit soal (GET untuk form, POST untuk update)
 			Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 			Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+			// [BARU] Route untuk hapus bank soal beserta semua soalnya
+			Route::delete('/banks/{bank}', [QuestionBankController::class, 'destroy'])->name('banks.destroy');
+			// [BARU] Route Toggle Status
+			Route::post('/banks/{bank}/toggle-status', [QuestionBankController::class, 'toggleStatus'])->name('banks.toggle_status');
 			// Koreksi & Hasil Ujian
 			Route::get('/results', [ExamResultController::class, 'index'])->name('results.index');
 			Route::get('/results/{exam}', [ExamResultController::class, 'show'])->name('results.show');

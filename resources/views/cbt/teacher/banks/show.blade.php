@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 @endpush
 @push('styles')
- 
+
 <style>
   /* Font fallback agar tulisan Arab terbaca indah dan besar */
   .text-dynamic,
@@ -57,6 +57,22 @@
         <div class="fs-2 fw-bold">{{ $bank->questions->count() }}</div>
         <small class="opacity-75">Total Soal</small>
       </div>
+      <div class="border-start border-light border-opacity-25 ps-4">
+        <form action="{{ route('teacher.cbt.banks.toggle_status', $bank->id) }}" method="POST">
+          @csrf
+          <button type="submit" class="btn {{ $bank->is_active ? 'btn-warning' : 'btn-success' }} border border-light border-opacity-25 rounded-pill shadow-sm" title="{{ $bank->is_active ? 'Jadikan Draft agar tidak dipakai ujian' : 'Aktifkan agar bisa dipakai ujian' }}">
+            <i class="bi {{ $bank->is_active ? 'bi-archive-fill' : 'bi-check-circle-fill' }} me-1"></i>
+            {{ $bank->is_active ? 'Jadikan Draft' : 'Aktifkan Bank' }}
+          </button>
+        </form>
+        <form id="form-delete-bank" action="{{ route('teacher.cbt.banks.destroy', $bank->id) }}" method="POST">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn btn-danger border border-light border-opacity-25 rounded-pill shadow-sm">
+            <i class="bi bi-trash-fill me-1"></i> Hapus Bank
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -88,11 +104,11 @@
 
           {{-- <div class="text-dynamic mb-3" dir="auto">
             {!! nl2br(e($q->question_text)) !!}
-          </div> --}} 
+          </div> --}}
 
           @php
-            // Cek apakah teks mengandung karakter Arab
-            $isArabic = preg_match('/\p{Arabic}/u', strip_tags($q->question_text));
+          // Cek apakah teks mengandung karakter Arab
+          $isArabic = preg_match('/\p{Arabic}/u', strip_tags($q->question_text));
           @endphp
           <div class="text-dynamic mb-3 {{ $isArabic ? 'font-arabic' : '' }}" dir="auto">
             {!! $q->question_text !!}
@@ -128,7 +144,7 @@
                   <div class="flex-grow-1">
                     @if($option->option_text)
                     @php
-                      $isOptArabic = preg_match('/\p{Arabic}/u', $option->option_text);
+                    $isOptArabic = preg_match('/\p{Arabic}/u', $option->option_text);
                     @endphp
                     <div class="text-dynamic mb-2 {{ $isOptArabic ? 'font-arabic' : '' }}" dir="auto">
                       {{ $option->option_text }}
@@ -207,7 +223,29 @@
       });
     });
 
-    // 2. Flash Message
+    // 2. Konfirmasi Hapus Bank Soal
+    const deleteBankForm = document.getElementById('form-delete-bank');
+    if (deleteBankForm) {
+      deleteBankForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Hapus Bank Soal?'
+          , text: "Apakah Anda yakin ingin menghapus Bank Soal ini secara permanen beserta seluruh soal di dalamnya? Jika bank soal ini sudah pernah diujikan, sistem akan menolak penghapusan ini demi keamanan data."
+          , icon: 'warning'
+          , showCancelButton: true
+          , confirmButtonColor: '#dc3545'
+          , cancelButtonColor: '#6c757d'
+          , confirmButtonText: 'Ya, Hapus Bank'
+          , cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.submit();
+          }
+        });
+      });
+    }
+
+    // 3. Flash Message
     @if(session('success'))
     Swal.fire({
       icon: 'success'
