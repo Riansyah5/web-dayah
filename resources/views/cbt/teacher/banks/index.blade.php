@@ -46,7 +46,7 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <div>
             <h3 class="fw-bolder text-dark mb-1">Bank Soal CBT</h3>
-            <p class="text-secondary mb-0">Kelola dan organisir kumpulan soal ujian santri dengan mudah.</p>
+            <p class="text-muted mb-0">Kelola dan organisir kumpulan soal ujian santri dengan mudah.</p>
         </div>
         <button class="btn btn-primary btn-lg rounded-pill shadow-sm px-4 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createBankModal">
             <i class="bi bi-plus-circle-fill"></i> Buat Bank Soal
@@ -65,20 +65,20 @@
                             {{ $bank->bank_code }}
                         </span>
                         
-                        <span class="badge {{ $bank->is_active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary text-secondary bg-opacity-10' }} px-3 py-2 rounded-pill fw-semibold">
+                        <span class="badge {{ $bank->is_active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary text-muted bg-opacity-10' }} px-3 py-2 rounded-pill fw-semibold">
                             <i class="bi {{ $bank->is_active ? 'bi-check-circle-fill' : 'bi-pencil-fill' }} me-1"></i>
                             {{ $bank->is_active ? 'Aktif' : 'Draft' }}
                         </span>
                     </div>
                     
-                    <h5 class="fw-bolder mb-1 {{ $bank->is_active ? 'text-dark' : 'text-secondary' }}">{{ $bank->subject_name }}</h5>
-                    <div class="text-secondary small mb-4">
+                    <h5 class="fw-bolder mb-1 {{ $bank->is_active ? 'text-dark' : 'text-muted' }}">{{ $bank->subject_name }}</h5>
+                    <div class="text-muted small mb-4">
                         <i class="bi bi-mortarboard me-1"></i> Kelas/Level: <span class="fw-medium">{{ $bank->level }}</span>
                     </div>
 
-                    <div class="d-flex align-items-center text-secondary rounded-3 p-2 px-3 mb-3 {{ $bank->is_active ? 'bg-light' : 'bg-white border' }}">
+                    <div class="d-flex align-items-center text-muted rounded-3 p-2 px-3 mb-3 {{ $bank->is_active ? 'bg-light' : 'bg-white border' }}">
                         <i class="bi bi-stickies text-primary me-2"></i> 
-                        <span class="fw-medium {{ $bank->is_active ? 'text-dark' : 'text-secondary' }} me-1">{{ $bank->questions_count }}</span> Butir Soal
+                        <span class="fw-medium {{ $bank->is_active ? 'text-dark' : 'text-muted' }} me-1">{{ $bank->questions_count }}</span> Butir Soal
                     </div>
                 </div>
                 
@@ -94,10 +94,10 @@
             <div class="card border-0 border-dashed rounded-4 bg-light shadow-sm">
                 <div class="card-body text-center py-5 my-4">
                     <div class="icon-circle bg-white shadow-sm mb-3">
-                        <i class="bi bi-folder-x text-secondary fs-2"></i>
+                        <i class="bi bi-folder-x text-muted fs-2"></i>
                     </div>
                     <h5 class="fw-bold text-dark">Belum ada Bank Soal</h5>
-                    <p class="text-secondary mb-4">Anda belum memiliki kumpulan soal. Mulai buat bank soal pertama Anda sekarang.</p>
+                    <p class="text-muted mb-4">Anda belum memiliki kumpulan soal. Mulai buat bank soal pertama Anda sekarang.</p>
                     <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createBankModal">
                         <i class="bi bi-plus-lg me-1"></i> Buat Bank Soal
                     </button>
@@ -117,7 +117,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <p class="text-secondary small mb-4">Silakan tentukan mata pelajaran dan tingkat kelas untuk bank soal baru ini.</p>
+                <p class="text-muted small mb-4">Silakan tentukan mata pelajaran dan tingkat kelas untuk bank soal baru ini.</p>
                 
                 <div class="mb-4">
                     <label class="form-label fw-semibold text-dark small">Mata Pelajaran</label>
