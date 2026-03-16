@@ -117,26 +117,33 @@ class ExamResultController extends Controller
     }
 
 
-    // 3. Form Koreksi Essay Santri
+    // 3. Form Koreksi Essay & Review Pilihan Ganda
     public function correct($studentExamId)
     {
-        $studentExam = CbtStudentExam::with(['exam.questionBank', 'cbtAccount.student', 'answers.question'])->findOrFail($studentExamId);
-
-        // Ambil HANYA jawaban essay
-        $essayAnswers = $studentExam->answers->filter(function ($ans) {
+        // PENTING: Tambahkan relasi 'answers.question.options' untuk memuat A,B,C,D
+        $studentExam = CbtStudentExam::with([
+            'exam.questionBank', 
+            'cbtAccount.student', 
+            'answers.question.options' // Memuat opsi pilihan ganda
+        ])->findOrFail($studentExamId);
+        
+        // 1. Ambil HANYA jawaban essay untuk form koreksi
+        $essayAnswers = $studentExam->answers->filter(function($ans) {
             return $ans->question->type == 'essay';
         });
 
+        // 2. Ambil HANYA jawaban PG untuk direview (Dilihat)
+        $pgAnswersList = $studentExam->answers->filter(function($ans) {
+            return $ans->question->type == 'multiple_choice';
+        });
+
         // Hitung nilai PG saat ini (sebagai info untuk guru)
-        $pgAnswers = $studentExam->answers->filter(function ($ans) {
-            return $ans->question->type == 'multiple_choice' && $ans->is_correct;
+        $pgScore = $pgAnswersList->where('is_correct', true)->sum(function($ans) { 
+            return $ans->question->score_weight; 
         });
 
-        $pgScore = $pgAnswers->sum(function ($ans) {
-            return $ans->question->score_weight;
-        });
-
-        return view('cbt.teacher.results.correct', compact('studentExam', 'essayAnswers', 'pgScore'));
+        // Lempar $pgAnswersList ke view
+        return view('cbt.teacher.results.correct', compact('studentExam', 'essayAnswers', 'pgAnswersList', 'pgScore'));
     }
 
     // 4. Simpan Nilai Essay & Rekalkulasi Nilai Akhir
