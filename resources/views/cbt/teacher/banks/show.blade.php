@@ -76,10 +76,10 @@
                         <i class="bi bi-upc-scan me-1"></i> Kode: {{ $bank->bank_code }}
                     </span>
                     <h3 class="fw-bolder text-dark mb-2">{{ $bank->subject_name }}</h3>
-                    <div class="text-secondary d-flex align-items-center gap-3">
+                    <div class="text-muted d-flex align-items-center gap-3">
                         <span><i class="bi bi-mortarboard me-1"></i> Kelas: <strong class="text-dark">{{ $bank->level }}</strong></span>
                         <span class="text-muted">•</span>
-                        <span class="badge {{ $bank->is_active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary' }} rounded-pill">
+                        <span class="badge {{ $bank->is_active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-muted' }} rounded-pill">
                             <i class="bi {{ $bank->is_active ? 'bi-check-circle-fill' : 'bi-pencil-fill' }} me-1"></i> 
                             {{ $bank->is_active ? 'Status: Aktif' : 'Status: Draft' }}
                         </span>
@@ -90,7 +90,7 @@
                     <div class="d-flex flex-column flex-sm-row justify-content-md-end gap-3 align-items-center">
                         <div class="text-center px-4 border-end">
                             <h2 class="fw-bolder text-primary mb-0">{{ $bank->questions->count() }}</h2>
-                            <small class="text-secondary fw-medium">Total Soal</small>
+                            <small class="text-muted fw-medium">Total Soal</small>
                         </div>
                         <div class="d-flex flex-column gap-2">
                             <form action="{{ route('teacher.cbt.banks.toggle_status', $bank->id) }}" method="POST">
@@ -116,7 +116,7 @@
 
     <div class="d-flex align-items-center gap-2 mb-4">
         <h5 class="fw-bolder text-dark mb-0">Daftar Pertanyaan</h5>
-        <span class="badge bg-light text-secondary rounded-pill border">{{ $bank->questions->count() }} Butir</span>
+        <span class="badge bg-light text-muted rounded-pill border">{{ $bank->questions->count() }} Butir</span>
     </div>
 
     @forelse($bank->questions as $index => $q)
@@ -170,7 +170,7 @@
                         <div class="col-md-6">
                             <div class="p-3 border rounded-4 h-100 option-card {{ $option->is_correct ? 'correct-answer' : 'bg-white text-dark' }}">
                                 <div class="d-flex gap-3 align-items-start h-100">
-                                    <strong class="fs-5 {{ $option->is_correct ? 'text-success' : 'text-secondary' }}">{{ $labels[$optIndex] ?? '-' }}.</strong>
+                                    <strong class="fs-5 {{ $option->is_correct ? 'text-success' : 'text-muted' }}">{{ $labels[$optIndex] ?? '-' }}.</strong>
                                     
                                     <div class="flex-grow-1">
                                         @if($option->option_text)
@@ -218,10 +218,10 @@
     <div class="card border-0 border-dashed rounded-4 bg-light shadow-sm">
         <div class="card-body text-center py-5 my-4">
             <div class="icon-circle bg-white shadow-sm mb-3">
-                <i class="bi bi-journal-x text-secondary fs-2"></i>
+                <i class="bi bi-journal-x text-muted fs-2"></i>
             </div>
             <h5 class="fw-bold text-dark">Belum Ada Soal</h5>
-            <p class="text-secondary mb-4">Bank soal ini masih kosong. Silakan tambahkan pertanyaan pertama Anda untuk memulai.</p>
+            <p class="text-muted mb-4">Bank soal ini masih kosong. Silakan tambahkan pertanyaan pertama Anda untuk memulai.</p>
             <a href="{{ route('teacher.cbt.questions.create', $bank->id) }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
                 <i class="bi bi-plus-lg me-2"></i> Tambah Pertanyaan Baru
             </a>
