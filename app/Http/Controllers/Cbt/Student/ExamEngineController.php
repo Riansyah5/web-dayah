@@ -17,6 +17,7 @@ class ExamEngineController extends Controller
     {
         $now = Carbon::now();
         $accountId = Auth::guard('cbt')->user()->id;
+        $student = Auth::guard('cbt')->user()->student; // Mengambil data relasi siswa asli
 
         // Cari ujian yang sedang aktif saat ini
         $availableExams = CbtExam::where('is_active', true)
@@ -27,7 +28,7 @@ class ExamEngineController extends Controller
         // Cari ujian yang sudah/sedang dikerjakan santri ini
         $myExams = CbtStudentExam::where('cbt_account_id', $accountId)->get()->keyBy('cbt_exam_id');
 
-        return view('cbt.student.dashboard', compact('availableExams', 'myExams'));
+        return view('cbt.student.dashboard', compact('availableExams', 'myExams', 'student'));
     }
 
     // 2. VERIFIKASI TOKEN & MULAI UJIAN
