@@ -65,57 +65,58 @@
   @if (!empty($attendanceRecap))
   <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-0">
-      <table class="table table-bordered mb-0 align-middle">
-        <thead class="bg-light text-center align-middle">
-          <tr>
-            <th width="5%" rowspan="2">No</th>
-            <th width="35%" rowspan="2" class="text-start">Nama Siswa</th>
-            <th colspan="5">Rincian Kehadiran</th>
-            <th width="10%" rowspan="2">Persentase<br>Kehadiran</th>
-          </tr>
-          <tr>
-            <th width="8%" class="text-success" title="Hadir Tepat Waktu">H</th>
-            <th width="8%" class="text-secondary" title="Terlambat">T</th>
-            <th width="8%" class="text-primary" title="Sakit">S</th>
-            <th width="8%" class="text-warning" title="Izin">I</th>
-            <th width="8%" class="text-danger" title="Alpha">A</th>
-          </tr>
-        </thead>
-        <tbody class="text-center">
-          @foreach($attendanceRecap as $idx => $student)
-          <tr>
-            <td>{{ $idx + 1 }}</td>
-            <td class="text-start">
-              <div class="fw-bold">{{ $student->name }}</div>
-              <small class="text-muted">{{ $student->nis }}</small>
-            </td>
+      <div class="table-responsive">
+        <table class="table table-bordered mb-0 align-middle">
+          <thead class="bg-light text-center align-middle">
+            <tr>
+              <th width="5%" rowspan="2">No</th>
+              <th width="35%" rowspan="2" class="text-start text-nowrap">Nama Siswa</th> 
+              <th colspan="5">Rincian Kehadiran</th>
+              <th width="10%" rowspan="2" class="text-nowrap">Persentase<br>Kehadiran</th>
+            </tr>
+            <tr>
+              <th width="8%" class="text-success" title="Hadir Tepat Waktu">H</th>
+              <th width="8%" class="text-secondary" title="Terlambat">T</th>
+              <th width="8%" class="text-primary" title="Sakit">S</th>
+              <th width="8%" class="text-warning" title="Izin">I</th>
+              <th width="8%" class="text-danger" title="Alpha">A</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            @foreach($attendanceRecap as $idx => $student)
+            <tr>
+              <td>{{ $idx + 1 }}</td>
+              <td class="text-start text-nowrap"> <div class="fw-bold">{{ $student->name }}</div>
+                <small class="text-muted">{{ $student->nis }}</small>
+              </td>
 
-            <td class="bg-success bg-opacity-10 fw-bold text-success">{{ $student->h }}</td>
+              <td class="bg-success bg-opacity-10 fw-bold text-success">{{ $student->h }}</td>
 
-            <td class="{{ $student->t > 0 ? 'fw-bold text-secondary bg-warning bg-opacity-10' : 'text-muted' }}">
-              {{ $student->t }}
-            </td>
+              <td class="{{ $student->t > 0 ? 'fw-bold text-secondary bg-warning bg-opacity-10' : 'text-muted' }}">
+                {{ $student->t }}
+              </td>
 
-            <td>{{ $student->s }}</td>
+              <td>{{ $student->s }}</td>
+              <td>{{ $student->i }}</td>
 
-            <td>{{ $student->i }}</td>
+              <td class="{{ $student->a > 0 ? 'bg-danger bg-opacity-10 text-danger fw-bold' : '' }}">
+                {{ $student->a }}
+              </td>
 
-            <td class="{{ $student->a > 0 ? 'bg-danger bg-opacity-10 text-danger fw-bold' : '' }}">
-              {{ $student->a }}
-            </td>
-
-            <td>
-              @if($student->percent < 75) <span class="badge bg-danger w-100">{{ $student->percent }}%</span>
-                @elseif($student->percent < 90) <span class="badge bg-warning text-dark w-100">{{ $student->percent }}%</span>
-                  @else
+              <td>
+                @if($student->percent < 75) 
+                  <span class="badge bg-danger w-100">{{ $student->percent }}%</span>
+                @elseif($student->percent < 90) 
+                  <span class="badge bg-warning text-dark w-100">{{ $student->percent }}%</span>
+                @else
                   <span class="badge bg-success w-100">{{ $student->percent }}%</span>
-                  @endif
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
-    </div>
+                @endif
+              </td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div> </div>
   </div>
   @elseif($request->classroom_id)
   <div class="alert alert-info text-center">Belum ada data jurnal untuk mapel dan kelas ini.</div>
