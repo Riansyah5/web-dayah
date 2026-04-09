@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\User; // Pastikan import model User
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class SuperAdminTest extends Seeder
 {
@@ -16,17 +14,33 @@ class SuperAdminTest extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'id' => (string) Str::ulid(),
-            'name' => 'Rian',
-            'username' => 'rian',
-            'email' => 'rian@gmail.com',
-            'password' => Hash::make('bismillah@24434'),
-            'role' => 'Superadmin',
-            'status' => 'Aktif',
-            'updated_by' => 'Rian',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        // Data yang ingin ditambah
+        $users = [
+            [
+                'name' => 'Rian',
+                'username' => 'rian',
+                'email' => 'rian@gmail.com',
+                'password' => Hash::make('bismillah@24434'),
+                'role' => 'Superadmin',
+                'status' => 'Aktif',
+                'updated_by' => 'Rian',
+            ],
+        ];
+
+        foreach ($users as $userData) {
+            // firstOrCreate( [kolom_untuk_dicek], [data_tambahan_jika_tidak_ada] )
+            User::firstOrCreate(
+                ['email' => $userData['email']], // Cek berdasarkan email
+                [
+                    'id' => (string) Str::ulid(), // Hanya dibuat jika user baru
+                    'name' => $userData['name'],
+                    'username' => $userData['username'],
+                    'password' => $userData['password'],
+                    'role' => $userData['role'],
+                    'status' => $userData['status'],
+                    'updated_by' => $userData['updated_by'],
+                ]
+            );
+        }
     }
 }

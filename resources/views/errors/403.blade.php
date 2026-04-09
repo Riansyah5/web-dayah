@@ -94,12 +94,12 @@
     <div class="container">
         <div class="illustration">🚫</div>
         <h1>403</h1>
-        <h2>Waduh, Area Terlarang!</h2>
         @if(isset($exception) && $exception->getMessage())
-            <p>{{ $exception->getMessage() }}</p>
+            <h2>{{ $exception->getMessage() }}</h2>
         @elseif(!empty($message))
             <p>{{ $message }}</p>
         @else
+            <h2>Waduh, Area Terlarang!</h2>
             <p>Maaf banget, tapi kamu nggak punya izin buat masuk ke halaman ini. Mungkin kamu salah jalan atau butuh akses khusus.</p>
         @endif
         <button onclick="goBack()" class="btn-back">
