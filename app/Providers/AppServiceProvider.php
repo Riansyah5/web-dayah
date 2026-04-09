@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\AcademicCalendar;
 use App\Models\AcademicYear;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,17 @@ class AppServiceProvider extends ServiceProvider
         // Superadmin otomatis lolos semua pengecekan Gate (termasuk @can di Blade)
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Superadmin') ? true : null;
+        });
+
+        // Mengirim data upcomingEvents ke semua view yang meload header
+        // Ganti '*' dengan nama view header Anda jika memungkinkan, misal 'layouts.header'
+        View::composer('*', function ($view) {
+            $upcomingEvents = AcademicCalendar::whereDate('start_date', '<=', Carbon::today()->addDays(7))
+                ->whereDate('start_date', '>=', Carbon::today())
+                ->orderBy('start_date', 'asc')
+                ->get();
+
+            $view->with('upcomingEvents', $upcomingEvents);
         });
     }
 }

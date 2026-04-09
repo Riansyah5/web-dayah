@@ -1,6 +1,7 @@
 <!-- [ Header Topbar ] start -->
 <header class="pc-header">
-  <div class="header-wrapper"><!-- [Mobile Media Block] start -->
+  <div class="header-wrapper">
+    <!-- [Mobile Media Block] start -->
     <div class="me-auto pc-mob-drp">
       <ul class="list-unstyled">
         <li class="pc-h-item header-mobile-collapse">
@@ -14,8 +15,7 @@
           </a>
         </li>
         <li class="dropdown pc-h-item d-inline-flex d-md-none">
-          <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown"
-            href="#" role="button" aria-haspopup="false" aria-expanded="false">
+          <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
             <i class="ti ti-search"></i>
           </a>
           <div class="dropdown-menu pc-h-dropdown drp-search">
@@ -41,52 +41,67 @@
     <div class="ms-auto">
       <ul class="list-unstyled">
         <li class="dropdown pc-h-item">
-          <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-            href="#" role="button" aria-haspopup="false" aria-expanded="false">
+          <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none me-0 position-relative" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+
             <i class="ti ti-bell"></i>
+
+            @if($upcomingEvents->count() > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.3em 0.5em; margin-left: -5px; margin-top: 5px;">
+              {{ $upcomingEvents->count() }}
+              <span class="visually-hidden">unread notifications</span>
+            </span>
+            @endif
+
           </a>
           <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
             <div class="dropdown-header">
-              <a href="#!" class="link-primary float-end text-decoration-underline">Mark as all read</a>
+              {{-- <a href="#!" class="link-primary float-end text-decoration-underline">Mark as all read</a> --}}
               <h5>
                 All Notification
-                <span class="badge bg-warning rounded-pill ms-1">01</span>
+                <span class="badge bg-warning rounded-pill ms-1">{{ $upcomingEvents->count() }}</span>
               </h5>
             </div>
-            <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
-              style="max-height: calc(100vh - 215px)">
+            <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative" style="max-height: calc(100vh - 215px)">
               <div class="list-group list-group-flush w-100">
+
+                @forelse($upcomingEvents as $event)
                 <div class="list-group-item list-group-item-action">
                   <div class="d-flex">
                     <div class="flex-shrink-0">
-                      <div class="user-avtar bg-light-success"><i class="ti ti-building-store"></i></div>
+                      <div class="user-avtar bg-light-warning"><i class="ti ti-calendar-event"></i></div>
                     </div>
                     <div class="flex-grow-1 ms-1">
-                      <span class="float-end text-muted">3 min ago</span>
-                      <h5>Store Verification Done</h5>
-                      <p class="text-body fs-6">We have successfully received your request.</p>
-                      <div class="badge rounded-pill bg-light-danger">Unread</div>
+                      @php
+                      $daysLeft = \Carbon\Carbon::today()->diffInDays(\Carbon\Carbon::parse($event->start_date)->startOfDay());
+                      @endphp
+
+                      <span class="float-end text-muted">
+                        {{ $daysLeft == 0 ? 'Hari ini!' : $daysLeft . ' hari lagi' }}
+                      </span>
+
+                      <h5>{{ $event->title }}</h5>
+                      <p class="text-body fs-6 mb-1">
+                        {{ \Carbon\Carbon::parse($event->start_date)->translatedFormat('d F Y') }}
+                      </p>
+
+                      <div class="badge rounded-pill {{ $event->is_holiday ? 'bg-light-danger' : 'bg-light-primary' }}">
+                        {{ ucfirst($event->category) }}
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="list-group-item list-group-item-action">
-                  <div class="d-flex">
-                    <div class="flex-shrink-0">
-                      <img src="{{ asset('assets/images/user/avatar-3.jpg') }}" alt="user-image" class="user-avtar" />
-                    </div>
-                    <div class="flex-grow-1 ms-1">
-                      <span class="float-end text-muted">10 min ago</span>
-                      <h5>Joseph William</h5>
-                      <p class="text-body fs-6">It is a long established fact that a reader will be distracted</p>
-                      <div class="badge rounded-pill bg-light-success">Confirmation of Account</div>
-                    </div>
-                  </div>
+                @empty
+                <div class="list-group-item text-center text-muted py-4">
+                  <i class="ti ti-bell-off fs-3 mb-2 d-block"></i>
+                  <p class="mb-0">Tidak ada agenda dalam 7 hari ke depan.</p>
                 </div>
+                @endforelse
+
               </div>
             </div>
             <div class="dropdown-divider"></div>
             <div class="text-center py-2">
-              <a href="#!" class="link-primary">Mark as all read</a>
+              <a href="{{ route('calendar.index') }}" class="link-primary">Lihat Kalender Akademik</a>
             </div>
           </div>
         </li>
@@ -97,19 +112,18 @@
           </span>
         </li>
         <li class="dropdown pc-h-item header-user-profile">
-          <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-            href="#" role="button" aria-haspopup="false" aria-expanded="false">
-            <img src="{{ asset('assets/images/user/avatar-2.jpg') }}" alt="user-image" class="user-avtar" />
+          <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random&color=fff" alt="user-image" class="user-avtar" />
             <span>
               <i class="ti ti-settings"></i>
             </span>
           </a>
           <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
             <div class="dropdown-header">
-              <h4>
+              <h3>
                 {{ Auth::user()->name }}
-              </h4>
-              <p class="text-muted">{{ Auth::user()->role }}</p>
+              </h3>
+              <span class="text-primary d-flex align-items-center gap-2"><i class="bi bi-shield-lock fs-5"></i> {{ Auth::user()->role }}</span>
               <hr />
               <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 280px)">
                 {{-- <div class="upgradeplan-block bg-light-warning rounded">
@@ -119,14 +133,14 @@
                     class="btn btn-warning">Buy Now</a>
                 </div> --}}
                 {{-- <hr /> --}}
-                <a href="../application/account-profile-v1.html" class="dropdown-item">
+                <a href="{{ route('user.show', Auth::user()->id) }}" class="dropdown-item">
                   <i class="ti ti-settings"></i>
                   <span>Account Settings</span>
                 </a>
-                <a href="../application/social-profile.html" class="dropdown-item">
+                {{-- <a href="../application/social-profile.html" class="dropdown-item">
                   <i class="ti ti-user"></i>
                   <span>Social Profile</span>
-                </a>
+                </a> --}}
                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
                   @csrf
                   <button type="submit" form="logout-form" class="dropdown-item">
