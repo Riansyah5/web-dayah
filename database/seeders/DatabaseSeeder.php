@@ -9,6 +9,7 @@ use App\Models\User;
 // use Database\Seeders\QuranSurahSeeder;
 // use Database\Seeders\StageSeeder;
 use Illuminate\Database\Seeder;
+use Termwind\Components\Raw;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminTest::class,
             TahfizhScheduleSeeder::class,
             SidebarSettingSeeder::class,
+            RolePermissionSeeder::class,
         ]);
     }
 }

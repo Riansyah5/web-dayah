@@ -153,15 +153,19 @@
                     <input class="form-check-input" type="checkbox" id="checkAll">
                     <label class="form-check-label small" for="checkAll">Pilih Semua</label>
                   </div>
+                  
+                </div>
+                <div class="mb-2">
+                  <input type="text" id="searchStudent" class="form-control form-control-sm" placeholder="Cari nama atau NIS santri...">
                 </div>
                 <div class="border rounded p-2 bg-light" style="max-height: 300px; overflow-y: auto;">
                   @forelse ($availableStudents as $s)
-                    <div class="form-check mb-2 border-bottom pb-2">
+                    <div class="form-check mb-2 border-bottom pb-2 student-item">
                       <input class="form-check-input student-check" type="checkbox" name="student_ids[]"
                         value="{{ $s->id }}" id="s_{{ $s->id }}">
                       <label class="form-check-label lh-sm" for="s_{{ $s->id }}">
-                        <span class="fw-bold d-block small">{{ $s->name }}</span>
-                        <span class="text-muted" style="font-size: 0.75rem;">{{ $s->nis }}</span>
+                        <span class="fw-bold d-block small student-name">{{ $s->name }}</span>
+                        <span class="text-muted student-nis" style="font-size: 0.75rem;">{{ $s->nis }}</span>
                       </label>
                     </div>
                   @empty
@@ -233,5 +237,22 @@
         text: '{{ session('error') }}',
       });
     @endif
+
+    // Search Santri
+    document.getElementById('searchStudent').addEventListener('input', function() {
+      const filter = this.value.toLowerCase();
+      const items = document.querySelectorAll('.student-item');
+
+      items.forEach(function(item) {
+        const name = item.querySelector('.student-name').textContent.toLowerCase();
+        const nis = item.querySelector('.student-nis').textContent.toLowerCase();
+
+        if (name.includes(filter) || nis.includes(filter)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
   </script>
 @endpush

@@ -83,8 +83,8 @@
     .stat-circle {
         width: 70px;
         height: 70px;
-        border: 4px solid #0d6efd;
-        border-radius: 50%;
+        border: 4px solid #a555d0;
+        border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -147,7 +147,7 @@
             <div class="col-lg-4 mt-4 mt-lg-0">
                 <div class="d-flex justify-content-lg-end align-items-center gap-4">
                     <div class="text-center">
-                        <div class="stat-circle text-primary mx-auto mb-2">{{ $bank->questions->count() }}</div>
+                        <div class="stat-circle text-secondary mx-auto mb-2">{{ $bank->questions->count() }}</div>
                         <small class="text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Pertanyaan</small>
                     </div>
                     <div class="vr mx-2 h-100 opacity-25"></div>

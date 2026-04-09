@@ -239,6 +239,7 @@
           <button class="btn btn-primary text-white rounded-3 shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#moveRoomModal">
             <i class="bi bi-arrow-left-right me-2"></i>Pindah Kamar
           </button>
+          @can('kelola-data-santri')
           {{-- tombol edit data --}}
           <a href="{{ route('students.edit', $student->id) }}" class="btn btn-warning text-white rounded-3 shadow-sm px-4">
             <i class="bi bi-pencil-square me-2"></i>Edit
@@ -246,6 +247,7 @@
           <button class="btn btn-outline-danger rounded-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
             <i class="bi bi-trash"></i>
           </button>
+          @endcan
         </div>
       </div>
     </div>
@@ -263,10 +265,13 @@
               <i class="bi bi-bar-chart-line"></i>
             </a>
             @if ($student->status == 'active')
+            @can('kelola-data-santri')
             <button type="button" class="btn btn-warning btn-sm text-dark fw-bold rounded" data-bs-toggle="modal" data-bs-target="#modalMutasi">
               <i class="bi bi-box-arrow-right me-2"></i> Mutasi
             </button>
+            @endcan
             @else
+
             <div class="alert alert-secondary d-inline-block py-1 px-3 mb-0">
               <i class="bi bi-info-circle me-2"></i>
               Status: <strong>{{ strtoupper($student->status) }}</strong>

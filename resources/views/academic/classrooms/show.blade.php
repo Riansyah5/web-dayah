@@ -117,7 +117,7 @@
                     <button type="button" class="btn btn-sm btn-light text-primary" data-bs-toggle="modal" data-bs-target="#moveModal{{ $student->id }}" title="Pindah Kelas">
                       <i class="bi bi-arrow-left-right"></i>
                     </button>
-
+                    @can('kelola-kelas')
                     <form action="{{ route('classrooms.removeStudent', ['classroom' => $classroom->id, 'studentId' => $student->id]) }}" method="POST" class="d-inline">
                       @csrf
                       @method('DELETE')
@@ -125,6 +125,7 @@
                         <i class="bi bi-x-lg"></i>
                       </button>
                     </form>
+                    @endcan
                   </div>
 
                   <div class="modal fade text-start" id="moveModal{{ $student->id }}" tabindex="-1">
@@ -193,11 +194,16 @@
                 </div>
                 @endif
               </div>
+              
+              <div class="mb-2">
+                <input type="text" id="searchAvailableStudent" class="form-control form-control-sm" placeholder="Cari nama santri...">
+              </div>
+
               <div class="border rounded p-2 bg-light" style="max-height: 300px; overflow-y: auto;">
                 @forelse($availableStudents as $as)
-                <div class="form-check mb-1">
+                <div class="form-check mb-1 student-item">
                   <input class="form-check-input student-checkbox" type="checkbox" name="student_ids[]" value="{{ $as->id }}" id="s_{{ $as->id }}">
-                  <label class="form-check-label small" for="s_{{ $as->id }}">{{ $as->name }} ({{ $as->gender }})</label>
+                  <label class="form-check-label small student-name" for="s_{{ $as->id }}">{{ $as->name }} ({{ $as->gender }})</label>
                 </div>
                 @empty
                 <div class="text-center text-muted small py-3">Tidak ada siswa tersedia.</div>
@@ -274,5 +280,23 @@
       });
     });
   });
+
+  // Pencarian Santri di Form Tambah Anggota
+  const searchInput = document.getElementById('searchAvailableStudent');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const filter = this.value.toLowerCase();
+      const items = document.querySelectorAll('.student-item');
+
+      items.forEach(function(item) {
+        const name = item.querySelector('.student-name').textContent.toLowerCase();
+        if (name.includes(filter)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
 </script>
 @endpush

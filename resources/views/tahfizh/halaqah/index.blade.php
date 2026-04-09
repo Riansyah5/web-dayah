@@ -21,9 +21,11 @@
       </div>
       <div class="d-flex gap-2">
         <input type="text" id="searchInput" class="form-control" placeholder="Cari halaqah atau musyrif..." style="width: 250px;">
-        <a href="{{ route('tahfizh.halaqah.create') }}" class="btn btn-primary shadow-sm text-nowrap">
-          <i class="bi bi-plus-lg me-2"></i> Halaqah Baru
-        </a>
+        @can('kelola-halaqah')
+          <a href="{{ route('tahfizh.halaqah.create') }}" class="btn btn-primary shadow-sm text-nowrap">
+            <i class="bi bi-plus-lg me-2"></i> Halaqah Baru
+          </a>
+        @endcan
       </div>
     </div>
 
@@ -50,6 +52,7 @@
                         data-description="{{ $halaqah->description }}"
                         data-url="{{ route('tahfizh.halaqah.update', $halaqah->id) }}">Edit Info</a>
                     </li>
+                    @can('kelola-halaqah')
                     <li>
                       <hr class="dropdown-divider">
                     </li>
@@ -60,6 +63,7 @@
                         <button type="submit" class="dropdown-item text-danger">Hapus</button>
                       </form>
                     </li>
+                    @endcan
                   </ul>
                 </div>
               </div>

@@ -128,14 +128,15 @@
               </ul>
             </div>
 
+            @can('kelola-data-santri')
             <button type="button" class="btn btn-success text-white rounded-3 shadow-sm" data-bs-toggle="modal"
               data-bs-target="#importModal">
               <i class="bi bi-file-earmark-spreadsheet me-2"></i>Import
             </button>
-
             <button type="button" class="btn btn-primary rounded-3 px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#checkNisnModal">
               <i class="bi bi-plus-lg me-2"></i>Tambah
             </button>
+            @endcan
           </div>
         </div>
 
@@ -255,6 +256,7 @@
                             class="btn btn-sm btn-light text-primary border" title="Detail">
                             <i class="bi bi-eye"></i>
                           </a>
+                          @can('kelola-data-santri')
                           <a href="{{ route('students.edit', $student->id) }}"
                             class="btn btn-sm btn-light text-warning border" title="Edit">
                             <i class="bi bi-pencil-square"></i>
@@ -268,6 +270,7 @@
                               <i class="bi bi-trash"></i>
                             </button>
                           </form>
+                          @endcan
                         </div>
                       </td>
                     </tr>

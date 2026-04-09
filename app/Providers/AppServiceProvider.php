@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\AcademicYear;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
             // Cache sederhana bisa ditambahkan nanti, sekarang query langsung saja
             $activeYear = AcademicYear::where('is_active', true)->first();
             $view->with('globalActiveYear', $activeYear);
+        });
+
+        // Superadmin otomatis lolos semua pengecekan Gate (termasuk @can di Blade)
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Superadmin') ? true : null;
         });
     }
 }

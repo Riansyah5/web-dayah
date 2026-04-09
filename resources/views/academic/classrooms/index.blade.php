@@ -25,7 +25,9 @@
             @endforeach
           </select>
         </form>
+        @can('kelola-kelas')
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">+ Kelas</button>
+        @endcan
       </div>
     </div>
 
