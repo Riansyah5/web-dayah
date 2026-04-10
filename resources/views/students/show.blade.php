@@ -154,6 +154,34 @@
     /* Pink */
   }
 
+  /* --- Pengaturan Print (Cetak) --- */
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      background-color: white !important;
+    }
+    /* Sembunyikan Header Topbar & Sidebar Bawaan Berry Template */
+    .pc-sidebar, .pc-header {
+      display: none !important;
+    }
+    /* Hilangkan padding margin sidebar agar konten penuh */
+    .pc-container {
+      margin-left: 0 !important;
+      margin-top: 0 !important;
+      padding: 0 !important;
+    }
+    .card {
+      box-shadow: none !important;
+      border: 1px solid #e5e7eb !important;
+      break-inside: avoid;
+    }
+    /* Tampilkan selalu Data Wali meskipun di-collapse */
+    .collapse {
+      display: block !important;
+      height: auto !important;
+    }
+  }
 </style>
 @endpush
 
@@ -173,8 +201,11 @@
         </ol>
       </nav>
     </div>
-    <div class="d-flex justify-content-between align-items-center">
-      <a href="{{ route('students.index') }}" class="btn btn-outline-secondary text-mute shadow-sm rounded-3">
+    <div class="d-flex gap-2 align-items-center">
+      <button onclick="window.print()" class="btn btn-outline-primary shadow-sm rounded-3 d-print-none">
+        <i class="bi bi-printer me-2"></i>Cetak
+      </button>
+      <a href="{{ route('students.index') }}" class="btn btn-outline-secondary text-mute shadow-sm rounded-3 d-print-none">
         <i class="bi bi-arrow-left me-2"></i>Kembali
       </a>
     </div>
@@ -215,7 +246,7 @@
             {{ $student->created_at->locale('id')->translatedFormat('d F Y') }}
           </div>
         </div>
-        <div class="col-md-auto mt-3 mt-md-3 d-flex flex-wrap gap-2 justify-content-center">
+        <div class="col-md-auto mt-3 mt-md-3 d-flex flex-wrap gap-2 justify-content-center d-print-none">
 
           {{-- tombol riwayat rapor --}}
           <div class="dropdown ms-2">
@@ -260,7 +291,7 @@
           <h6 class="fw-bold text-dark">
             <i class="bi bi-info-circle me-2 text-primary"></i>Status Akademik
           </h6>
-          <div>
+          <div class="d-print-none">
             <a href="{{ route('tahfizh.report.show', $student->id) }}" class="btn btn-sm btn-info text-white rounded me-1" title="Lihat Hafalan">
               <i class="bi bi-bar-chart-line"></i>
             </a>
@@ -670,7 +701,7 @@
 
           {{-- Data Wali (Collapsible) --}}
           <div class="mt-4">
-            <a class="btn btn-outline-secondary border-opacity-25 w-100 text-start fw-semibold d-flex justify-content-between align-items-center p-3 rounded-3" data-bs-toggle="collapse" href="#collapseGuardian" role="button" aria-expanded="false" aria-controls="collapseGuardian">
+            <a class="btn btn-outline-secondary border-opacity-25 w-100 text-start fw-semibold d-flex justify-content-between align-items-center p-3 rounded-3 d-print-none" data-bs-toggle="collapse" href="#collapseGuardian" role="button" aria-expanded="false" aria-controls="collapseGuardian">
               <span>
                 <i class="bi bi-person-badge me-2 text-warning"></i>
                 Data Wali (Opsional)

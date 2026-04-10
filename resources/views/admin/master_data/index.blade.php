@@ -393,11 +393,14 @@
     // Notifikasi Sukses
     @if (session('success'))
       Swal.fire({
+        toast: true,
+        position: 'top-end',
         icon: 'success',
         title: 'Berhasil',
         text: '{{ session('success') }}',
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
+        timerProgressBar: true
       });
     @endif
 

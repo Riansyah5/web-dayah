@@ -21,7 +21,7 @@ class RoomController extends Controller
     public function create(){
         // Kita butuh data Gedung untuk dipilih di dropdown
         $dorms = Dorm::all();
-        $wardens = Pegawai::all();
+        $wardens = Pegawai::all()->sortBy('nama'); // Urutkan pegawai berdasarkan nama untuk memudahkan pencarian
         return view('rooms.create', compact('dorms', 'wardens'));
     }
 
