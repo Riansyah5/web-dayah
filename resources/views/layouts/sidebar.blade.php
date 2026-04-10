@@ -107,7 +107,7 @@
                 <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.journal.dashboard') }}">Absensi</a></li>
                 @endcan
                 @can('ajukan-izin-guru')
-                <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.create') }}">Pengajuan Izin</a></li>
+                {{-- <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.create') }}">Pengajuan Izin</a></li> --}}
                 <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.permission.index') }}">Riwayat Izin</a></li>
                 @endcan
               </ul>
