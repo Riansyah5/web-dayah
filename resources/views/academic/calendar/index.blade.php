@@ -392,10 +392,11 @@
             year_id: "{{ $viewedYear->id }}" // Kirim ID tahun yang dipilih dropdown
           }
         },
-        // Set tanggal awal kalender sesuai tahun yang dipilih
-        // (Agar pas buka arsip 2023, kalender langsung loncat ke 2023, bukan hari ini)
-        initialDate: "{{ $viewedYear->created_at->format('Y-m-d') }}",
 
+        @if ($viewedYear->id != $activeYear->id)
+          // Jika melihat arsip, loncat ke tanggal arsip tersebut (misal: awal tahun ajaran)
+          initialDate: "{{ $viewedYear->created_at->format('Y-m-d') }}",
+        @endif
         // events: "{{ route('calendar.feed') }}", // Ambil data dari API
 
         // Saat Event Diklik -> Munculkan Modal
