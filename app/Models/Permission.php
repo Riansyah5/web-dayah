@@ -14,6 +14,7 @@ class Permission extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'returned_at' => 'datetime',
+        'last_notification_sent_at' => 'datetime',
     ];
 
     public function student()

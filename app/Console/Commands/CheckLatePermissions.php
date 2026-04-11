@@ -25,6 +25,11 @@ class CheckLatePermissions extends Command
         $count = 0;
 
         foreach ($latePermissions as $permission) {
+            // Cek apakah notifikasi sudah dikirim hari ini. Jika sudah, lewati.
+            if ($permission->last_notification_sent_at && $permission->last_notification_sent_at->isToday()) {
+                continue;
+            }
+
             $student = $permission->student;
 
             // 2. Cari Kamar & Warden (Wali Kamar) Santri Tersebut melalui RoomAssignment
@@ -39,10 +44,10 @@ class CheckLatePermissions extends Command
             if ($warden && !empty($warden->no_hp)) {
                 $this->sendWhatsApp($warden->no_hp, $student, $permission, $assignment->room->name ?? '-');
                 $count++;
-            }
 
-            // 3. Ubah status menjadi 'late' agar tidak dikirim berulang kali pada jam/menit berikutnya
-            $permission->update(['status' => 'late']);
+                // Update timestamp notifikasi setelah berhasil dikirim
+                $permission->update(['last_notification_sent_at' => now()]);
+            }
         }
 
         $this->info("Pengecekan selesai. {$count} notifikasi WhatsApp berhasil dikirim ke Wali Kamar.");
