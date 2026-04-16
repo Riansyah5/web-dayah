@@ -22,6 +22,7 @@
 
         <div class="mb-3">
           <label class="form-label fw-bold">Pilih Santri</label>
+          <input type="text" id="searchStudent" class="form-control mb-3" placeholder="Cari nama santri atau NIS...">
           
           <ul class="nav nav-tabs" id="studentTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -54,7 +55,7 @@
                       <div class="accordion-body">
                         <div class="row">
                           @foreach ($groupStudents as $student)
-                            <div class="col-md-6">
+                            <div class="col-md-6 student-item">
                               <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="student_ids[]" value="{{ $student->id }}" id="nr_{{ $student->id }}">
                                 <label class="form-check-label" for="nr_{{ $student->id }}">
@@ -91,7 +92,7 @@
                         <div class="row">
                           @foreach ($groupStudents as $student)
                             @php $currentRoom = $student->roomAssignments->first()->room; @endphp
-                            <div class="col-md-6 mb-1">
+                            <div class="col-md-6 mb-1 student-item">
                               <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="student_ids[]" value="{{ $student->id }}" id="hr_{{ $student->id }}">
                                 <label class="form-check-label" for="hr_{{ $student->id }}">
@@ -140,4 +141,40 @@
   </div>
 @endsection
 @push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchStudent');
+    const accordionItems = document.querySelectorAll('.accordion-item');
+
+    searchInput.addEventListener('input', function (e) {
+      const searchTerm = e.target.value.toLowerCase();
+
+      accordionItems.forEach(item => {
+        const students = item.querySelectorAll('.student-item');
+        let hasVisibleStudent = false;
+
+        students.forEach(student => {
+          const text = student.textContent.toLowerCase();
+          if (text.includes(searchTerm)) {
+            student.style.display = 'block';
+            hasVisibleStudent = true;
+          } else {
+            student.style.display = 'none';
+          }
+        });
+
+        // Tampilkan/Sembunyikan Group Kelas beserta Accordion-nya
+        if (hasVisibleStudent) {
+          item.style.display = 'block';
+          if (searchTerm !== '') {
+            item.querySelector('.accordion-collapse')?.classList.add('show');
+            item.querySelector('.accordion-button')?.classList.remove('collapsed');
+          }
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
 @endpush
