@@ -18,6 +18,8 @@
 
               <div class="mb-3">
                 <label class="form-label fw-bold">Pilih Santri</label>
+                <input type="text" id="searchStudent" class="form-control mb-3" placeholder="Cari nama santri atau NIS...">
+                
                 <div class="accordion" id="accordionStudents" style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem;">
                   @foreach ($students->groupBy('class_group')->sortKeys() as $classGroup => $groupStudents)
                     @php $groupId = 'class_' . \Illuminate\Support\Str::slug($classGroup ?? 'no-class') . '_' . $loop->index; @endphp
@@ -31,7 +33,7 @@
                       <div id="{{ $groupId }}" class="accordion-collapse collapse" data-bs-parent="#accordionStudents">
                         <div class="accordion-body">
                           @foreach ($groupStudents as $student)
-                            <div class="form-check">
+                            <div class="form-check student-item">
                               <input class="form-check-input" type="radio" name="student_id" value="{{ $student->id }}" id="s_{{ $student->id }}">
                               <label class="form-check-label w-100" for="s_{{ $student->id }}" style="cursor: pointer;">
                                 {{ $student->name }} <small class="text-muted">({{ $student->nis }})</small>
@@ -86,4 +88,40 @@
   </div>
 @endsection
 @push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchStudent');
+    const accordionItems = document.querySelectorAll('.accordion-item');
+
+    searchInput.addEventListener('input', function (e) {
+      const searchTerm = e.target.value.toLowerCase();
+
+      accordionItems.forEach(item => {
+        const students = item.querySelectorAll('.student-item');
+        let hasVisibleStudent = false;
+
+        students.forEach(student => {
+          const text = student.textContent.toLowerCase();
+          if (text.includes(searchTerm)) {
+            student.style.display = 'block';
+            hasVisibleStudent = true;
+          } else {
+            student.style.display = 'none';
+          }
+        });
+
+        // Tampilkan/Sembunyikan Group Kelas beserta Accordion-nya
+        if (hasVisibleStudent) {
+          item.style.display = 'block';
+          if (searchTerm !== '') {
+            item.querySelector('.accordion-collapse').classList.add('show');
+            item.querySelector('.accordion-button').classList.remove('collapsed');
+          }
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
 @endpush
