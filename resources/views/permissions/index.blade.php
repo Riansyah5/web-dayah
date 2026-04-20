@@ -48,76 +48,101 @@
     <div class="tab-content" id="pills-tabContent">
 
       <div class="tab-pane fade show active" id="pills-active">
-        <div class="card border-0 shadow-sm rounded-4">
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                  <tr>
-                    <th class="ps-4">Nama Santri</th>
-                    <th>Jenis</th>
-                    <th>Petugas</th>
-                    <th>Waktu Keluar</th>
-                    <th>Batas Kembali</th>
-                    <th>Sisa Waktu</th>
-                    <th class="text-end pe-4">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @forelse($activePermissions as $perm)
-                    <tr>
-                      <td class="ps-4">
-                        <div class="fw-bold text-dark">{{ $perm->student->name }}</div>
-                        <div class="small text-muted">{{ $perm->student->class_group ?? '-' }}</div>
-                      </td>
-                      <td>
-                        <span class="badge bg-warning text-dark">{{ ucfirst($perm->type) }}</span>
-                      </td>
-                      <td>
-                        <strong>{{ $perm->user->name ?? '-' }}</strong>
-                      </td>
-                      <td>{{ $perm->start_date->locale('id')->translatedFormat('d M H:i') }}</td>
-                      <td>
-                        <div class="fw-bold text-danger">{{ $perm->end_date->locale('id')->translatedFormat('d M H:i') }}</div>
-                      </td>
-                      <td>
-                        @if (now()->gt($perm->end_date))
-                          <span class="text-danger fw-bold">Telat
-                            {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
-                        @else
-                          <span class="text-success">Sisa
-                            {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
-                        @endif
-                      </td>
-                      <td class="text-end pe-4">
-                        <a href="{{ route('permissions.print', $perm->id) }}" target="_blank"
-                          class="btn btn-sm btn-outline-secondary me-1" title="Lihat dan Cetak Surat">
-                          <i class="bi bi-printer"></i>
-                        </a>
-                        <a href="{{ route('permissions.downloadpdf', $perm->id) }}" target="_blank"
-                          class="btn btn-sm btn-outline-warning me-1" title="Download PDF Surat Izin">
-                          <i class="bi bi-download"></i>
-                        </a>
-                        <form action="{{ route('permissions.return', $perm->id) }}" method="POST" class="d-inline">
-                          @csrf
-                          @method('PUT')
-                          <button type="submit" class="btn btn-sm btn-success text-white btn-return"
-                            data-name="{{ $perm->student->name }}">
-                            <i class="bi bi-check-lg me-1"></i> Kembali
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  @empty
-                    <tr>
-                      <td colspan="6" class="text-center py-5 text-muted">Tidak ada santri yang sedang izin di luar.
-                      </td>
-                    </tr>
-                  @endforelse
-                </tbody>
-              </table>
+        @php
+          // Kelompokkan data izin berdasarkan asrama dari relasi student
+          $groupedActivePermissions = $activePermissions->groupBy(function($perm) {
+              return $perm->student->dormitory ?? 'Tanpa Asrama';
+          })->sortKeys();
+        @endphp
+
+        <div class="mb-3">
+          <input type="text" id="searchActivePermission" class="form-control rounded-pill px-4 shadow-sm border-0 py-2" placeholder="Cari nama santri yang sedang izin...">
+        </div>
+
+        <div class="accordion" id="accordionActivePermissions">
+          @forelse($groupedActivePermissions as $dormitory => $perms)
+            <div class="accordion-item border-0 shadow-sm mb-3 rounded-4 overflow-hidden">
+              <h2 class="accordion-header" id="heading-{{ Str::slug($dormitory) }}">
+                <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }} bg-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ Str::slug($dormitory) }}" aria-expanded="{{ $loop->first ? 'true' : 'false' }}" aria-controls="collapse-{{ Str::slug($dormitory) }}">
+                  {{ $dormitory }} ({{ $perms->count() }} Santri)
+                </button>
+              </h2>
+              <div id="collapse-{{ Str::slug($dormitory) }}" class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}" aria-labelledby="heading-{{ Str::slug($dormitory) }}" data-bs-parent="#accordionActivePermissions">
+                <div class="accordion-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="bg-light">
+                        <tr>
+                          <th class="ps-4">Nama Santri</th>
+                          <th>Kamar</th>
+                          <th>Jenis</th>
+                          <th>Petugas</th>
+                          <th>Waktu Keluar</th>
+                          <th>Batas Kembali</th>
+                          <th>Sisa Waktu</th>
+                          <th class="text-end pe-4">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($perms as $perm)
+                          <tr>
+                            <td class="ps-4">
+                              <div class="fw-bold text-dark">{{ $perm->student->name }}</div>
+                              <div class="small text-muted">{{ $perm->student->class_group ?? '-' }}</div>
+                            </td>
+                            <td>{{ $perm->student->room ?? '-' }}</td>
+                            <td>
+                              <span class="badge bg-warning text-dark">{{ ucfirst($perm->type) }}</span>
+                            </td>
+                            <td>
+                              <strong>{{ $perm->user->name ?? '-' }}</strong>
+                            </td>
+                            <td>{{ $perm->start_date->locale('id')->translatedFormat('d M H:i') }}</td>
+                            <td>
+                              <div class="fw-bold text-danger">{{ $perm->end_date->locale('id')->translatedFormat('d M H:i') }}</div>
+                            </td>
+                            <td>
+                              @if (now()->gt($perm->end_date))
+                                <span class="text-danger fw-bold">Telat
+                                  {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
+                              @else
+                                <span class="text-success">Sisa
+                                  {{ $perm->end_date->locale('id')->diffForHumans(null, true) }}</span>
+                              @endif
+                            </td>
+                            <td class="text-end pe-4">
+                              <a href="{{ route('permissions.print', $perm->id) }}" target="_blank"
+                                class="btn btn-sm btn-outline-secondary me-1" title="Lihat dan Cetak Surat">
+                                <i class="bi bi-printer"></i>
+                              </a>
+                              <a href="{{ route('permissions.downloadpdf', $perm->id) }}" target="_blank"
+                                class="btn btn-sm btn-outline-warning me-1" title="Download PDF Surat Izin">
+                                <i class="bi bi-download"></i>
+                              </a>
+                              <form action="{{ route('permissions.return', $perm->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-sm btn-success text-white btn-return"
+                                  data-name="{{ $perm->student->name }}">
+                                  <i class="bi bi-check-lg me-1"></i> Kembali
+                                </button>
+                              </form>
+                            </td>
+                          </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          @empty
+            <div class="card border-0 shadow-sm rounded-4">
+              <div class="card-body">
+                <div class="text-center py-5 text-muted">Tidak ada santri yang sedang izin di luar.</div>
+              </div>
+            </div>
+          @endforelse
         </div>
       </div>
 
@@ -205,5 +230,35 @@
         });
       });
     });
+
+    // Live Search untuk Santri yang Sedang Izin
+    const searchInput = document.getElementById('searchActivePermission');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        const filter = this.value.toLowerCase();
+        const accordions = document.querySelectorAll('#accordionActivePermissions .accordion-item');
+
+        accordions.forEach(accordion => {
+          const rows = accordion.querySelectorAll('tbody tr');
+          let hasVisibleRow = false;
+
+          rows.forEach(row => {
+            const nameElement = row.querySelector('.fw-bold.text-dark');
+            if (nameElement) {
+              const name = nameElement.textContent.toLowerCase();
+              if (name.includes(filter)) {
+                row.style.display = '';
+                hasVisibleRow = true;
+              } else {
+                row.style.display = 'none';
+              }
+            }
+          });
+
+          // Sembunyikan accordion jika tidak ada nama yang cocok di dalamnya
+          accordion.style.display = hasVisibleRow ? '' : 'none';
+        });
+      });
+    }
   </script>
 @endpush
