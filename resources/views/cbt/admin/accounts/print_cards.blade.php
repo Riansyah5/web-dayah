@@ -91,38 +91,40 @@
     </div>
 
     <div class="card-container">
-        @foreach($students as $student)
-        <div class="exam-card">
-            <div class="header">
-                <h3>DAYAH MATAQU UTSMAN BIN AFFAN</h3>
-                <h4>Kartu Login Peserta Ujian (CBT)</h4>
-            </div>
-            
-            <table class="content-table">
-                <tr>
-                    <td class="label">Nama Santri</td>
-                    <td class="colon">:</td>
-                    <td><strong>{{ $student->name }}</strong></td>
-                </tr>
-                <tr>
-                    <td class="label">Kelas / Halaqah</td>
-                    <td class="colon">:</td>
-                    <td>{{ $student->classrooms->last()->name ?? '.................' }}</td>
-                </tr>
-            </table>
+        @foreach($studentsByClass as $className => $students)
+            @foreach($students as $student)
+            <div class="exam-card">
+                <div class="header">
+                    <h3>DAYAH MATAQU UTSMAN BIN AFFAN</h3>
+                    <h4>Kartu Login Peserta Ujian (CBT)</h4>
+                </div>
+                
+                <table class="content-table">
+                    <tr>
+                        <td class="label">Nama Santri</td>
+                        <td class="colon">:</td>
+                        <td><strong>{{ $student->name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Kelas / Halaqah</td>
+                        <td class="colon">:</td>
+                        <td>{{ $className !== 'Tanpa Kelas' ? $className : '.................' }}</td>
+                    </tr>
+                </table>
 
-            <div class="credentials">
-                <div>Username / No. Peserta:</div>
-                <span>{{ $student->cbtAccount->username }}</span>
-                <div style="margin-top: 10px;">PIN Ujian:</div>
-                <span>{{ $student->cbtAccount->raw_pin }}</span>
-            </div>
+                <div class="credentials">
+                    <div>Username / No. Peserta:</div>
+                    <span>{{ $student->cbtAccount->username }}</span>
+                    <div style="margin-top: 10px;">PIN Ujian:</div>
+                    <span>{{ $student->cbtAccount->raw_pin }}</span>
+                </div>
 
-            <div class="footer">
-                *Simpan kartu ini baik-baik. PIN bersifat rahasia.<br>
-                Link Ujian: <strong>{{ url('/cbt/login') }}</strong>
+                <div class="footer">
+                    *Simpan kartu ini baik-baik. PIN bersifat rahasia.<br>
+                    Link Ujian: <strong>{{ url('/cbt/login') }}</strong>
+                </div>
             </div>
-        </div>
+            @endforeach
         @endforeach
     </div>
 

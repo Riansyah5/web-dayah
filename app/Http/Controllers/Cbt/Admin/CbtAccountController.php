@@ -152,16 +152,22 @@ class CbtAccountController extends Controller
     {
         // Ambil santri yang sudah memiliki akun CBT
         // Asumsi ada relasi classRoom di model Student, jika tidak ada sesuaikan saja
-        $students = Student::whereHas('cbtAccount')
+        $allStudents = Student::whereHas('cbtAccount')
             ->with(['cbtAccount', 'classrooms']) // Load relasi kelas jika ada
             ->orderBy('name')
             ->get();
 
-        if ($students->isEmpty()) {
+        if ($allStudents->isEmpty()) {
             return back()->with('error', 'Belum ada akun yang di-generate. Silakan generate terlebih dahulu.');
         }
 
-        return view('cbt.admin.accounts.print_cards', compact('students'));
+        // Kelompokkan santri berdasarkan kelas terakhirnya, lalu urutkan berdasarkan nama kelas
+        $studentsByClass = $allStudents->groupBy(function ($student) {
+            // Ambil kelas terakhir. Jika tidak ada, kelompokkan ke 'Tanpa Kelas'
+            return $student->classrooms->last()->name ?? 'Tanpa Kelas';
+        })->sortKeys(); // sortKeys() akan mengurutkan berdasarkan nama kelas secara alfabetis
+
+        return view('cbt.admin.accounts.print_cards', compact('studentsByClass'));
     }
 
     // [BARU] Reset Massal Pasca Ujian Selesai
