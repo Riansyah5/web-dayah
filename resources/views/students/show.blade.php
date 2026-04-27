@@ -291,7 +291,7 @@
           <h6 class="fw-bold text-dark">
             <i class="bi bi-info-circle me-2 text-primary"></i>Status Akademik
           </h6>
-          <div class="d-print-none">
+          <div class="d-print-none d-flex justify-content-between align-items-center gap-2">
             <a href="{{ route('tahfizh.report.show', $student->id) }}" class="btn btn-sm btn-info text-white rounded me-1" title="Lihat Hafalan">
               <i class="bi bi-bar-chart-line"></i>
             </a>
@@ -303,9 +303,8 @@
             @endcan
             @else
 
-            <div class="alert alert-secondary d-inline-block py-1 px-3 mb-0">
-              <i class="bi bi-info-circle me-2"></i>
-              Status: <strong>{{ strtoupper($student->status) }}</strong>
+            <div class="alert alert-secondary d-inline-block py-1 px-1 mb-0">
+              Status: <strong>{{ strtoupper($student->status) }}</strong><br>
               @if ($student->exitDetail)
               <small class="ms-2 text-muted">({{ $student->exitDetail->exit_date->translatedFormat('d M Y') }})</small>
               @endif
