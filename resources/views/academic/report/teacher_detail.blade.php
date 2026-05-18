@@ -13,15 +13,18 @@
             <div class="container py-4">
 
               <div class="d-flex align-items-center justify-content-between mb-4">
+                @php
+                  $level = request('level', 'Wustha');
+                @endphp
                 <div class="d-flex align-items-center">
-                  <a href="{{ route('academic.report.teacher', ['month' => $month, 'year' => $year]) }}"
+                  <a href="{{ route('academic.report.teacher', ['month' => $month, 'year' => $year, 'level' => $level]) }}"
                     class="btn btn-outline-secondary rounded me-3">
                     <i class="bi bi-arrow-left"></i>
                   </a>
                   <div>
                     <h4 class="fw-bold mb-0">{{ $teacher->name }}</h4>
                     <p class="text-muted small mb-0">
-                      Laporan Periode: {{ DateTime::createFromFormat('!m', $month)->format('F') }} {{ $year }}
+                      Laporan Periode: {{ DateTime::createFromFormat('!m', $month)->format('F') }} {{ $year }} | Tingkat: <span class="badge bg-primary ms-1">{{ $level }}</span>
                     </p>
                   </div>
                 </div>
@@ -288,6 +291,7 @@
           $eval = \App\Models\TeacherMonthlyEvaluation::where('teacher_id', $teacher->id)
               ->where('month', $month)
               ->where('year', $year)
+                  ->where('level', $level)
               ->first();
 
           $isApproved = $eval && $eval->is_approved;
@@ -336,6 +340,7 @@
                 <input type="hidden" name="month" value="{{ (int) $month }}">
                 <input type="hidden" name="year" value="{{ (int) $year }}">
                 <input type="hidden" name="action" id="actionInput">
+                <input type="hidden" name="level" value="{{ $level }}">
 
                 <div class="mb-3">
                   <label class="form-label fw-bold">Total Jam Terhitung</label>
@@ -421,11 +426,17 @@
   <script>
     @if (session('success'))
       Swal.fire({
+        toast: true,
         icon: 'success',
         title: 'Berhasil!',
         text: "{{ session('success') }}",
         timer: 3000,
-        showConfirmButton: false
+        position: 'top',
+        showConfirmButton: false,
+        timerProgressBar: true,
+
+        // background: '#34e363',
+        // color: '#ffffff'
       });
     @endif
 

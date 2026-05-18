@@ -940,20 +940,22 @@
   // Notifikasi Sukses
   @if(session('success'))
   Swal.fire({
-    icon: 'success'
-    , title: 'Berhasil'
-    , text: '{{ session('
-    success ') }}'
-    , timer: 2000
-    , showConfirmButton: false
+    icon: 'success',
+    title: 'Berhasil',
+    text: '{{ session('success') }}',
+    timer: 2000,
+    showConfirmButton: false,
+    position: 'top',
+    toast: true
   });
   @elseif(session('error'))
   Swal.fire({
-    icon: 'error'
-    , title: 'Gagal'
-    , html: '{{ session('
-    error ') }}'
-    , showConfirmButton: true
+    icon: 'error',
+    title: 'Gagal',
+    html: '{{ session('error') }}',
+    showConfirmButton: true,
+    position: 'top',
+    toast: true
   });
   @endif
 

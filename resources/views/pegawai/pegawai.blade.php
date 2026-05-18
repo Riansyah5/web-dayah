@@ -459,7 +459,7 @@
       });
 
       // SweetAlert Success Notification
-      /* @if (session('success'))
+      @if (session('success'))
         const Toast = Swal.mixin({
           toast: true,
           position: 'top-end',
@@ -476,17 +476,17 @@
           icon: 'success',
           title: '{{ session('success') }}'
         });
-      @endif */
-      @if (session('success'))
-        Swal.fire({
-          icon: 'success',
-          title: 'Berhasil',
-          text: '{{ session('success') }}',
-          timer: 1800,
-          timerProgressBar: true,
-          showConfirmButton: false
-        });
       @endif
+      // @if (session('success'))
+      //   Swal.fire({
+      //     icon: 'success',
+      //     title: 'Berhasil',
+      //     text: '{{ session('success') }}',
+      //     timer: 1800,
+      //     timerProgressBar: true,
+      //     showConfirmButton: false
+      //   });
+      // @endif
 
       @if (session('error'))
         Swal.fire({

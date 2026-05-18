@@ -22,16 +22,21 @@ class AcademicReportController extends Controller
     {
         $month = $request->month ?? date('m');
         $year = $request->year ?? date('Y');
+        $level = $request->level ?? 'Wustha'; // 1. Tangkap parameter tingkat
 
         $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
         // Kita map data untuk hitung statistik
-        $recap = $teachers->map(function ($teacher) use ($month, $year) {
+        $recap = $teachers->map(function ($teacher) use ($month, $year, $level) {
 
             // Hitung Kehadiran Real (Jurnal yang dia buat)
             $journals = TeachingJournal::where('teacher_id', $teacher->id)
                 ->whereMonth('date', $month)
                 ->whereYear('date', $year)
+                ->whereHas('lessonSchedule.classroom.level', function($q) use($level) {
+                    // Sesuaikan relasi ini. Jika Wustha/Ulya disimpan di tabel 'stages', gunakan 'lessonSchedule.classroom.level.stage'
+                    $q->where('name', 'LIKE', '%' . $level . '%');
+                })
                 ->get();
 
             $mainTeaching = $journals->where('is_substitute', false)->count();
@@ -39,7 +44,14 @@ class AcademicReportController extends Controller
             $totalHours = TeacherMonthlyEvaluation::where('teacher_id', $teacher->id)
                 ->where('month', $month)
                 ->where('year', $year)
+                ->where('level', $level) // 2. Filter nilai jam spesifik tingkat ini
                 ->value('total_hours');
+
+            // Hitung total jam terhitung keseluruhan (Semua Tingkat / Wustha + Ulya)
+            $totalHoursAll = TeacherMonthlyEvaluation::where('teacher_id', $teacher->id)
+                ->where('month', $month)
+                ->where('year', $year)
+                ->sum('total_hours');
 
             // Hitung Izin (Dari tabel teacher_permissions Tahap 2)
             // $permits = ... (Query ke tabel permissions)
@@ -50,10 +62,11 @@ class AcademicReportController extends Controller
                 'sub_count' => $substituteTeaching, // Mengajar badal
                 'total_count' => $mainTeaching + $substituteTeaching,
                 'total_hours' => $totalHours,
+                'total_hours_all' => $totalHoursAll,
             ];
         });
 
-        return view('academic.report.teacher_recap', compact('recap', 'month', 'year'));
+        return view('academic.report.teacher_recap', compact('recap', 'month', 'year', 'level'));
     }
 
     // 2. LAPORAN ABSENSI SISWA PER MAPEL
@@ -140,12 +153,16 @@ class AcademicReportController extends Controller
     {
         $month = $request->month ?? date('m');
         $year = $request->year ?? date('Y');
+        $level = $request->level ?? 'Wustha'; // 3. Tangkap parameter tingkat
 
         // 1. Ambil Data Detail Jurnal & Izin (TETAP DIPERLUKAN UNTUK TABEL BAWAH)
         // Kita butuh ini sebagai "Bukti Audit" meskipun ringkasannya diambil dari snapshot
         $journals = TeachingJournal::where('teacher_id', $teacher->id)
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
+            ->whereHas('lessonSchedule.classroom.level', function($q) use($level) {
+                $q->where('name', 'LIKE', '%' . $level . '%');
+            })
             ->with(['lessonSchedule.classroom', 'lessonSchedule.subject'])
             ->orderByDesc('date')
             ->orderByDesc('clock_in_time')
@@ -162,6 +179,7 @@ class AcademicReportController extends Controller
         $evaluation = TeacherMonthlyEvaluation::where('teacher_id', $teacher->id)
             ->where('month', $month)
             ->where('year', $year)
+            ->where('level', $level) // 4. Cari evaluasi khusus tingkat ini
             ->first();
 
         if ($evaluation) {
@@ -204,6 +222,7 @@ class AcademicReportController extends Controller
         $request->validate([
             'month' => 'required|integer',
             'year' => 'required|integer',
+            'level' => 'required|string', // 5. Wajib ada agar tidak tertukar saat simpan
             'rating' => 'required|integer|min:1|max:5',
             'headmaster_note' => 'nullable|string',
             'action' => 'required|in:save,approve', // save=draft, approve=final
@@ -214,6 +233,9 @@ class AcademicReportController extends Controller
         $journals = TeachingJournal::where('teacher_id', $teacher->id)
             ->whereMonth('date', $request->month)
             ->whereYear('date', $request->year)
+            ->whereHas('lessonSchedule.classroom.level', function($q) use($request) {
+                $q->where('name', 'LIKE', '%' . $request->level . '%');
+            })
             ->get();
 
         $permissions = TeacherPermission::where('teacher_id', $teacher->id)
@@ -228,6 +250,7 @@ class AcademicReportController extends Controller
                 'teacher_id' => $teacher->id,
                 'month' => $request->month,
                 'year' => $request->year,
+                'level' => $request->level, // 6. Tambahkan indikator tingkat sebagai pemisah (unique key)
             ],
             [
                 // Simpan Angka Statistik (Frozen Data)
