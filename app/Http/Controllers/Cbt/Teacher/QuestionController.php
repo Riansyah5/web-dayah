@@ -29,7 +29,7 @@ class QuestionController extends Controller
             // Validasi File Media (Opsional)
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
             'audio_file' => 'nullable|mimes:mp3,wav|max:5120', // Max 5MB
-            // 'option_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'option_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         DB::transaction(function () use ($request, $bank) {
@@ -47,7 +47,7 @@ class QuestionController extends Controller
             $question = CbtQuestion::create([
                 'cbt_question_bank_id' => $bank->id,
                 'type' => $request->type,
-                'question_text' => Purifier::clean($request->question_text),
+                'question_text' => $request->question_text,
                 'score_weight' => $request->score_weight,
                 'image_file' => $imagePath,
                 'audio_file' => $audioPath,
@@ -104,7 +104,7 @@ class QuestionController extends Controller
             'score_weight' => 'required|integer|min:1',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'audio_file' => 'nullable|mimes:mp3,wav|max:5120',
-            // 'option_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'option_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         DB::transaction(function () use ($request, $question) {
@@ -133,7 +133,8 @@ class QuestionController extends Controller
             // 2. UPDATE TEKS SOAL
             $question->update([
                 'type' => $request->type,
-                'question_text' => Purifier::clean($request->question_text),
+                // 'question_text' => Purifier::clean($request->question_text),
+                'question_text' => $request->question_text,
                 'score_weight' => $request->score_weight,
             ]);
 

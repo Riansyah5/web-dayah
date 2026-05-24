@@ -324,6 +324,8 @@
         // Auto-close success alerts
         @if(session('success'))
             Swal.fire({
+                toast: true,
+                position: 'top',
                 icon: 'success',
                 title: 'Sukses!',
                 text: "{{ session('success') }}",

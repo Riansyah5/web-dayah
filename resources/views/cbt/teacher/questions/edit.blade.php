@@ -196,7 +196,8 @@
                       <i class="bi bi-translate"></i>
                     </button>
                   </div>
-
+                  
+                  <!-- Preview Gambar & Tombol Hapus (Jika sudah ada gambar) -->
                   @if($opt && $opt->image_file)
                   <div class="d-flex align-items-center gap-3 bg-light p-2 rounded-3 w-auto d-inline-flex border">
                     <img src="{{ asset('storage/' . $opt->image_file) }}" class="rounded" style="max-height: 40px;">
@@ -206,6 +207,12 @@
                     </div>
                   </div>
                   @endif
+
+                  <!-- Input untuk Menambah/Mengganti Gambar -->
+                  <div class="d-flex align-items-center mt-1">
+                    <input type="file" name="option_images[{{ $index }}]" class="form-control form-control-sm border-0 bg-transparent w-auto" style="font-size: 11px;" accept="image/*">
+                    <span class="text-muted ms-2" style="font-size: 11px;">*Upload untuk menambah / mengganti gambar jawaban</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -256,22 +263,47 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
+<!-- Menggunakan CKEditor 5 Super Build -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/super-build/ckeditor.js"></script>
 <script>
   let questionEditor;
 
-  ClassicEditor
+  // 1. Definisikan nama plugin yang dibutuhkan
+  const requiredPlugins = [
+    'Essentials', 'Paragraph', 'Heading', 'Bold', 'Italic', 
+    'Link', 'List', 'BlockQuote', 'Table', 'Undo', 'MathType'
+  ];
+
+  // 2. Ambil class/constructor aslinya dari Super Build
+  const loadedPlugins = requiredPlugins.map(pluginName => {
+    return CKEDITOR.ClassicEditor.builtinPlugins.find(plugin => plugin.pluginName === pluginName);
+  }).filter(plugin => plugin !== undefined);
+
+  // 3. Inisialisasi CKEditor
+  CKEDITOR.ClassicEditor
     .create(document.querySelector('#q_text'), {
-      toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
+      plugins: loadedPlugins, // Gunakan array class
+      toolbar: {
+        items: [
+          'heading', '|', 
+          'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+          'MathType', 'ChemType', '|', 
+          'blockQuote', 'insertTable', 'undo', 'redo'
+        ],
+        shouldNotGroupWhenFull: true
+      }
     })
     .then(editor => {
       questionEditor = editor;
 
-      // Auto RTL check
+      // Auto RTL check: Jika teks awal mengandung huruf Arab, otomatis ubah format ke RTL
       const initialContent = editor.getData();
       if (/[\u0600-\u06FF]/.test(initialContent)) {
         toggleRtl('q_text');
       }
+    })
+    .catch(error => {
+      console.error('Error saat memuat CKEditor:', error);
     });
 
   function highlightChoice(index) {
@@ -306,9 +338,9 @@
     el.classList.toggle('arabic-input');
   }
 
+  // Update source element sebelum submit
   document.querySelector('form').addEventListener('submit', () => {
     if (questionEditor) questionEditor.updateSourceElement();
   });
-
 </script>
 @endpush

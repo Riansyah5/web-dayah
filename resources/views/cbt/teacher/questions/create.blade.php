@@ -178,10 +178,10 @@
                       <i class="bi bi-translate"></i>
                     </button>
                   </div>
-                  {{-- <div class="d-flex align-items-center">
+                  <div class="d-flex align-items-center">
                     <input type="file" name="option_images[{{ $index }}]" class="form-control form-control-sm border-0 bg-transparent w-auto" style="font-size: 11px;">
                     <span class="text-muted ms-2" style="font-size: 11px;">*Opsional Gambar Jawaban</span>
-                  </div> --}}
+                  </div>
                 </div>
               </div>
             </div>
@@ -234,22 +234,45 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
+<!-- Menggunakan CKEditor 5 Super Build -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/super-build/ckeditor.js"></script>
 <script>
   let questionEditor;
 
-  ClassicEditor
+  // 1. Definisikan nama plugin yang dibutuhkan
+  const requiredPlugins = [
+    'Essentials', 'Paragraph', 'Heading', 'Bold', 'Italic', 
+    'Link', 'List', 'BlockQuote', 'Table', 'Undo', 'MathType'
+  ];
+
+  // 2. Ambil class/constructor aslinya dari Super Build
+  const loadedPlugins = requiredPlugins.map(pluginName => {
+    return CKEDITOR.ClassicEditor.builtinPlugins.find(plugin => plugin.pluginName === pluginName);
+  }).filter(plugin => plugin !== undefined);
+
+  // 3. Inisialisasi CKEditor
+  CKEDITOR.ClassicEditor
     .create(document.querySelector('#q_text'), {
-      toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
+      plugins: loadedPlugins, // Gunakan array class, BUKAN array string
+      toolbar: {
+        items: [
+          'heading', '|', 
+          'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+          'MathType', 'ChemType', '|', 
+          'blockQuote', 'insertTable', 'undo', 'redo'
+        ],
+        shouldNotGroupWhenFull: true
+      }
     })
     .then(editor => {
       questionEditor = editor;
+    })
+    .catch(error => {
+      console.error('Error saat memuat CKEditor:', error);
     });
 
   function highlightChoice(index) {
-    // Hapus class active dari semua card pilihan
     document.querySelectorAll('.option-item').forEach(card => card.classList.remove('active-choice'));
-    // Tambahkan ke yang dipilih
     document.getElementById(`card_opt_${index}`).classList.add('active-choice');
   }
 
@@ -284,8 +307,6 @@
     el.classList.toggle('arabic-input');
   }
 
-  // Initialize highlight for the default checked radio
   highlightChoice(0);
-
 </script>
 @endpush
