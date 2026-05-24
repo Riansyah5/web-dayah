@@ -128,7 +128,20 @@ class PegawaiController extends Controller
             $validatedData['no_hp'] = $phone;
         }
 
+        $oldName = $pegawai->nama;
+        $newName = $validatedData['nama'];
+
         $pegawai->update($validatedData);
+
+        // Sinkronisasi perubahan nama ke tabel users dan teachers
+        if ($oldName !== $newName) {
+            \App\Models\Teacher::where('name', $oldName)->update(['name' => $newName]);
+            
+            if ($pegawai->user) {
+                $pegawai->user->update(['name' => $newName]);
+            }
+        }
+
         return redirect()->route('pegawai.show', $pegawai)->with('success', 'Data pegawai berhasil diperbarui.');
     }
 
@@ -137,13 +150,19 @@ class PegawaiController extends Controller
      */
     public function destroy(Pegawai $pegawai)
     {
-        // Hapus akun user yang terkait jika ada
-        if ($pegawai->user) {
-            $pegawai->user->delete();
-        }
+        \Illuminate\Support\Facades\DB::transaction(function () use ($pegawai) {
+            // Hapus akun user yang terkait jika ada
+            if ($pegawai->user) {
+                $pegawai->user->delete();
+            }
 
-        $pegawai->delete();
-        return redirect()->route('pegawai.index')->with('success', 'Data pegawai dan akun terkait berhasil dihapus.');
+            // Hapus data guru yang namanya sama dengan nama pegawai
+            \App\Models\Teacher::where('name', $pegawai->nama)->delete();
+
+            $pegawai->delete();
+        });
+
+        return redirect()->route('pegawai.index')->with('success', 'Data pegawai, guru, dan akun terkait berhasil dihapus.');
     }
 
     /**

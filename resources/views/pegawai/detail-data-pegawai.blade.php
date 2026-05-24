@@ -277,14 +277,15 @@
 @if (session('success'))
 <script>
   Swal.fire({
-    icon: 'success'
-    , title: 'Berhasil!'
-    , text: '{{ session('
-    success ') }}'
-    , timer: 1800
-    , timerProgressBar: true
-    , showConfirmButton: false
-  });
+    toast: true,
+    position: 'top',
+    icon: 'success',
+    title: 'Berhasil!',
+    text: "{{ session('success') }}",
+    timer: 1800,
+    timerProgressBar: true,
+    showConfirmButton: false
+});
 
 </script>
 @endif
