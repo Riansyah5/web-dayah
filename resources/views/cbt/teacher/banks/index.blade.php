@@ -90,7 +90,7 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="row align-items-center mb-5 animate__animated animate__fadeIn">
+    <div class="row align-items-center mb-4 animate__animated animate__fadeIn">
         <div class="col-md-7">
             <div class="d-flex align-items-center">
                 <div class="header-icon-box me-3">
@@ -106,6 +106,42 @@
             <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#createBankModal">
                 <i class="bi bi-plus-lg me-2"></i>Tambah Bank Soal
             </button>
+        </div>
+    </div>
+    
+        <div class="row g-4 mb-5 animate__animated animate__fadeIn">
+        <div class="col-md-4">
+            <div class="glass-card p-3 border-0 shadow-sm d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-center rounded-4 bg-primary bg-opacity-10 text-primary me-3" style="width: 54px; height: 54px;">
+                    <i class="bi bi-collection fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bolder mb-0 text-dark">{{ $banks->count() }}</h3>
+                    <p class="text-muted small mb-0 fw-bold text-uppercase">Total Bank Soal</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-3 border-0 shadow-sm d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-center rounded-4 bg-success bg-opacity-10 text-success me-3" style="width: 54px; height: 54px;">
+                    <i class="bi bi-check-circle fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bolder mb-0 text-dark">{{ $banks->where('is_active', true)->count() }}</h3>
+                    <p class="text-muted small mb-0 fw-bold text-uppercase">Status Aktif</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-3 border-0 shadow-sm d-flex align-items-center">
+                <div class="d-flex align-items-center justify-content-center rounded-4 bg-warning bg-opacity-10 text-warning me-3" style="width: 54px; height: 54px;">
+                    <i class="bi bi-pencil-square fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bolder mb-0 text-dark">{{ $banks->where('is_active', false)->count() }}</h3>
+                    <p class="text-muted small mb-0 fw-bold text-uppercase">Status Draft</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -131,12 +167,19 @@
                     </div>
                     
                     <h5 class="fw-extra-bold text-dark mb-2" style="letter-spacing: -0.5px;">{{ $bank->subject_name }}</h5>
-                    <div class="d-flex align-items-center text-muted small mb-4">
+                    <div class="d-flex align-items-center text-muted small">
                         <div class="bg-light rounded-circle p-1 me-2 d-flex">
                             <i class="bi bi-mortarboard-fill text-secondary"></i>
                         </div>
                         Tingkat: <span class="fw-bold ms-1 text-dark">{{ $bank->level }}</span>
                     </div>
+
+                    <div class="d-flex align-items-center text-muted small mb-2">
+                        <div class="bg-light rounded-circle p-1 me-2 d-flex">
+                            <i class="bi bi-person-fill text-secondary"></i>
+                        </div>
+                        Guru: <span class="fw-bold ms-1 text-dark">{{ $bank->teacher->name ?? Auth::user()->name }}</span>
+                    </div> 
 
                     <div class="stats-pill d-flex align-items-center justify-content-between text-primary">
                         <div class="d-flex align-items-center">
