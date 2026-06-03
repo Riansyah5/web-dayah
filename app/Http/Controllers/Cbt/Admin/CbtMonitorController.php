@@ -20,10 +20,8 @@ class CbtMonitorController extends Controller
     // 2. API Endpoint: Menyuplai Data JSON ke Halaman Monitoring
     public function apiData(CbtExam $exam)
     {
-        // Mulai hitung waktu eksekusi server (untuk Indikator Latency)
         $startTime = microtime(true);
 
-        // Ambil semua santri yang sudah masuk ke ujian ini
         $studentExams = CbtStudentExam::with(['cbtAccount.student', 'answers'])
             ->where('cbt_exam_id', $exam->id)
             ->get();
@@ -39,7 +37,6 @@ class CbtMonitorController extends Controller
         $now = Carbon::now();
 
         foreach ($studentExams as $se) {
-            // Hitung Progress (Berapa soal yang sudah dijawab)
             $answeredCount = $se->answers->whereNotNull('cbt_option_id')->count() + $se->answers->whereNotNull('essay_answer')->count();
             $totalQuestions = $se->answers->count();
             $progress = $totalQuestions > 0 ? round(($answeredCount / $totalQuestions) * 100) : 0;
@@ -48,13 +45,19 @@ class CbtMonitorController extends Controller
             $statusText = 'Mengerjakan';
             $statusColor = 'primary';
 
+            // --- PERBAIKAN LOGIKA OFFLINE UNTUK MONITORING ---
+            $lastActive = $se->last_active_at ? Carbon::parse($se->last_active_at) : Carbon::parse($se->started_at);
+            
+            // Gunakan abs() persis seperti di ExamEngineController
+            $offlineSeconds = abs((int) $now->diffInSeconds($lastActive));
+
             if ($se->status == 'finished') {
                 $stats['finished']++;
                 $statusText = 'Selesai';
                 $statusColor = 'success';
             } else {
-                // Deteksi Jaringan: Jika last_active_at lebih dari 2 menit (120 detik) yang lalu
-                if ($se->last_active_at && $now->diffInSeconds($se->last_active_at) > 120) {
+                // Samakan threshold dengan engine siswa (60 detik)
+                if ($offlineSeconds > 60) {
                     $isOffline = true;
                     $stats['offline']++;
                     $statusText = 'Koneksi Terputus';
@@ -77,13 +80,13 @@ class CbtMonitorController extends Controller
                 'progress' => $progress,
                 'answered' => $answeredCount,
                 'total_q' => $totalQuestions,
-                'last_active' => $se->last_active_at ? $se->last_active_at->diffForHumans() : 'Belum sinkron'
+                // Tampilkan pesan yang lebih akurat jika offline
+                'last_active' => $isOffline ? 'Offline sejak ' . floor($offlineSeconds / 60) . ' mnt lalu' : 'Baru saja'
             ];
         }
 
-        // Kalkulasi Beban Server
-        $latency = round((microtime(true) - $startTime) * 1000); // Milidetik
-        $memory = round(memory_get_usage() / 1024 / 1024, 2); // Megabyte
+        $latency = round((microtime(true) - $startTime) * 1000); 
+        $memory = round(memory_get_usage() / 1024 / 1024, 2); 
 
         return response()->json([
             'stats' => $stats,

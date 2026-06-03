@@ -8,6 +8,7 @@ use App\Models\CbtExam;
 use App\Models\CbtStudentExam;
 use App\Models\CbtStudentAnswer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ExamEngineController extends Controller
@@ -17,15 +18,13 @@ class ExamEngineController extends Controller
     {
         $now = Carbon::now();
         $accountId = Auth::guard('cbt')->user()->id;
-        $student = Auth::guard('cbt')->user()->student; // Mengambil data relasi siswa asli
+        $student = Auth::guard('cbt')->user()->student;
 
-        // Cari ujian yang sedang aktif saat ini
         $availableExams = CbtExam::where('is_active', true)
                             ->where('start_time', '<=', $now)
                             ->where('end_time', '>=', $now)
                             ->get();
 
-        // Cari ujian yang sudah/sedang dikerjakan santri ini
         $myExams = CbtStudentExam::where('cbt_account_id', $accountId)->get()->keyBy('cbt_exam_id');
 
         return view('cbt.student.dashboard', compact('availableExams', 'myExams', 'student'));
@@ -42,12 +41,10 @@ class ExamEngineController extends Controller
 
         $accountId = Auth::guard('cbt')->user()->id;
 
-        // Cek apakah sudah pernah klik mulai sebelumnya
         $studentExam = CbtStudentExam::where('cbt_account_id', $accountId)
                                      ->where('cbt_exam_id', $exam->id)
                                      ->first();
 
-        // Jika Belum Pernah Sama Sekali -> Inisialisasi Soal
         if (!$studentExam) {
             $studentExam = CbtStudentExam::create([
                 'cbt_account_id' => $accountId,
@@ -56,15 +53,9 @@ class ExamEngineController extends Controller
                 'status' => 'working'
             ]);
 
-            // Ambil pertanyaan dari bank soal
             $questions = $exam->questionBank->questions;
-            
-            // Acak urutan jika diset di pengaturan
-            if ($exam->randomize_questions) {
-                $questions = $questions->shuffle();
-            }
+            if ($exam->randomize_questions) $questions = $questions->shuffle();
 
-            // Simpan ke lembar jawaban (Kosong)
             $order = 1;
             foreach ($questions as $q) {
                 CbtStudentAnswer::create([
@@ -83,45 +74,56 @@ class ExamEngineController extends Controller
     {
         $studentExam = CbtStudentExam::with(['exam.questionBank', 'answers.question.options'])->findOrFail($studentExamId);
         
-        // Keamanan: Pastikan ini milik dia
         if ($studentExam->cbt_account_id !== Auth::guard('cbt')->user()->id) {
             abort(403);
         }
 
-        // Redirect jika sudah selesai
         if ($studentExam->status == 'finished') {
             return redirect()->route('cbt.dashboard')->with('success', 'Anda sudah menyelesaikan ujian ini.');
         }
 
-        // Kalkulasi Sisa Waktu (Durasi habis atau Waktu End_time habis, ambil yang paling cepat)
-        $timeLimitByDuration = $studentExam->started_at->copy()->addMinutes($studentExam->exam->duration);
+        $now = Carbon::now();
+        $lastActive = $studentExam->last_active_at ? Carbon::parse($studentExam->last_active_at) : Carbon::parse($studentExam->started_at);
+        
+        // Memaksa hasil selisih waktu menjadi Integer Positif Mutlak
+        $offlineSeconds = abs((int) $now->diffInSeconds($lastActive));
+
+        // ==== OPSI NUKLIR: BYPASS ELOQUENT ====
+        if ($offlineSeconds > 60) {
+            $newStartedAt = Carbon::parse($studentExam->started_at)->addSeconds($offlineSeconds);
+            
+            DB::table('cbt_student_exams')->where('id', $studentExam->id)->update([
+                'started_at' => $newStartedAt->format('Y-m-d H:i:s'),
+                'last_active_at' => $now->format('Y-m-d H:i:s')
+            ]);
+            
+            $studentExam = $studentExam->fresh(); 
+        } else {
+            DB::table('cbt_student_exams')->where('id', $studentExam->id)->update([
+                'last_active_at' => $now->format('Y-m-d H:i:s')
+            ]);
+        }
+
+        $timeLimitByDuration = Carbon::parse($studentExam->started_at)->addMinutes($studentExam->exam->duration);
         $timeLimitBySchedule = Carbon::parse($studentExam->exam->end_time);
         
         $deadline = $timeLimitByDuration->lessThan($timeLimitBySchedule) ? $timeLimitByDuration : $timeLimitBySchedule;
-        
-        $now = Carbon::now();
         $remainingSeconds = $now->diffInSeconds($deadline, false);
 
-        // Jika waktu habis, paksa selesai
-        if ($remainingSeconds <= 0) {
-            return $this->finishExam($studentExam->id);
-        }
+        if ($remainingSeconds <= 0) return $this->finishExam($studentExam->id);
 
-        // Pagination Manual (1 Soal per Halaman)
         $page = $request->query('no', 1);
         $totalQuestions = $studentExam->answers->count();
         $currentAnswer = $studentExam->answers->where('question_order', $page)->first();
 
-        // Jika opsi harus diacak (A,B,C,D nya diputar)
         if ($currentAnswer && $currentAnswer->question->type == 'multiple_choice' && $studentExam->exam->randomize_options) {
-            // Kita shuffle options-nya di level collection, tidak merubah database opsi asli
             $currentAnswer->question->setRelation('options', $currentAnswer->question->options->shuffle());
         }
 
         return view('cbt.student.engine', compact('studentExam', 'currentAnswer', 'totalQuestions', 'page', 'remainingSeconds'));
     }
 
-    // [UPDATE] Pastikan autosave juga memperbarui last_active_at
+    // 4. AUTOSAVE SAAT SISWA MEMILIH JAWABAN
     public function autosave(Request $request, $answerId)
     {
         $answer = CbtStudentAnswer::findOrFail($answerId);
@@ -129,15 +131,28 @@ class ExamEngineController extends Controller
 
         if ($exam->status == 'finished') return response()->json(['status' => 'error', 'msg' => 'Ujian telah ditutup']);
 
-        if ($request->has('option_id')) {
-            $answer->cbt_option_id = $request->option_id;
-        } elseif ($request->has('essay_text')) {
-            $answer->essay_answer = $request->essay_text;
-        }
-        $answer->save();
+        $now = Carbon::now();
+        $lastActive = $exam->last_active_at ? Carbon::parse($exam->last_active_at) : Carbon::parse($exam->started_at);
+        
+        // Memaksa hasil selisih waktu menjadi Integer Positif Mutlak
+        $offlineSeconds = abs((int) $now->diffInSeconds($lastActive));
 
-        // Update detak jantung karena santri beraktivitas
-        $exam->update(['last_active_at' => Carbon::now()]);
+        // ==== OPSI NUKLIR: BYPASS ELOQUENT ====
+        if ($offlineSeconds > 60) {
+            $newStartedAt = Carbon::parse($exam->started_at)->addSeconds($offlineSeconds);
+            DB::table('cbt_student_exams')->where('id', $exam->id)->update([
+                'started_at' => $newStartedAt->format('Y-m-d H:i:s'),
+                'last_active_at' => $now->format('Y-m-d H:i:s')
+            ]);
+        } else {
+            DB::table('cbt_student_exams')->where('id', $exam->id)->update([
+                'last_active_at' => $now->format('Y-m-d H:i:s')
+            ]);
+        }
+
+        if ($request->has('option_id')) $answer->cbt_option_id = $request->option_id;
+        elseif ($request->has('essay_text')) $answer->essay_answer = $request->essay_text;
+        $answer->save();
 
         return response()->json(['status' => 'success']);
     }
@@ -146,16 +161,11 @@ class ExamEngineController extends Controller
     public function finishExam($studentExamId)
     {
         $studentExam = CbtStudentExam::with('answers.question')->findOrFail($studentExamId);
-        
-        // Cek Pilihan Ganda dan Hitung Skor (Essay butuh guru)
-        $totalScore = 0;
-        $maxScore = 0;
+        $totalScore = 0; $maxScore = 0;
 
         foreach ($studentExam->answers as $ans) {
             $maxScore += $ans->question->score_weight;
-
             if ($ans->question->type == 'multiple_choice' && $ans->cbt_option_id) {
-                // Cari opsi yang dipilih
                 $option = \App\Models\CbtOption::find($ans->cbt_option_id);
                 if ($option && $option->is_correct) {
                     $ans->update(['is_correct' => true]);
@@ -166,9 +176,7 @@ class ExamEngineController extends Controller
             }
         }
 
-        // Hitung Nilai Akhir (Skala 100) -> Khusus PG. Jika ada essay, ini nilai sementara.
         $finalScore = ($maxScore > 0) ? ($totalScore / $maxScore) * 100 : 0;
-
         $studentExam->update([
             'status' => 'finished',
             'finished_at' => Carbon::now(),
@@ -178,28 +186,47 @@ class ExamEngineController extends Controller
         return redirect()->route('cbt.dashboard')->with('success', 'Alhamdulillah, ujian telah selesai dan jawaban Anda berhasil dikirim.');
     }
 
-    // [BARU] Menerima sinyal detak jantung dari browser santri
+    // 6. HEARTBEAT DARI BROWSER SANTRI
     public function heartbeat($studentExamId)
     {
-        $studentExam = CbtStudentExam::find($studentExamId);
-        if ($studentExam && $studentExam->status == 'working') {
-            
-            // Simpan pesan jika ada
-            $message = $studentExam->warning_message;
-            
-            // Jika ada pesan, segera hapus dari database agar tidak terbaca 2x
-            if ($message) {
-                $studentExam->warning_message = null;
-            }
-            
-            // Update waktu aktif
-            $studentExam->last_active_at = Carbon::now();
-            $studentExam->save();
+        $studentExam = CbtStudentExam::with('exam')
+            ->where('id', $studentExamId)
+            ->where('cbt_account_id', Auth::guard('cbt')->user()->id)
+            ->first();
 
-            return response()->json([
-                'status' => 'alive',
-                'warning_message' => $message // Kirim pesan ke browser santri
-            ]);
+        if ($studentExam && $studentExam->status == 'working') {
+            $message = $studentExam->warning_message;
+            if ($message) DB::table('cbt_student_exams')->where('id', $studentExamId)->update(['warning_message' => null]);
+
+            $now = Carbon::now();
+            $lastActive = $studentExam->last_active_at ? Carbon::parse($studentExam->last_active_at) : Carbon::parse($studentExam->started_at);
+            
+            // Memaksa hasil selisih waktu menjadi Integer Positif Mutlak
+            $offlineSeconds = abs((int) $now->diffInSeconds($lastActive));
+
+            // ==== OPSI NUKLIR: BYPASS ELOQUENT ====
+            if ($offlineSeconds > 60) {
+                $newStartedAt = Carbon::parse($studentExam->started_at)->addSeconds($offlineSeconds);
+                DB::table('cbt_student_exams')->where('id', $studentExam->id)->update([
+                    'started_at' => $newStartedAt->format('Y-m-d H:i:s'),
+                    'last_active_at' => $now->format('Y-m-d H:i:s')
+                ]);
+                $studentExam = $studentExam->fresh();
+            } else {
+                DB::table('cbt_student_exams')->where('id', $studentExam->id)->update([
+                    'last_active_at' => $now->format('Y-m-d H:i:s')
+                ]);
+            }
+
+            $timeLimitByDuration = Carbon::parse($studentExam->started_at)->addMinutes($studentExam->exam->duration);
+            $timeLimitBySchedule = Carbon::parse($studentExam->exam->end_time);
+            $deadline = $timeLimitByDuration->lessThan($timeLimitBySchedule) ? $timeLimitByDuration : $timeLimitBySchedule;
+
+            if ($now->greaterThanOrEqualTo($deadline)) {
+                return response()->json(['status' => 'dead_or_finished', 'msg' => 'Waktu ujian telah habis']);
+            }
+
+            return response()->json(['status' => 'alive', 'warning_message' => $message]);
         }
         return response()->json(['status' => 'dead_or_finished']);
     }
