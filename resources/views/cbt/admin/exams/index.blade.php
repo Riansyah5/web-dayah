@@ -210,6 +210,19 @@
                                 <a href="{{ route('admin.cbt.exams.monitor', $exam->id) }}" class="btn btn-sm btn-white border shadow-sm px-3 rounded-3 fw-bold text-primary" target="_blank">
                                     <i class="bi bi-activity me-1"></i> Monitor
                                 </a>
+                                <button type="button" class="btn btn-sm btn-outline-primary border-0 rounded-3 shadow-sm"
+                                    onclick="openEditModal(this)"
+                                    data-id="{{ $exam->id }}"
+                                    data-name="{{ $exam->name }}"
+                                    data-bank="{{ $exam->cbt_question_bank_id }}"
+                                    data-start="{{ \Carbon\Carbon::parse($exam->start_time)->format('Y-m-d\TH:i') }}"
+                                    data-end="{{ \Carbon\Carbon::parse($exam->end_time)->format('Y-m-d\TH:i') }}"
+                                    data-duration="{{ $exam->duration }}"
+                                    data-rand-q="{{ $exam->randomize_questions }}"
+                                    data-rand-o="{{ $exam->randomize_options }}"
+                                    data-show-res="{{ $exam->show_result }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
                                 <form action="{{ route('admin.cbt.exams.destroy', $exam->id) }}" method="POST">
                                     @csrf @method('DELETE')
                                     <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-3" onclick="confirmDelete(this.closest('form'))">
@@ -229,6 +242,74 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Ujian -->
+<div class="modal fade" id="editExamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light">
+                <h5 class="modal-title fw-bold text-dark">
+                    <i class="bi bi-pencil-square text-primary me-2"></i>Edit Jadwal Ujian
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editExamForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Nama Ujian</label>
+                            <input type="text" name="name" id="edit_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Bank Soal</label>
+                            <select name="cbt_question_bank_id" id="edit_bank" class="form-select" required>
+                                @foreach($banks as $bank)
+                                    <option value="{{ $bank->id }}">
+                                        {{ $bank->subject_name }} ({{ $bank->level }}) - {{ $bank->questions_count }} Soal
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Waktu Mulai</label>
+                            <input type="datetime-local" name="start_time" id="edit_start" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Waktu Selesai</label>
+                            <input type="datetime-local" name="end_time" id="edit_end" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Durasi (Menit)</label>
+                            <input type="number" name="duration" id="edit_duration" class="form-control" min="10" required>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="d-flex flex-wrap gap-3 p-3 rounded-3 bg-light bg-opacity-50 border">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="randomize_questions" id="edit_rand_q">
+                                    <label class="form-check-label small" for="edit_rand_q">Acak Soal</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="randomize_options" id="edit_rand_o">
+                                    <label class="form-check-label small" for="edit_rand_o">Acak Opsi</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="show_result" id="edit_show_res">
+                                    <label class="form-check-label small" for="edit_show_res">Tampilkan Nilai</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-light">
+                    <button type="button" class="btn btn-light shadow-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -305,5 +386,33 @@
             confirmButtonText: 'Hapus Sekarang'
         }).then((result) => { if (result.isConfirmed) form.submit(); });
     }
+
+    // Script untuk Modal Edit Ujian
+    function openEditModal(button) {
+        // Ambil data dari atribut tombol
+        const id = button.getAttribute('data-id');
+        
+        // Update form action URL
+        const form = document.getElementById('editExamForm');
+        form.action = `/admin/cbt/exams/${id}`; // Sesuaikan dengan prefix route kamu
+        
+        // Isi input fields
+        document.getElementById('edit_name').value = button.getAttribute('data-name');
+        document.getElementById('edit_bank').value = button.getAttribute('data-bank');
+        document.getElementById('edit_start').value = button.getAttribute('data-start');
+        document.getElementById('edit_end').value = button.getAttribute('data-end');
+        document.getElementById('edit_duration').value = button.getAttribute('data-duration');
+        
+        // Isi checkboxes
+        document.getElementById('edit_rand_q').checked = button.getAttribute('data-rand-q') == '1';
+        document.getElementById('edit_rand_o').checked = button.getAttribute('data-rand-o') == '1';
+        document.getElementById('edit_show_res').checked = button.getAttribute('data-show-res') == '1';
+        
+        // Tampilkan Modal (menggunakan Bootstrap 5 API)
+        var editModal = new bootstrap.Modal(document.getElementById('editExamModal'));
+        editModal.show();
+    }
 </script>
+
+
 @endpush
