@@ -388,6 +388,7 @@ Route::middleware('auth')->group(function () {
       Route::post('/exams', [CbtExamController::class, 'store'])->name('exams.store');
       // Tambahkan route ini untuk update
       Route::put('/exams/{exam}', [CbtExamController::class, 'update'])->name('exams.update');
+      Route::post('/exams/{exam}/toggle-pause', [CbtExamController::class, 'togglePause'])->name('exams.toggle_pause');
       Route::post('/exams/{exam}/refresh-token', [CbtExamController::class, 'refreshToken'])->name('exams.refresh_token');
       Route::delete('/exams/{exam}', [CbtExamController::class, 'destroy'])->name('exams.destroy');
     });

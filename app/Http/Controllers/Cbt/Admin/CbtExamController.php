@@ -88,6 +88,17 @@ class CbtExamController extends Controller
         return back()->with('success', 'Token Ujian berhasil diperbarui!');
     }
 
+    public function togglePause(CbtExam $exam)
+    {
+        // Balikkan nilai boolean-nya (Toggle)
+        $exam->update([
+            'is_paused' => !$exam->is_paused
+        ]);
+
+        $statusMessage = $exam->is_paused ? 'di-jeda (pause)' : 'dilanjutkan (resume)';
+        return back()->with('success', "Ujian berhasil $statusMessage.");
+    }
+
     public function destroy(CbtExam $exam)
     {
         $exam->delete();

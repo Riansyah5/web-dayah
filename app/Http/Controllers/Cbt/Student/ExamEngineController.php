@@ -20,7 +20,9 @@ class ExamEngineController extends Controller
         $accountId = Auth::guard('cbt')->user()->id;
         $student = Auth::guard('cbt')->user()->student;
 
+        // TAMBAHKAN FILTER: where('is_paused', false)
         $availableExams = CbtExam::where('is_active', true)
+                            ->where('is_paused', false) 
                             ->where('start_time', '<=', $now)
                             ->where('end_time', '>=', $now)
                             ->get();
@@ -33,6 +35,17 @@ class ExamEngineController extends Controller
     // 2. VERIFIKASI TOKEN & MULAI UJIAN
     public function startExam(Request $request, CbtExam $exam)
     {
+        // CEK APAKAH UJIAN DI-PAUSE
+        if ($exam->is_paused) {
+            return back()->with('error', 'Ujian sedang di-jeda (pause) oleh pengawas.');
+        }
+
+        $request->validate(['token' => 'required|string']);
+
+        if (strtoupper($request->token) !== $exam->token) {
+            return back()->with('error', 'Token Ujian tidak valid atau sudah diganti pengawas.');
+        }
+
         $request->validate(['token' => 'required|string']);
 
         if (strtoupper($request->token) !== $exam->token) {
@@ -80,6 +93,11 @@ class ExamEngineController extends Controller
 
         if ($studentExam->status == 'finished') {
             return redirect()->route('cbt.dashboard')->with('success', 'Anda sudah menyelesaikan ujian ini.');
+        }
+
+        // CEK JIKA UJIAN DI-PAUSE SAAT SISWA SEDANG MENGERJAKAN ATAU REFRESH HALAMAN
+        if ($studentExam->exam->is_paused) {
+            return redirect()->route('cbt.dashboard')->with('error', 'Ujian sedang di-jeda (pause) oleh Pengawas. Silakan tunggu instruksi selanjutnya.');
         }
 
         $now = Carbon::now();

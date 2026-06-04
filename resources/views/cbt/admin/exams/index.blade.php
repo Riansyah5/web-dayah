@@ -174,10 +174,19 @@
                             </div>
                         </td>
                         <td>
-                            <div class="small fw-bold text-dark mb-1">{{ $exam->start_time->translatedFormat('d M Y') }}</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">
-                                {{ $exam->start_time->format('H:i') }} - {{ $exam->end_time->format('H:i') }} ({{ $exam->duration }}m)
-                            </div>
+                            @if($exam->start_time->isSameDay($exam->end_time))
+                                <div class="small fw-bold text-dark mb-1">{{ $exam->start_time->translatedFormat('d M Y') }}</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">
+                                    {{ $exam->start_time->format('H:i') }} - {{ $exam->end_time->format('H:i') }} ({{ $exam->duration }}m)
+                                </div>
+                            @else
+                                <div class="small fw-bold text-dark mb-1">
+                                    {{ $exam->start_time->translatedFormat('d M Y') }} <span class="text-muted fw-normal mx-1">-</span> {{ $exam->end_time->translatedFormat('d M Y') }}
+                                </div>
+                                <div class="text-muted" style="font-size: 0.75rem;">
+                                    {{ $exam->start_time->format('H:i') }} - {{ $exam->end_time->format('H:i') }} ({{ $exam->duration }}m)
+                                </div>
+                            @endif
                         </td>
                         <td class="text-center">
                             @if($isFinished)
@@ -197,6 +206,10 @@
                         <td>
                             @if($isFinished)
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill border">Selesai</span>
+                            @elseif($exam->is_paused)
+                                <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm">
+                                    <i class="bi bi-pause-circle me-1"></i> Paused
+                                </span>
                             @elseif($isOngoing)
                                 <span class="badge bg-success px-3 py-2 rounded-pill animate-pulse-live shadow-sm">
                                     <i class="bi bi-record-fill me-1"></i> Running
@@ -207,9 +220,11 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2">
+                                {{-- Monitor Button --}}
                                 <a href="{{ route('admin.cbt.exams.monitor', $exam->id) }}" class="btn btn-sm btn-white border shadow-sm px-3 rounded-3 fw-bold text-primary" target="_blank">
                                     <i class="bi bi-activity me-1"></i> Monitor
                                 </a>
+                                {{-- Edit Button dengan data attributes untuk modal --}}
                                 <button type="button" class="btn btn-sm btn-outline-primary border-0 rounded-3 shadow-sm"
                                     onclick="openEditModal(this)"
                                     data-id="{{ $exam->id }}"
@@ -223,6 +238,20 @@
                                     data-show-res="{{ $exam->show_result }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
+                                {{-- Toggle Pause Button --}}
+                                @if(!$isFinished)
+                                <form action="{{ route('admin.cbt.exams.toggle_pause', $exam->id) }}" method="POST">
+                                    @csrf
+                                    <button type="button" 
+                                            class="btn btn-sm border-0 rounded-3 shadow-sm {{ $exam->is_paused ? 'btn-outline-success' : 'btn-outline-warning' }}" 
+                                            onclick="confirmPause(this.closest('form'), {{ $exam->is_paused ? 'true' : 'false' }})"
+                                            data-bs-toggle="tooltip" 
+                                            title="{{ $exam->is_paused ? 'Lanjutkan Ujian' : 'Jeda Ujian' }}">
+                                        <i class="bi {{ $exam->is_paused ? 'bi-play-fill' : 'bi-pause-fill' }} fs-6"></i>
+                                    </button>
+                                </form>
+                                @endif
+                                {{-- Delete Button --}}
                                 <form action="{{ route('admin.cbt.exams.destroy', $exam->id) }}" method="POST">
                                     @csrf @method('DELETE')
                                     <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-3" onclick="confirmDelete(this.closest('form'))">
@@ -411,6 +440,29 @@
         // Tampilkan Modal (menggunakan Bootstrap 5 API)
         var editModal = new bootstrap.Modal(document.getElementById('editExamModal'));
         editModal.show();
+    }
+
+    // Function to confirm pause/unpause action
+    function confirmPause(form, isPaused) {
+        const titleText = isPaused ? 'Lanjutkan Ujian?' : 'Jeda (Pause) Ujian?';
+        const descText = isPaused 
+            ? "Siswa akan bisa melihat dan mengerjakan ujian ini kembali." 
+            : "Siswa yang sedang mengerjakan akan terhenti, dan ujian akan disembunyikan dari dashboard siswa.";
+        const confirmBtnColor = isPaused ? '#198754' : '#ffc107';
+        const confirmBtnText = isPaused ? 'Ya, Lanjutkan!' : 'Ya, Jeda Ujian!';
+
+        Swal.fire({
+            ...swalConfig,
+            title: titleText,
+            text: descText,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: confirmBtnColor,
+            confirmButtonText: confirmBtnText,
+            cancelButtonText: 'Batal'
+        }).then((result) => { 
+            if (result.isConfirmed) form.submit(); 
+        });
     }
 </script>
 

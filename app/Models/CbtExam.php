@@ -15,6 +15,7 @@ class CbtExam extends Model
         'randomize_options' => 'boolean',
         'show_result' => 'boolean',
         'is_active' => 'boolean',
+        'is_paused' => 'boolean',
     ];
 
     public function questionBank()
