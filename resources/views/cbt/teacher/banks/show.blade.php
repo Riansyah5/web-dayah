@@ -116,7 +116,7 @@
 @section('content')
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-3 animate__animated animate__fadeIn">
-        <a href="{{ route('teacher.cbt.banks.index') }}" class="btn btn-white shadow-sm border rounded-pill px-4 fw-bold">
+        <a href="{{ route('teacher.cbt.banks.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-4 fw-bold">
             <i class="bi bi-chevron-left me-2"></i>Daftar Bank
         </a>
         <div class="d-flex gap-2">

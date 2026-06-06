@@ -297,9 +297,9 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold small">Bank Soal</label>
                             <select name="cbt_question_bank_id" id="edit_bank" class="form-select" required>
-                                @foreach($banks as $bank)
+                                @foreach($banks->sortBy('subject_name') as $bank)
                                     <option value="{{ $bank->id }}">
-                                        {{ $bank->subject_name }} ({{ $bank->level }}) - {{ $bank->questions_count }} Soal
+                                        [{{ $bank->bank_code }}] {{ $bank->subject_name }} ({{ $bank->level }}) - {{ $bank->questions_count }} Soal
                                     </option>
                                 @endforeach
                             </select>

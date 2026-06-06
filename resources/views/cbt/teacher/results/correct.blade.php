@@ -91,7 +91,7 @@
                 Ujian: <strong class="text-dark">{{ $studentExam->exam->name }}</strong>
             </div>
         </div>
-        <a href="{{ route('teacher.cbt.results.show', $studentExam->exam->id) }}" class="btn btn-sm btn-white border shadow-sm rounded-pill px-3 fw-medium">
+        <a href="{{ route('teacher.cbt.results.show', $studentExam->exam->id) }}" class="btn btn-sm btn-outline-secondary border-2 shadow-sm rounded-pill px-3 fw-medium">
             <i class="bi bi-arrow-left me-1"></i> Kembali
         </a>
     </div>

@@ -117,6 +117,14 @@
       user-select: none;
       -moz-user-select: none;
       -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+
+    textarea, input {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
     }
 
     /* === PREMIUM NAVBAR === */
@@ -970,6 +978,27 @@
         .catch(err => console.log('Koneksi internet mungkin terputus.'));
     }, 15000); // 15 Detik
 
+    // --- ANTI-CHEAT: BLOKIR KLIK KANAN, SELEKSI & SHORTCUT ---
+    // 1. Blokir klik kanan secara global (melengkapi oncontextmenu di <body>)
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 2. Blokir drag/seleksi teks (kecuali sedang mengisi essay)
+    document.addEventListener('selectstart', event => {
+      if (event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'INPUT') {
+        event.preventDefault();
+      }
+    });
+
+    // 3. Blokir shortcut copy/paste/inspect element (F12, Ctrl+C, Ctrl+A, dll)
+    document.addEventListener('keydown', function(event) {
+      if (
+        event.key === 'F12' || 
+        (event.ctrlKey && ['u', 'U', 's', 'S', 'p', 'P', 'c', 'C', 'a', 'A'].includes(event.key)) ||
+        (event.ctrlKey && event.shiftKey && ['i', 'I', 'j', 'J', 'c', 'C'].includes(event.key))
+      ) {
+        event.preventDefault();
+      }
+    });
   </script>
 </body>
 </html>

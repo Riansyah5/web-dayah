@@ -89,7 +89,7 @@
             </nav>
             <h2 class="fw-bolder mb-0 text-dark"><i class="bi bi-calendar-plus me-2 text-primary"></i>Buat <span class="text-gradient-primary">Jadwal Ujian</span></h2>
         </div>
-        <a href="{{ route('admin.cbt.exams.index') }}" class="btn btn-white shadow-sm border rounded-pill px-4">
+        <a href="{{ route('admin.cbt.exams.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-4">
             <i class="bi bi-x-lg me-2"></i>Batal
         </a>
     </div>
@@ -109,7 +109,7 @@
                         <label class="form-label fw-bold small"><i class="bi bi-database me-1 text-primary"></i>SUMBER BANK SOAL</label>
                         <select name="cbt_question_bank_id" class="form-select" required>
                             <option value="" selected disabled>-- Pilih Paket Soal --</option>
-                            @foreach($banks as $bank)
+                            @foreach($banks->sortBy('subject_name') as $bank)
                             <option value="{{ $bank->id }}">
                                 [{{ $bank->bank_code }}] {{ $bank->subject_name }} - {{ $bank->level }} ({{ $bank->questions_count }} Soal)
                             </option>
@@ -135,7 +135,7 @@
                         <div class="col-md-4">
                             <label class="form-label fw-bold small">DURASI PENGERJAAN</label>
                             <div class="input-group">
-                                <input type="number" name="duration" class="form-control" value="90" min="1;10" required>
+                                <input type="number" name="duration" class="form-control" value="90" min="10" required oninvalid="this.setCustomValidity('Minimal 10 menit')" oninput="this.setCustomValidity('')">
                                 <span class="input-group-text">Menit</span>
                             </div>
                         </div>

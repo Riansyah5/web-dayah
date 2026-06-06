@@ -75,7 +75,7 @@
             <form action="{{ route('login.process') }}" method="POST">
               @csrf
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="login" name="login" value="{{ old('login') }}" placeholder="Email address / Username" />
+                <input type="text" class="form-control" id="login" name="login" value="{{ old('login') }}" placeholder="Email address / Username" autofocus/>
                 <label for="login">Email address / Username</label>
               </div>
               <div class="form-floating mb-3 position-relative">

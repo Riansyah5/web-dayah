@@ -93,7 +93,7 @@
             <a href="{{ route('teacher.cbt.results.export.pdf', $exam->id) }}" class="btn btn-outline-danger border-2 rounded-pill fw-medium px-4 shadow-sm btn-action">
                 <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF
             </a>
-            <a href="{{ route('teacher.cbt.results.index') }}" class="btn btn-light border rounded-pill fw-medium px-4 shadow-sm btn-action ms-lg-2">
+            <a href="{{ route('teacher.cbt.results.index') }}" class="btn btn-outline-secondary border-2 rounded-pill fw-medium px-4 shadow-sm btn-action ms-lg-2">
                 <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
         </div>
