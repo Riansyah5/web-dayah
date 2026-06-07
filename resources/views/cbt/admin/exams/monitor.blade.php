@@ -182,7 +182,12 @@
     </div>
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 px-2 gap-3">
-        <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-radar me-2 text-primary"></i>Radar Peserta</h5>
+        <div class="d-flex align-items-center gap-3">
+            <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-radar me-2 text-primary"></i>Radar Peserta</h5>
+            <button type="button" class="btn btn-sm btn-warning shadow-sm rounded-pill px-3 fw-bold text-dark" onclick="openBroadcastModal()" title="Kirim pesan ke seluruh peserta yang sedang aktif">
+                <i class="bi bi-megaphone-fill me-1"></i> Tegur Semua
+            </button>
+        </div>
         
         <div class="d-flex flex-column flex-sm-row gap-3 align-items-center">
             <div class="glass-panel d-flex align-items-center rounded-pill px-3 py-1 shadow-sm w-100" style="max-width: 300px;">
@@ -256,6 +261,35 @@
                 <button type="button" class="btn btn-light rounded-pill px-4 shadow-sm border" data-bs-dismiss="modal">Batal</button>
                 <button type="button" class="btn btn-warning rounded-pill fw-bold px-4 shadow-sm text-dark" onclick="submitMessage()">
                     Kirim Pesan <i class="bi bi-send ms-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="broadcastModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-white rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-dark">
+                    <div class="icon-box text-warning d-inline-flex me-2" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                        <i class="bi bi-megaphone-fill"></i>
+                    </div>
+                    Tegur Semua Peserta
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body px-4 pt-3 pb-4">
+                <p class="mb-3 text-dark">Pesan pop-up akan dikirim ke layar <strong>SEMUA</strong> santri yang belum selesai ujian.</p>
+                <textarea id="broadcastContent" class="form-control form-control-lg border shadow-sm bg-light" rows="3" placeholder="Contoh: Waktu ujian tersisa 15 menit, silakan periksa kembali jawaban kalian!" style="resize: none;" required></textarea>
+                <div class="mt-3 text-muted d-flex align-items-center" style="font-size: 0.75rem;">
+                    <i class="bi bi-info-circle me-1 text-primary"></i> *Pesan terkirim maks. dalam 15 detik sesuai siklus koneksi santri.
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                <button type="button" class="btn btn-light rounded-pill px-4 shadow-sm border" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-warning rounded-pill fw-bold px-4 shadow-sm text-dark" onclick="submitBroadcast()">
+                    Kirim ke Semua <i class="bi bi-send ms-1"></i>
                 </button>
             </div>
         </div>
@@ -529,6 +563,41 @@
         }).catch(err => {
             btn.disabled = false;
             btn.innerHTML = 'Kirim Pesan <i class="bi bi-send ms-1"></i>';
+            showToast('Gagal mengirim pesan.', 'danger');
+        });
+    }
+
+    function openBroadcastModal() {
+        document.getElementById('broadcastContent').value = '';
+        new bootstrap.Modal(document.getElementById('broadcastModal')).show();
+    }
+
+    function submitBroadcast() {
+        const message = document.getElementById('broadcastContent').value;
+        const btn = event.target;
+
+        if(message.trim() === '') {
+            Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Pesan tidak boleh kosong!', timer: 2000, showConfirmButton: false });
+            return; 
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengirim...';
+
+        fetch(`/admin/cbt/exams/{{ $exam->id }}/send-message-all`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            bootstrap.Modal.getInstance(document.getElementById('broadcastModal')).hide();
+            showToast(data.msg, 'success');
+            btn.disabled = false;
+            btn.innerHTML = 'Kirim ke Semua <i class="bi bi-send ms-1"></i>';
+        }).catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = 'Kirim ke Semua <i class="bi bi-send ms-1"></i>';
             showToast('Gagal mengirim pesan.', 'danger');
         });
     }
