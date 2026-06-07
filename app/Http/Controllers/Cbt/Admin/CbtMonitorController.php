@@ -166,4 +166,22 @@ class CbtMonitorController extends Controller
             'msg' => 'Pesan berhasil dikirim ke layar santri.'
         ]);
     }
+
+    // 5. Aksi Darurat: Kirim Pesan Teguran Ke Semua Peserta Aktif
+    public function sendMessageAll(Request $request, CbtExam $exam)
+    {
+        $request->validate([
+            'message' => 'required|string|max:500'
+        ]);
+
+        // Kirim pesan hanya ke santri yang sedang mengerjakan ujian (belum selesai)
+        CbtStudentExam::where('cbt_exam_id', $exam->id)
+            ->where('status', '!=', 'finished')
+            ->update(['warning_message' => $request->message]);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => 'Pesan berhasil di-broadcast ke layar seluruh santri.'
+        ]);
+    }
 }

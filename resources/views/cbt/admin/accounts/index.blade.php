@@ -48,22 +48,9 @@
         align-items: center;
         gap: 0.5rem;
     }
-    .search-input {
-        border-radius: 10px 0 0 10px;
-        border-right: none;
-    }
     .search-input:focus {
         box-shadow: none;
         border-color: #ced4da;
-    }
-    .search-btn {
-        border-radius: 0 10px 10px 0;
-        border-left: none;
-        background-color: #fff;
-        border-color: #ced4da;
-    }
-    .search-btn:hover {
-        background-color: #f8f9fa;
     }
 </style>
 @endpush
@@ -166,21 +153,21 @@
         <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
             <h5 class="fw-bold mb-3 mb-md-0 text-dark">Data Akun Ujian Santri</h5>
             
-            <form action="{{ url()->current() }}" method="GET" class="d-flex" style="min-width: 400px;">
+            <form action="{{ url()->current() }}" method="GET" class="d-flex" style="min-width: 400px;" id="searchForm">
                 <div class="input-group">
-                    <select name="status" class="form-select bg-light border-end-0 text-muted" style="max-width: 150px; font-size: 0.9rem;" onchange="this.form.submit()">
+                    <select name="status" id="statusFilter" class="form-select bg-light border-end-0 text-muted" style="max-width: 150px; font-size: 0.9rem;">
                         <option value="">Semua Status</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Akun Aktif</option>
                         <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Non-Aktif</option>
                         <option value="none" {{ request('status') == 'none' ? 'selected' : '' }}>Belum Ada</option>
                     </select>
                     <span class="input-group-text bg-white border-start-0 border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0 search-input" placeholder="Cari nama..." value="{{ request('search') }}">
-                    <button class="btn border search-btn" type="submit">Cari</button>
+                    <input type="text" name="search" id="searchInput" class="form-control border-start-0 ps-0 search-input" placeholder="Cari nama..." value="{{ request('search') }}">
                 </div>
             </form>
         </div>
 
+        <div id="tableDataContainer">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-custom align-middle mb-0">
@@ -198,7 +185,12 @@
                         @forelse($students as $index => $student)
                         <tr>
                             <td class="ps-4 text-muted">{{ $students->firstItem() + $index }}</td>
-                            <td class="fw-bold text-dark">{{ $student->name }}</td>
+                            <td class="fw-bold text-dark">
+                                {{ $student->name }}
+                                <div class="small text-muted fw-normal mt-1">
+                                    <i class="bi bi-building me-1 opacity-75"></i> {{ $student->classrooms->last()->name ?? 'Tanpa Kelas' }}
+                                </div>
+                            </td>
 
                             @if($student->cbtAccount)
                             <td>
@@ -261,6 +253,7 @@
         <div class="card-footer bg-white border-top-0 py-3 px-4">
             {{ $students->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -272,10 +265,118 @@
   document.addEventListener('DOMContentLoaded', function() {
     
     // Inisialisasi Tooltips Bootstrap (opsional jika Anda pakai Bootstrap JS)
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
+    function initTooltips() {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+    }
+    initTooltips();
+
+    // Fitur Live Search & Filter
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    let searchTimeout;
+
+    function fetchTableData(url) {
+      const container = document.getElementById('tableDataContainer');
+      container.style.opacity = '0.5'; // Visual feedback loading
+      
+      fetch(url, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'text/html'
+        }
+      })
+      .then(response => response.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContainer = doc.getElementById('tableDataContainer');
+        
+        if (newContainer) {
+          container.innerHTML = newContainer.innerHTML;
+          initTooltips(); // Re-init tooltips after DOM update
+          // Update URL in browser history
+          window.history.pushState({}, '', url);
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error))
+      .finally(() => {
+        container.style.opacity = '1';
+      });
+    }
+
+    function handleFilterChange() {
+      const url = new URL(searchForm.action);
+      if (searchInput.value) url.searchParams.set('search', searchInput.value);
+      if (statusFilter.value) url.searchParams.set('status', statusFilter.value);
+      
+      fetchTableData(url.toString());
+    }
+
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(handleFilterChange, 500); // 500ms delay
+    });
+
+    statusFilter.addEventListener('change', handleFilterChange);
+
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      handleFilterChange();
+    });
+
+    // Event Delegation untuk elemen dalam tabel (agar tetap jalan setelah AJAX)
+    document.addEventListener('click', function(e) {
+      // Konfirmasi Reset PIN
+      const btnReset = e.target.closest('.btn-reset');
+      if (btnReset) {
+        e.preventDefault();
+        const form = btnReset.closest('.form-reset');
+        Swal.fire({
+          title: 'Reset PIN?',
+          text: "PIN lama akan diganti dengan yang baru secara acak.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ffc107',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Ya, Reset PIN',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) form.submit();
+        });
+      }
+
+      // Konfirmasi Toggle Status
+      const btnToggle = e.target.closest('.btn-toggle');
+      if (btnToggle) {
+        e.preventDefault();
+        const form = btnToggle.closest('.form-toggle');
+        const isActive = btnToggle.getAttribute('data-status') === 'active';
+        
+        Swal.fire({
+          title: isActive ? 'Blokir Akses?' : 'Buka Blokir?',
+          text: isActive ? "Santri tidak akan bisa login ujian." : "Santri akan diizinkan login kembali.",
+          icon: isActive ? 'warning' : 'question',
+          showCancelButton: true,
+          confirmButtonColor: isActive ? '#dc3545' : '#198754',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Ya, Lakukan',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) form.submit();
+        });
+      }
+      
+      // Handle pagination click for AJAX
+      const paginationLink = e.target.closest('.pagination a');
+      if (paginationLink) {
+        e.preventDefault();
+        fetchTableData(paginationLink.href);
+      }
+    });
 
     // 1. Konfirmasi Generate Akun
     const btnGenerate = document.getElementById('btnGenerate');
@@ -295,46 +396,6 @@
         });
       });
     }
-
-    // 2. Konfirmasi Reset PIN
-    document.querySelectorAll('.btn-reset').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const form = this.closest('.form-reset');
-        Swal.fire({
-          title: 'Reset PIN?',
-          text: "PIN lama akan diganti dengan yang baru secara acak.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#ffc107',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Ya, Reset PIN',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-          if (result.isConfirmed) form.submit();
-        });
-      });
-    });
-
-    // 3. Konfirmasi Toggle Status
-    document.querySelectorAll('.btn-toggle').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const form = this.closest('.form-toggle');
-        const isActive = this.getAttribute('data-status') === 'active';
-        
-        Swal.fire({
-          title: isActive ? 'Blokir Akses?' : 'Buka Blokir?',
-          text: isActive ? "Santri tidak akan bisa login ujian." : "Santri akan diizinkan login kembali.",
-          icon: isActive ? 'warning' : 'question',
-          showCancelButton: true,
-          confirmButtonColor: isActive ? '#dc3545' : '#198754',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Ya, Lakukan',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-          if (result.isConfirmed) form.submit();
-        });
-      });
-    });
 
     // 4. Konfirmasi Reset Massal
     const btnReset = document.getElementById('btnReset');
