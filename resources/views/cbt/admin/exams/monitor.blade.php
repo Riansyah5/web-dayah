@@ -427,6 +427,7 @@
         } else {
             filteredStudents.forEach(student => {
                 let badgeClass = `bg-${student.status_color} bg-opacity-10 text-${student.status_color} border border-${student.status_color}`;
+                let safeName = student.name.replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;");
 
                 html += `
                     <tr>
@@ -454,12 +455,12 @@
                         </td>
                         <td class="text-end pe-4">
                             ${student.status !== 'finished' ? `
-                                <button type="button" class="btn btn-sm bg-white text-warning border shadow-sm rounded-pill px-3 me-2" onclick="openMessageModal(${student.id}, '${student.name}')" title="Kirim Teguran">
+                                <button type="button" class="btn btn-sm bg-white text-warning border shadow-sm rounded-pill px-3 me-2" onclick="openMessageModal(${student.id}, '${safeName}')" title="Kirim Teguran">
                                     <i class="bi bi-chat-dots-fill"></i> Tegur
                                 </button>
                                 <form action="/admin/cbt/exams/{{ $exam->id }}/force-finish/${student.id}" method="POST" class="d-inline">
                                     @csrf
-                                    <button type="button" onclick="confirmForceFinish(this.closest('form'), '${student.name}')" class="btn btn-sm bg-white text-danger border shadow-sm rounded-pill px-3" title="Paksa Selesai">
+                                    <button type="button" onclick="confirmForceFinish(this.closest('form'), '${safeName}')" class="btn btn-sm bg-white text-danger border shadow-sm rounded-pill px-3" title="Paksa Selesai">
                                         <i class="bi bi-stop-circle-fill"></i> Stop
                                     </button>
                                 </form>
