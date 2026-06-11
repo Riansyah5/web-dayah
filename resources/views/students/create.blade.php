@@ -145,6 +145,19 @@
           <div class="card card-modern shadow-sm border-0 rounded-4 overflow-hidden">
             <div class="card-body p-4 p-md-5">
 
+              {{-- Error Messages --}}
+              @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                  <strong><i class="bi bi-exclamation-triangle-fill me-2"></i> Gagal Menyimpan Data!</strong>
+                  <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              @endif
+
               <form id="studentForm" action="{{ route('students.store') }}" method="POST">
                 @csrf
 
@@ -349,7 +362,7 @@
                   <div class="row g-3">
                     <div class="col-md-6">
                       <div class="form-floating">
-                        <select name="education_level" class="form-select" id="level" disabled>
+                        <select name="education_level" class="form-select" id="level" style="pointer-events: none;" tabindex="-1">
                           <option value="MTS">MTS / SMP</option>
                           <option value="MA">MA / SMA</option>
                           <option value="Madin">Madin Saja</option>
@@ -360,21 +373,21 @@
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="class_group" class="form-control" placeholder="Misal: 1A"
-                          value="{{ old('class_group') }}" disabled>
+                          value="{{ old('class_group') }}" readonly>
                         <label>Rombel / Kelas</label>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="dormitory" class="form-control" placeholder="Nama Asrama"
-                          value="{{ old('dormitory') }}" disabled>
+                          value="{{ old('dormitory') }}" readonly>
                         <label>Gedung Asrama</label>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-floating">
                         <input type="text" name="room" class="form-control" placeholder="Nomor Kamar"
-                          value="{{ old('room') }}" disabled>
+                          value="{{ old('room') }}" readonly>
                         <label>Nama Kamar</label>
                       </div>
                     </div>

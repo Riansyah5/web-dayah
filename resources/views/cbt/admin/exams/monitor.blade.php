@@ -27,15 +27,12 @@
         background: rgba(255, 255, 255, 0.45) !important;
         backdrop-filter: blur(16px) saturate(180%) !important;
         -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-        /*border: 1px solid rgba(255, 255, 255, 0.6);*/
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important;
     }
 
     .stat-card {
         border-radius: 16px;
         transition: all 0.3s ease;
-        /*border-left-width: 4px !important;
-        border-left-style: solid !important;*/
     }
     .stat-card:hover {
         transform: translateY(-5px);
@@ -93,6 +90,57 @@
     .filter-btn-group .btn { transition: all 0.3s ease; font-weight: 500; }
     .filter-btn-group .btn-check:checked + .btn { background-color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); color: #0d6efd; font-weight: 600; }
     .search-input:focus { outline: none; box-shadow: none; }
+
+    /* =========================================
+       RESPONSIVE CUSTOM STYLES (MOBILE & TABLET)
+       ========================================= */
+       
+    /* Mobile Responsiveness untuk Server Pill */
+    @media (max-width: 575.98px) {
+        .server-status-pill {
+            border-radius: 16px !important;
+            padding: 12px !important;
+        }
+
+        .border-end-sm { border-right: none !important; }
+    }
+    @media (min-width: 576px) {
+        .border-end-sm { border-right: 1px solid rgba(108, 117, 125, 0.25) !important; }
+    }
+
+    /* Sticky First Column (Nama Santri) untuk Mobile/Tablet */
+    @media (max-width: 991.98px) {
+        .table-custom th:first-child,
+        .table-custom td:first-child {
+            position: sticky;
+            left: 0;
+            background: rgba(244, 247, 252, 0.95) !important; 
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            z-index: 2;
+        }
+        
+        .table-custom thead th:first-child {
+            z-index: 12 !important;
+        }
+
+        .table-custom th:first-child::after,
+        .table-custom td:first-child::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: -8px;
+            width: 8px;
+            background: linear-gradient(to right, rgba(0,0,0,0.08), transparent);
+            pointer-events: none;
+        }
+        
+        .table-custom td:last-child .btn {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+    }
 </style>
 @endpush
 
@@ -104,8 +152,10 @@
 </div>
 
 <div class="container-fluid py-4 px-4 position-relative" style="z-index: 1;">
+    
     <div class="glass-panel d-flex flex-column flex-xl-row justify-content-between align-items-xl-center mb-4 gap-3 p-4 rounded-4 mx-0">
-        <div>
+        
+        <div class="w-100 w-xl-auto">
             <div class="d-flex align-items-center mb-1">
                 <span class="live-indicator me-3"></span>
                 <h4 class="fw-bold mb-0 text-dark">LIVE MONITORING</h4>
@@ -117,26 +167,32 @@
             </div>
         </div>
         
-        <div class="d-flex gap-3 align-items-center flex-wrap">
-            <div class="server-status-pill glass-panel border-0 shadow-sm d-flex align-items-center">
-                <i class="bi bi-hdd-network text-primary me-3 fs-4"></i>
-                <div class="me-3 border-end border-secondary border-opacity-25 pe-3">
-                    <small class="text-muted d-block" style="font-size: 10px; font-weight: 600;">LATENCY</small>
-                    <div class="d-flex align-items-center">
-                        <span id="serverLatency" class="fw-bold font-monospace text-dark">-- ms</span>
-                        <span id="pingDot" class="spinner-grow spinner-grow-sm text-success ms-2" style="width: 8px; height: 8px;"></span>
+        <div class="d-flex gap-2 gap-sm-3 align-items-center flex-wrap flex-lg-nowrap w-100 justify-content-xl-end mt-3 mt-xl-0">
+            
+            <div class="server-status-pill glass-panel border-0 shadow-sm w-100 w-sm-auto d-flex flex-wrap flex-sm-nowrap align-items-center justify-content-between p-5 p-sm-1 px-sm-3 gap-2" style="min-height: 60px;">
+                <div class="d-flex align-items-center flex-grow-1 justify-content-between justify-content-sm-start">
+                    <i class="bi bi-hdd-network text-primary me-sm-3 fs-4 d-none d-sm-inline-block"></i>
+                    
+                    <div class="me-2 pe-2 pe-sm-3 border-end border-secondary border-opacity-25 flex-fill text-center text-sm-start" style="min-width: 80px;">
+                        <small class="text-muted d-block" style="font-size: 10px; font-weight: 600;">LATENCY</small>
+                        <div class="d-flex align-items-center justify-content-center justify-content-sm-start">
+                            <span id="serverLatency" class="fw-bold font-monospace text-dark" style="font-size: 0.9rem;">-- ms</span>
+                            <span id="pingDot" class="spinner-grow spinner-grow-sm text-success ms-1 ms-sm-2" style="width: 8px; height: 8px;"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="me-sm-3 pe-sm-3 border-end-sm border-secondary border-opacity-25 flex-fill text-center text-sm-start" style="min-width: 80px;">
+                        <small class="text-muted d-block" style="font-size: 10px; font-weight: 600;">RAM USAGE</small>
+                        <span id="serverMemory" class="fw-bold font-monospace text-dark" style="font-size: 0.9rem;">-- MB</span>
                     </div>
                 </div>
-                <div class="me-3 border-end border-secondary border-opacity-25 pe-3">
-                    <small class="text-muted d-block" style="font-size: 10px; font-weight: 600;">RAM USAGE</small>
-                    <span id="serverMemory" class="fw-bold font-monospace text-dark">-- MB</span>
-                </div>
-                <div style="width: 120px; height: 35px;">
+
+                <div class="d-flex justify-content-center w-100 w-sm-auto mt-2 mt-sm-0" style="min-width: 120px; height: 35px;">
                     <canvas id="latencyChart"></canvas>
                 </div>
             </div>
             
-            <a href="{{ route('admin.cbt.exams.index') }}" class="btn glass-panel text-dark border shadow-sm rounded-pill fw-medium px-4">
+            <a href="{{ route('admin.cbt.exams.index') }}" class="btn glass-panel text-dark border shadow-sm rounded-pill fw-medium px-4 w-100 w-sm-auto mt-2 mt-sm-0" title="Kembali ke daftar ujian" style="width: 50px;">
                 <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
         </div>
@@ -214,11 +270,11 @@
                 <table class="table table-custom mb-0">
                     <thead class="position-sticky top-0" style="z-index: 10;">
                         <tr>
-                            <th class="ps-4">Nama Santri</th>
+                            <th class="ps-4" style="min-width: 200px;">Nama Santri</th>
                             <th>Status Terkini</th>
-                            <th width="30%">Progress Pengerjaan</th>
+                            <th width="30%" style="min-width: 200px;">Progress Pengerjaan</th>
                             <th>Aktivitas Terakhir</th>
-                            <th class="text-center pe-4">Aksi Darurat</th>
+                            <th class="text-end pe-4" style="min-width: 280px;">Aksi Darurat</th>
                         </tr>
                     </thead>
                     <tbody id="studentGrid">
@@ -486,7 +542,7 @@
                 const latencyEl = document.getElementById('serverLatency');
                 latencyEl.innerText = data.server.latency + ' ms';
                 
-                dot.className = 'spinner-grow spinner-grow-sm ms-2 ';
+                dot.className = 'spinner-grow spinner-grow-sm ms-1 ms-sm-2 ';
                 if(data.server.latency < 500) dot.className += 'text-success';
                 else if(data.server.latency < 1000) dot.className += 'text-warning';
                 else dot.className += 'text-danger';
@@ -520,7 +576,7 @@
                 renderTable();
             })
             .catch(error => {
-                dot.className = 'spinner-grow spinner-grow-sm ms-2 text-danger';
+                dot.className = 'spinner-grow spinner-grow-sm ms-1 ms-sm-2 text-danger';
             });
     }
 

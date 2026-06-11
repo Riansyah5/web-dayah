@@ -167,13 +167,13 @@
                         elseif($isOngoing) $statusAttr = 'running';
                     @endphp
                     <tr data-status="{{ $statusAttr }}">
-                        <td class="ps-4 py-4">
+                        <td class="ps-4 py-4" style="min-width: 300px;">
                             <div class="fw-bold text-dark fs-6">{{ $exam->name }}</div>
                             <div class="text-muted" style="font-size: 0.75rem;">
                                 <i class="bi bi-book me-1"></i>{{ $exam->questionBank->subject_name }} ({{ $exam->questionBank->level }})
                             </div>
                         </td>
-                        <td>
+                        <td style="min-width: 240px;">
                             @if($exam->start_time->isSameDay($exam->end_time))
                                 <div class="small fw-bold text-dark mb-1">{{ $exam->start_time->translatedFormat('d M Y') }}</div>
                                 <div class="text-muted" style="font-size: 0.75rem;">
@@ -218,7 +218,7 @@
                                 <span class="badge bg-warning text-dark px-3 py-2 rounded-pill border border-warning border-opacity-25">Upcoming</span>
                             @endif
                         </td>
-                        <td class="text-end pe-4">
+                        <td class="text-end pe-4" style="min-width: 280px;">
                             <div class="d-flex justify-content-end gap-2">
                                 {{-- Monitor Button --}}
                                 <a href="{{ route('admin.cbt.exams.monitor', $exam->id) }}" class="btn btn-sm btn-white border shadow-sm px-3 rounded-3 fw-bold text-primary" target="_blank">
@@ -442,6 +442,75 @@
         editModal.show();
     }
 
+    // Submit Edit Form via AJAX
+    document.getElementById('editExamForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const url = form.action;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Menyimpan...';
+        submitBtn.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(async response => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            
+            if (response.ok) {
+                const editModal = bootstrap.Modal.getInstance(document.getElementById('editExamModal'));
+                editModal.hide();
+                
+                Swal.fire({...swalConfig, icon: 'success', title: 'Berhasil!', text: 'Jadwal berhasil diperbarui.', timer: 2000, showConfirmButton: false});
+                
+                const examId = url.split('/').pop();
+                const rowBtn = document.querySelector(`button[data-id="${examId}"]`);
+                if (rowBtn) {
+                    const row = rowBtn.closest('tr');
+                    // Fetch halaman yang sama di background lalu ganti elemen tabel baris ini saja
+                    fetch(window.location.href)
+                        .then(res => res.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newRowBtn = doc.querySelector(`button[data-id="${examId}"]`);
+                            if (newRowBtn) {
+                                const newRow = newRowBtn.closest('tr');
+                                row.innerHTML = newRow.innerHTML;
+                                row.className = newRow.className;
+                                row.setAttribute('data-status', newRow.getAttribute('data-status'));
+                            }
+                        });
+                }
+            } else {
+                if(response.status === 422) {
+                    const data = await response.json();
+                    let errors = '';
+                    for (const [key, value] of Object.entries(data.errors || {})) {
+                        errors += `${value.join(', ')}<br>`;
+                    }
+                    Swal.fire({...swalConfig, icon: 'error', title: 'Validasi Gagal!', html: errors || 'Silakan cek kembali form anda.'});
+                } else {
+                    Swal.fire({...swalConfig, icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.'});
+                }
+            }
+        })
+        .catch(error => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            Swal.fire({...swalConfig, icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan koneksi.'});
+        });
+    });
+
     // Function to confirm pause/unpause action
     function confirmPause(form, isPaused) {
         const titleText = isPaused ? 'Lanjutkan Ujian?' : 'Jeda (Pause) Ujian?';
@@ -461,7 +530,58 @@
             confirmButtonText: confirmBtnText,
             cancelButtonText: 'Batal'
         }).then((result) => { 
-            if (result.isConfirmed) form.submit(); 
+            if (result.isConfirmed) {
+                Swal.fire({
+                    ...swalConfig,
+                    title: 'Memproses...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                const formData = new FormData(form);
+                const url = form.action;
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        Swal.fire({...swalConfig, icon: 'success', title: 'Berhasil!', text: isPaused ? 'Ujian dilanjutkan.' : 'Ujian dijeda.', timer: 2000, showConfirmButton: false});
+                        
+                        const tr = form.closest('tr');
+                        const editBtn = tr.querySelector('button[data-id]');
+                        if (editBtn) {
+                            const examId = editBtn.getAttribute('data-id');
+                            fetch(window.location.href)
+                                .then(res => res.text())
+                                .then(html => {
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(html, 'text/html');
+                                    const newRowBtn = doc.querySelector(`button[data-id="${examId}"]`);
+                                    if (newRowBtn) {
+                                        const newRow = newRowBtn.closest('tr');
+                                        tr.innerHTML = newRow.innerHTML;
+                                        tr.className = newRow.className;
+                                        tr.setAttribute('data-status', newRow.getAttribute('data-status'));
+                                    }
+                                });
+                        }
+                    } else {
+                        Swal.fire({...swalConfig, icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat memproses permintaan.'});
+                    }
+                })
+                .catch(() => {
+                    Swal.fire({...swalConfig, icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan koneksi.'});
+                });
+            }
         });
     }
 </script>

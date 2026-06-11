@@ -52,6 +52,32 @@
         box-shadow: none;
         border-color: #ced4da;
     }
+
+    /* Modern Pill Search Bar */
+    .search-wrapper {
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+    .search-wrapper:focus-within {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15) !important;
+        border-color: #86b7fe !important;
+    }
+    .search-wrapper .form-select, 
+    .search-wrapper .form-control {
+        background-color: transparent;
+    }
+    .search-wrapper .form-select:focus, 
+    .search-wrapper .form-control:focus {
+        box-shadow: none;
+    }
+    /* Pembatas garis di dalam search bar */
+    .search-divider {
+        width: 1px;
+        background-color: #dee2e6;
+        height: 24px;
+        margin: auto 0;
+    }
+
 </style>
 @endpush
 
@@ -150,19 +176,26 @@
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <h5 class="fw-bold mb-3 mb-md-0 text-dark">Data Akun Ujian Santri</h5>
+        <div class="search-bar card-header bg-white border-bottom-0 pt-4 pb-3 px-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <h5 class="fw-bold mb-0 text-dark text-center text-md-start w-100 w-md-auto">Data Akun Ujian Santri</h5>
             
-            <form action="{{ url()->current() }}" method="GET" class="d-flex" style="min-width: 400px;" id="searchForm">
-                <div class="input-group">
-                    <select name="status" id="statusFilter" class="form-select bg-light border-end-0 text-muted" style="max-width: 150px; font-size: 0.9rem;">
+            <form action="{{ url()->current() }}" method="GET" class="w-100" style="max-width: 500px;" id="searchForm">
+                <div class="input-group search-wrapper border bg-white shadow-sm p-1 align-items-center">
+                    
+                    <select name="status" id="statusFilter" class="form-select border-0 text-muted fw-medium py-2 ps-3 pe-4" style="max-width: 135px; font-size: 0.85rem; cursor: pointer;">
                         <option value="">Semua Status</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Akun Aktif</option>
                         <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Non-Aktif</option>
                         <option value="none" {{ request('status') == 'none' ? 'selected' : '' }}>Belum Ada</option>
                     </select>
-                    <span class="input-group-text bg-white border-start-0 border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" id="searchInput" class="form-control border-start-0 ps-0 search-input" placeholder="Cari nama..." value="{{ request('search') }}">
+
+                    <div class="search-divider"></div>
+
+                    <span class="input-group-text bg-transparent border-0 text-muted ps-3 pe-2 py-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="search" id="searchInput" class="form-control border-0 ps-1 py-2 search-input" placeholder="Cari nama santri..." value="{{ request('search') }}" style="font-size: 0.9rem;">
+                    
                 </div>
             </form>
         </div>
@@ -175,9 +208,9 @@
                         <tr>
                             <th class="ps-4" width="5%">No</th>
                             <th>Nama Santri</th>
-                            <th>Username CBT</th>
-                            <th>PIN / Password</th>
-                            <th>Status Akses</th>
+                            <th class="text-center">Username CBT</th>
+                            <th class="text-center">PIN / Password</th>
+                            <th class="text-center">Status Akses</th>
                             <th class="text-center" width="15%">Aksi</th>
                         </tr>
                     </thead>
@@ -185,7 +218,7 @@
                         @forelse($students as $index => $student)
                         <tr>
                             <td class="ps-4 text-muted">{{ $students->firstItem() + $index }}</td>
-                            <td class="fw-bold text-dark">
+                            <td class="fw-bold text-dark" style="min-width: 250px;">
                                 {{ $student->name }}
                                 <div class="small text-muted fw-normal mt-1">
                                     <i class="bi bi-building me-1 opacity-75"></i> {{ $student->classrooms->last()->name ?? 'Tanpa Kelas' }}
@@ -193,26 +226,26 @@
                             </td>
 
                             @if($student->cbtAccount)
-                            <td>
+                            <td class="text-center" style="min-width: 180px;">
                                 <div class="d-inline-flex align-items-center bg-light px-3 py-1 rounded-pill border">
                                     <i class="bi bi-person-badge text-muted me-2 small"></i>
                                     <span class="font-monospace text-dark">{{ $student->cbtAccount->username }}</span>
                                 </div>
                             </td>
-                            <td>
+                            <td class="text-center" style="min-width: 180px;">
                                 <div class="d-inline-flex align-items-center bg-light px-3 py-1 rounded-pill border border-danger border-opacity-25">
                                     <i class="bi bi-key text-danger me-2 small"></i>
                                     <span class="font-monospace text-danger fw-bold tracking-wide">{{ $student->cbtAccount->raw_pin }}</span>
                                 </div>
                             </td>
-                            <td>
+                            <td class="text-center" style="min-width: 100px;">
                                 @if($student->cbtAccount->is_active)
                                     <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Aktif</span>
                                 @else
                                     <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill"><i class="bi bi-x-circle-fill me-1"></i> Diblokir</span>
                                 @endif
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" style="min-width: 150px;">
                                 <form action="{{ route('admin.cbt.accounts.reset', $student->cbtAccount->id) }}" method="POST" class="d-inline form-reset">
                                     @csrf
                                     <button type="button" class="btn btn-sm btn-light text-warning rounded-circle me-1 border shadow-sm btn-reset" title="Reset PIN Baru" data-bs-toggle="tooltip">
