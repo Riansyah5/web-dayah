@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // <-- Tambahkan Facades Auth ini
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,6 +20,25 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+
+        // === PENGATURAN REDIRECT MULTI-AUTH (LARAVEL 11) ===
+        
+        // 1. Jika user BELUM login (Guest), arahkan berdasarkan prefix URL
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('cbt') || $request->is('cbt/*')) {
+                return route('cbt.login');
+            }
+            return route('login'); // Default ke login admin
+        });
+
+        // 2. Jika user SUDAH login, jangan biarkan kembali ke halaman login
+        $middleware->redirectUsersTo(function (Request $request) {
+            if (Auth::guard('cbt')->check()) {
+                return route('cbt.dashboard');
+            }
+            return route('dashboard'); // Default ke dashboard admin
+        });
+        // ====================================================
 
         // === TAMBAHKAN PENGECUALIAN CSRF DI SINI ===
         $middleware->validateCsrfTokens(except: [
