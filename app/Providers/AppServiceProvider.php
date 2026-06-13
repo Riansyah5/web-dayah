@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Request; // <-- TAMBAHKAN INI
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // === PEMISAHAN SESI ADMIN DAN CBT ===
+        // Mengubah nama cookie sesi berdasarkan prefix URL untuk mencegah bentrok
+        if (Request::is('cbt') || Request::is('cbt/*')) {
+            config(['session.cookie' => config('app.name', 'laravel') . '_cbt_session']);
+        } else {
+            config(['session.cookie' => config('app.name', 'laravel') . '_admin_session']);
+        }
+        // ====================================
+
         // Share variabel $globalActiveYear ke SEMUA view blade
         // Kita pakai View Composer agar query hanya jalan jika view dirender
         View::composer('*', function ($view) {

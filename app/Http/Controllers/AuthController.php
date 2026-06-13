@@ -31,19 +31,22 @@ class AuthController extends Controller
             'password' => $request->password,
         ];
 
-        // Attempt Login
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Attempt Login secara eksplisit menggunakan guard 'web'
+        if (Auth::guard('web')->attempt($credentials, $request->boolean('remember'))) {
             
-            // Cek status
-            if (Auth::user()->status !== 'Aktif') {
-                Auth::logout();
+            // Cek status menggunakan guard 'web'
+            if (Auth::guard('web')->user()->status !== 'Aktif') {
+                Auth::guard('web')->logout();
                 return back()->withErrors([
                     'nonaktif' => 'Akun Anda dinonaktifkan.'
                 ]);
             }
 
             $request->session()->regenerate();
-            $total = Pegawai::count();
+            
+            // Opsional: Baris ini sepertinya tidak dipakai di bawahnya, 
+            // bisa dihapus jika memang tidak diteruskan ke view/session.
+            $total = Pegawai::count(); 
 
             return redirect()->intended('dashboard');
         }
@@ -55,7 +58,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Logout secara eksplisit untuk guard 'web'
+        Auth::guard('web')->logout();
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
