@@ -19,6 +19,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+
+        // === TAMBAHKAN PENGECUALIAN CSRF DI SINI ===
+        $middleware->validateCsrfTokens(except: [
+            'cbt/login',
+            'cbt/exam/autosave/*',
+            'cbt/exam/finish/*',
+            'cbt/exam/heartbeat/*'
+        ]);
+        // ===========================================
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // --- TAMBAHKAN KODE INI UNTUK MENANGKAP ERROR 403 SPATIE ---
