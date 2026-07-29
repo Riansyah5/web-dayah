@@ -180,25 +180,16 @@
 
   <script>
     $(document).ready(function() {
-      var table = $('#alumniTable').DataTable({
+      // Inisialisasi DataTables tanpa fitur-fitur yang bentrok dengan paginasi server
+      $('#alumniTable').DataTable({
         responsive: true,
-        dom: 'Blfrtip', // B = Buttons, l = Length, f = Filter, etc.
-        buttons: [{
-          extend: 'excel',
-          className: 'd-none', // Sembunyikan tombol bawaan
-          title: 'Data Alumni dan Mutasi',
-          exportOptions: {
-            columns: ':not(:last-child)' // Jangan export kolom Aksi
-          }
-        }],
+        paging: false,    // Matikan paginasi dari DataTables
+        searching: false, // Matikan pencarian dari DataTables
+        info: false,      // Matikan info "Showing x to y of z entries"
+        ordering: false,  // Matikan sorting dari DataTables
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json"
         }
-      });
-
-      // Trigger tombol export bawaan DataTables saat tombol custom diklik
-      $('#btnExportExcel').on('click', function() {
-        table.button('.buttons-excel').trigger();
       });
     });
   </script>

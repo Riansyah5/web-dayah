@@ -37,7 +37,7 @@ class AlumniController extends Controller
         }
 
         // 5. Urutkan dari yang terbaru keluar
-        $alumni = $query->latest('updated_at')->paginate(20)->withQueryString();
+        $alumni = $query->latest('updated_at')->get();
 
         // Data pendukung untuk Dropdown Filter Tahun
         $years = \App\Models\StudentExit::distinct()->orderBy('exit_year', 'desc')->pluck('exit_year');
