@@ -20,8 +20,9 @@ class ClassroomController extends Controller
     {
         $activeYear = AcademicYear::where('is_active', true)->first();
 
+        // Modifikasi withCount untuk hanya menghitung siswa aktif
         $query = Classroom::with(['level.stage', 'major'])
-            ->withCount('students')
+            ->withCount(['students' => fn($q) => $q->where('status', 'active')])
             ->where('academic_year_id', $activeYear?->id);
 
         if ($request->filled('stage_id')) {
@@ -67,7 +68,11 @@ class ClassroomController extends Controller
      ========================== */
     public function show(Classroom $classroom)
     {
-        $classroom->load(['students', 'level.stage', 'major']);
+        // Memuat relasi siswa dengan filter hanya yang berstatus 'active'
+        $classroom->load([
+            'students' => fn($query) => $query->where('status', 'active')->orderBy('name'),
+            'level.stage', 'major'
+        ]);
         $activeYearId = $classroom->academic_year_id;
 
         $bookedIds = DB::table('classroom_student')

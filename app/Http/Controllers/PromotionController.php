@@ -34,14 +34,37 @@ class PromotionController extends Controller
         $fromYear = AcademicYear::findOrFail($request->from_year_id);
         $toYear   = AcademicYear::findOrFail($request->to_year_id);
 
-        // Ambil seluruh kelas tahun asal beserta siswa & level
-        $oldClasses = Classroom::with(['students', 'level'])
+        // Ambil seluruh kelas tahun asal beserta siswa AKTIF & level
+        // Ini akan menyelesaikan masalah validasi dan proses migrasi
+        $oldClasses = Classroom::with(['students' => fn($q) => $q->where('status', 'active'), 'level'])
             ->where('academic_year_id', $fromYear->id)
             ->get();
 
         if ($oldClasses->isEmpty()) {
             return back()->with('error', 'Tidak ada data kelas pada tahun ajaran sumber.');
         }
+
+        // --- VALIDASI BARU: CEGAH JIKA KELAS AKHIR BELUM LULUS ---
+        if ($request->type === 'promote') {
+            $finalClassesWithStudents = [];
+            foreach ($oldClasses as $class) {
+                // Cek apakah ini kelas tingkat akhir
+                $currentAlias = (int) $class->level->alias;
+                $nextLevel = Level::where('stage_id', $class->level->stage_id)
+                    ->where('alias', (string) ($currentAlias + 1))
+                    ->first();
+
+                // Jika tidak ada level selanjutnya DAN kelas masih punya siswa
+                if (!$nextLevel && $class->students->isNotEmpty()) {
+                    $finalClassesWithStudents[] = $class->name;
+                }
+            }
+
+            if (!empty($finalClassesWithStudents)) {
+                $classList = '<ul><li>' . implode('</li><li>', $finalClassesWithStudents) . '</li></ul>';
+                return back()->with('error', '<b>Proses Kenaikan Kelas Gagal!</b><br>Masih ada siswa di kelas tingkat akhir. Harap proses kelulusan terlebih dahulu untuk kelas berikut:' . $classList);            }
+        } 
+        // --- AKHIR VALIDASI BARU ---
 
         DB::beginTransaction();
 
@@ -66,11 +89,8 @@ class PromotionController extends Controller
                         ->first();
 
                     // Jika tidak ada level lanjutan (kelas akhir → lulus)
+                    // Abaikan kelas ini, karena akan diproses via menu Kelulusan.
                     if (!$nextLevel) {
-                        foreach ($oldClass->students as $student) {
-                            $student->update(['status' => 'graduated']);
-                            $countStudents++;
-                        }
                         continue;
                     }
 
