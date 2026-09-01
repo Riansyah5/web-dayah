@@ -17,12 +17,12 @@ class DashboardController extends Controller
         $totalSantri = Student::where('status', 'active')->count();
         $santriLaki = Student::where('gender', 'L')->count();
         $santriPerempuan = Student::where('gender', 'P')->count();
-        $santriSMP = Student::where('education_level', 'WUSTHA')->count();
-        $santriSMPlaki = Student::where([['education_level','=', 'WUSTHA'],['gender','=', 'L']])->count();
-        $santriSMPperempuan = Student::where([['education_level','=', 'WUSTHA'],['gender','=', 'P']])->count();
-        $santriSMA = Student::where('education_level', 'ULYA')->count();
-        $santriSMAlaki = Student::where([['education_level','=', 'ULYA'],['gender','=', 'L']])->count();
-        $santriSMAperempuan = Student::where([['education_level','=', 'ULYA'],['gender','=', 'P']])->count();
+        $santriSMP = Student::where(['education_level' => 'WUSTHA', 'status' => 'active'])->count();
+        $santriSMPlaki = Student::where(['education_level' => 'WUSTHA', 'gender' => 'L', 'status' => 'active'])->count();
+        $santriSMPperempuan = Student::where(['education_level' => 'WUSTHA', 'gender' => 'P', 'status' => 'active'])->count();
+        $santriSMA = Student::where(['education_level' => 'ULYA', 'status' => 'active'])->count();
+        $santriSMAlaki = Student::where(['education_level' => 'ULYA', 'gender' => 'L', 'status' => 'active'])->count();
+        $santriSMAperempuan = Student::where(['education_level' => 'ULYA', 'gender' => 'P', 'status' => 'active'])->count();
         $totalAlumni = StudentExit::count();
 
         $totalStudents = Student::count();
