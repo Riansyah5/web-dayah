@@ -147,44 +147,46 @@
       </div>
 
       <div class="tab-pane fade" id="pills-history">
-        <div class="card border-0 shadow-sm rounded-4">
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-hover align-middle">
-                <thead class="bg-light">
-                  <tr>
-                    <th class="ps-4">Nama Santri</th>
-                    <th>Jenis</th>
-                    <th>Petugas</th>
-                    <th>Alasan</th>
-                    <th>Tgl Keluar</th>
-                    <th>Tgl Kembali</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($historyPermissions as $perm)
+        <div id="history-container">
+          <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="bg-light">
                     <tr>
-                      <td class="ps-4 fw-medium">{{ $perm->student->name }}</td>
-                      <td>{{ ucfirst($perm->type) }}</td>
-                      <td><strong>{{ $perm->user->name ?? '-' }}</strong></td>
-                      <td>{{ Str::limit($perm->reason, 30) }}</td>
-                      <td>{{ $perm->start_date->format('d/m/y H:i') }}</td>
-                      <td>{{ $perm->returned_at ? $perm->returned_at->format('d/m/y H:i') : '-' }}</td>
-                      <td>
-                        @if ($perm->status == 'late')
-                          <span class="badge bg-danger">Terlambat</span>
-                        @elseif($perm->status == 'returned')
-                          <span class="badge bg-success">Tepat Waktu</span>
-                        @endif
-                      </td>
+                      <th class="ps-4">Nama Santri</th>
+                      <th>Jenis</th>
+                      <th>Petugas</th>
+                      <th>Alasan</th>
+                      <th>Tgl Keluar</th>
+                      <th>Tgl Kembali</th>
+                      <th>Status</th>
                     </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-            <div class="p-3">
-              {{ $historyPermissions->links() }}
+                  </thead>
+                  <tbody>
+                    @foreach ($historyPermissions as $perm)
+                      <tr>
+                        <td class="ps-4 fw-medium">{{ $perm->student->name }}</td>
+                        <td>{{ ucfirst($perm->type) }}</td>
+                        <td><strong>{{ $perm->user->name ?? '-' }}</strong></td>
+                        <td>{{ Str::limit($perm->reason, 30) }}</td>
+                        <td>{{ $perm->start_date->format('d/m/y H:i') }}</td>
+                        <td>{{ $perm->returned_at ? $perm->returned_at->format('d/m/y H:i') : '-' }}</td>
+                        <td>
+                          @if ($perm->status == 'late')
+                            <span class="badge bg-danger">Terlambat</span>
+                          @elseif($perm->status == 'returned')
+                            <span class="badge bg-success">Tepat Waktu</span>
+                          @endif
+                        </td>
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-3">
+                {{ $historyPermissions->links('pagination::bootstrap-5') }}
+              </div>
             </div>
           </div>
         </div>
@@ -196,14 +198,23 @@
   {{-- sweetAlert2 --}}
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // Notifikasi Sukses
+    // Notifikasi Sukses (Toast Top-Center)
     @if (session('success'))
-      Swal.fire({
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top', // 'top' secara otomatis berada di tengah atas
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      Toast.fire({
         icon: 'success',
-        title: 'Berhasil',
-        text: '{{ session('success') }}',
-        timer: 2000,
-        showConfirmButton: false
+        title: '{{ session('success') }}'
       });
     @endif
 
@@ -227,6 +238,27 @@
           if (result.isConfirmed) {
             form.submit();
           }
+        });
+      });
+    });
+
+    // Simpan dan Pulihkan Tab Aktif Menggunakan LocalStorage
+    document.addEventListener("DOMContentLoaded", function() {
+      // 1. Cek apakah ada history tab yang tersimpan di browser
+      let activeTab = localStorage.getItem('activeTab');
+      if (activeTab) {
+        let tabElement = document.querySelector(`button[data-bs-target="${activeTab}"]`);
+        if (tabElement) {
+          tabElement.click(); // Otomatis klik tab yang terakhir dibuka
+        }
+      }
+
+      // 2. Simpan nama tab ke localStorage setiap kali user pindah tab
+      let tabButtons = document.querySelectorAll('button[data-bs-toggle="pill"]');
+      tabButtons.forEach(button => {
+        button.addEventListener('shown.bs.tab', function (e) {
+          let target = e.target.getAttribute('data-bs-target');
+          localStorage.setItem('activeTab', target);
         });
       });
     });
@@ -259,6 +291,55 @@
           accordion.style.display = hasVisibleRow ? '' : 'none';
         });
       });
+
+    // AJAX Pagination untuk Riwayat Izin
+    document.addEventListener('click', function(e) {
+      // Pastikan yang diklik adalah link pagination (elemen 'a') di dalam '#history-container'
+      let paginationLink = e.target.closest('#history-container .pagination a');
+      
+      if (paginationLink) {
+        e.preventDefault(); // Cegah browser me-reload halaman
+        let url = paginationLink.href;
+        
+        fetchHistoryData(url);
+      }
+    });
+
+    function fetchHistoryData(url) {
+      const container = document.getElementById('history-container');
+      
+      // Beri efek loading (sedikit transparan)
+      container.style.transition = 'opacity 0.3s ease';
+      container.style.opacity = '0.5';
+
+      fetch(url, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest' // Beritahu server ini adalah request AJAX
+        }
+      })
+      .then(response => response.text())
+      .then(html => {
+        // Ubah string HTML menjadi elemen DOM (Document Object Model)
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Ambil HANYA bagian tabel history dari halaman baru
+        const newContent = doc.getElementById('history-container').innerHTML;
+        
+        // Ganti tabel lama dengan tabel baru
+        container.innerHTML = newContent;
+        
+        // Kembalikan opacity menjadi normal
+        container.style.opacity = '1';
+
+        // Opsional: Ubah URL di address bar browser tanpa reload (agar kalau di-refresh tetap di halaman tsb)
+        window.history.pushState({}, "", url);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        container.style.opacity = '1'; // Kembalikan tampilan jika error
+      });
+    }
     }
   </script>
 @endpush
