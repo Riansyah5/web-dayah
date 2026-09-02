@@ -11,7 +11,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PermissionController extends Controller
 {
-    public function index()
+    // Tambahkan Request $request pada parameter index
+    public function index(Request $request)
     {
         // Tab 1: Sedang Izin (Belum Kembali)
         $activePermissions = Permission::with(['student', 'user'])
@@ -20,10 +21,40 @@ class PermissionController extends Controller
             ->get();
 
         // Tab 2: Riwayat (Sudah Kembali / Ditolak)
-        $historyPermissions = Permission::with(['student', 'user'])
-            ->whereIn('status', ['returned', 'rejected', 'late'])
-            ->latest()
-            ->paginate(10);
+        $historyQuery = Permission::with(['student', 'user'])
+            ->whereIn('status', ['returned', 'rejected', 'late']);
+
+        // --- MULAI FITUR SEARCH & FILTER --- //
+        
+        // 1. Filter Search (Nama Santri, Petugas, atau Alasan)
+        if ($request->filled('search_history')) {
+            $search = $request->search_history;
+            $historyQuery->where(function($q) use ($search) {
+                $q->whereHas('student', function($studentQuery) use ($search) {
+                    $studentQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('user', function($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('reason', 'like', "%{$search}%");
+            });
+        }
+
+        // 2. Filter Bulan & Tahun (Format input: YYYY-MM)
+        if ($request->filled('month_history')) {
+            $date = explode('-', $request->month_history);
+            if (count($date) === 2) {
+                $year = $date[0];
+                $month = $date[1];
+                $historyQuery->whereYear('start_date', $year)
+                             ->whereMonth('start_date', $month);
+            }
+        }
+        
+        // --- SELESAI FITUR SEARCH & FILTER --- //
+
+        // Eksekusi Query dengan Paginate
+        $historyPermissions = $historyQuery->latest()->paginate(10);
 
         return view('permissions.index', compact('activePermissions', 'historyPermissions'));
     }
@@ -135,6 +166,7 @@ class PermissionController extends Controller
         ->setPaper('A4', 'portrait')
         ->download($fileName);
     }
+    
     public function downloadPdf($id)
     {
         $isPdf = true;

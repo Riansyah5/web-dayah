@@ -147,11 +147,25 @@
       </div>
 
       <div class="tab-pane fade" id="pills-history">
+        <div class="row g-2 mb-3">
+          <div class="col-md-8">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-0 shadow-sm"><i class="bi bi-search"></i></span>
+              <input type="text" id="searchHistory" class="form-control border-0 shadow-sm py-2" 
+                     placeholder="Cari nama santri, alasan, atau petugas...">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <input type="month" id="filterMonthHistory" class="form-control border-0 shadow-sm py-2" 
+                   title="Filter Bulan & Tahun">
+          </div>
+        </div>
+
         <div id="history-container">
           <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-0">
               <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle mb-0">
                   <thead class="bg-light">
                     <tr>
                       <th class="ps-4">Nama Santri</th>
@@ -164,7 +178,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    @foreach ($historyPermissions as $perm)
+                    @forelse ($historyPermissions as $perm)
                       <tr>
                         <td class="ps-4 fw-medium">{{ $perm->student->name }}</td>
                         <td>{{ ucfirst($perm->type) }}</td>
@@ -180,17 +194,22 @@
                           @endif
                         </td>
                       </tr>
-                    @endforeach
+                    @empty
+                      <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">Data riwayat izin tidak ditemukan.</td>
+                      </tr>
+                    @endforelse
                   </tbody>
                 </table>
               </div>
               <div class="p-3">
-                {{ $historyPermissions->links('pagination::bootstrap-5') }}
+                {{ $historyPermissions->appends(request()->query())->links('pagination::bootstrap-5') }}
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 @endsection
@@ -198,11 +217,11 @@
   {{-- sweetAlert2 --}}
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // Notifikasi Sukses (Toast Top-Center)
+    // 1. Notifikasi Sukses (Toast Top-Center)
     @if (session('success'))
       const Toast = Swal.mixin({
         toast: true,
-        position: 'top', // 'top' secara otomatis berada di tengah atas
+        position: 'top',
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
@@ -218,7 +237,7 @@
       });
     @endif
 
-    // SweetAlert Konfirmasi Kembali
+    // 2. SweetAlert Konfirmasi Kembali
     document.querySelectorAll('.btn-return').forEach(button => {
       button.addEventListener('click', function(e) {
         e.preventDefault();
@@ -242,18 +261,16 @@
       });
     });
 
-    // Simpan dan Pulihkan Tab Aktif Menggunakan LocalStorage
+    // 3. Simpan dan Pulihkan Tab Aktif Menggunakan LocalStorage
     document.addEventListener("DOMContentLoaded", function() {
-      // 1. Cek apakah ada history tab yang tersimpan di browser
       let activeTab = localStorage.getItem('activeTab');
       if (activeTab) {
         let tabElement = document.querySelector(`button[data-bs-target="${activeTab}"]`);
         if (tabElement) {
-          tabElement.click(); // Otomatis klik tab yang terakhir dibuka
+          tabElement.click(); 
         }
       }
 
-      // 2. Simpan nama tab ke localStorage setiap kali user pindah tab
       let tabButtons = document.querySelectorAll('button[data-bs-toggle="pill"]');
       tabButtons.forEach(button => {
         button.addEventListener('shown.bs.tab', function (e) {
@@ -263,7 +280,7 @@
       });
     });
 
-    // Live Search untuk Santri yang Sedang Izin
+    // 4. Live Search untuk Santri yang Sedang Izin (Tab 1)
     const searchInput = document.getElementById('searchActivePermission');
     if (searchInput) {
       searchInput.addEventListener('input', function() {
@@ -286,60 +303,85 @@
               }
             }
           });
-
-          // Sembunyikan accordion jika tidak ada nama yang cocok di dalamnya
           accordion.style.display = hasVisibleRow ? '' : 'none';
         });
       });
+    }
 
-    // AJAX Pagination untuk Riwayat Izin
-    document.addEventListener('click', function(e) {
-      // Pastikan yang diklik adalah link pagination (elemen 'a') di dalam '#history-container'
-      let paginationLink = e.target.closest('#history-container .pagination a');
-      
-      if (paginationLink) {
-        e.preventDefault(); // Cegah browser me-reload halaman
-        let url = paginationLink.href;
-        
-        fetchHistoryData(url);
+    // =========================================================
+    // 5. AJAX Search, Filter Bulan & Pagination (Riwayat Izin)
+    // =========================================================
+    let searchDebounceTimer;
+    const searchHistoryInput = document.getElementById('searchHistory');
+    const filterMonthInput = document.getElementById('filterMonthHistory');
+    const historyContainer = document.getElementById('history-container');
+
+    // Fungsi Utama Fetch Data
+    function fetchHistoryData(pageUrl = null) {
+      const searchQuery = searchHistoryInput ? searchHistoryInput.value : '';
+      const monthQuery = filterMonthInput ? filterMonthInput.value : '';
+
+      let url = new URL(pageUrl || window.location.href);
+
+      // Set/Remove Parameter Search
+      if (searchQuery) url.searchParams.set('search_history', searchQuery);
+      else url.searchParams.delete('search_history');
+
+      // Set/Remove Parameter Month
+      if (monthQuery) url.searchParams.set('month_history', monthQuery);
+      else url.searchParams.delete('month_history');
+
+      if (historyContainer) {
+        historyContainer.style.transition = 'opacity 0.2s ease';
+        historyContainer.style.opacity = '0.5';
       }
-    });
 
-    function fetchHistoryData(url) {
-      const container = document.getElementById('history-container');
-      
-      // Beri efek loading (sedikit transparan)
-      container.style.transition = 'opacity 0.3s ease';
-      container.style.opacity = '0.5';
-
-      fetch(url, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest' // Beritahu server ini adalah request AJAX
-        }
+      fetch(url.toString(), {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => response.text())
       .then(html => {
-        // Ubah string HTML menjadi elemen DOM (Document Object Model)
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
-        // Ambil HANYA bagian tabel history dari halaman baru
         const newContent = doc.getElementById('history-container').innerHTML;
-        
-        // Ganti tabel lama dengan tabel baru
-        container.innerHTML = newContent;
-        
-        // Kembalikan opacity menjadi normal
-        container.style.opacity = '1';
+        if(historyContainer) {
+            historyContainer.innerHTML = newContent;
+            historyContainer.style.opacity = '1';
+        }
 
-        // Opsional: Ubah URL di address bar browser tanpa reload (agar kalau di-refresh tetap di halaman tsb)
-        window.history.pushState({}, "", url);
+        window.history.pushState({}, "", url.toString());
       })
       .catch(error => {
-        console.error('Error fetching data:', error);
-        container.style.opacity = '1'; // Kembalikan tampilan jika error
+        console.error('Error fetching history:', error);
+        if(historyContainer) historyContainer.style.opacity = '1';
       });
     }
+
+    // Trigger Saat Mengetik Search (dengan Debounce 400ms)
+    if (searchHistoryInput) {
+      searchHistoryInput.addEventListener('input', function() {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+          fetchHistoryData();
+        }, 400);
+      });
     }
+
+    // Trigger Saat Memilih Bulan
+    if (filterMonthInput) {
+      filterMonthInput.addEventListener('change', function() {
+        fetchHistoryData();
+      });
+    }
+
+    // Trigger Saat Klik Pagination
+    document.addEventListener('click', function(e) {
+      let paginationLink = e.target.closest('#history-container .pagination a');
+      if (paginationLink) {
+        e.preventDefault();
+        fetchHistoryData(paginationLink.href);
+      }
+    });
   </script>
 @endpush
