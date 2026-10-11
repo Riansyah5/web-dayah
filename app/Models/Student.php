@@ -114,4 +114,10 @@ class Student extends Model
     {
         return $this->hasOne(CbtAccount::class);
     }
+
+    // Relasi ke Absensi Asrama / Pengasuhan
+    public function dormAttendanceDetails(): HasMany
+    {
+        return $this->hasMany(DormAttendanceDetail::class);
+    }
 }

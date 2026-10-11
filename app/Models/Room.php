@@ -27,6 +27,11 @@ class Room extends Model
         return $this->hasMany(RoomAssignment::class);
     }
 
+    public function attendances()
+    {
+        return $this->hasMany(DormAttendance::class);
+    }
+
     // Helper: Hitung sisa kapasitas (berguna untuk validasi saat input santri)
     public function getRemainingCapacityAttribute()
     {

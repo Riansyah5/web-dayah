@@ -55,20 +55,64 @@ class DataMasterController extends Controller
 
     public function storeAcademicYear(Request $r)
     {
-        // Jika set aktif, nonaktifkan yang lain
+        $oldActive = null;
         if ($r->has('is_active')) {
+            $oldActive = AcademicYear::where('is_active', true)->first();
             AcademicYear::query()->update(['is_active' => false]);
         }
-        AcademicYear::create($r->merge(['is_active' => $r->has('is_active')])->all());
+        
+        $newYear = AcademicYear::create($r->merge(['is_active' => $r->has('is_active')])->all());
+        
+        // Salin penempatan kamar jika langsung diaktifkan
+        if ($r->has('is_active') && $oldActive && $oldActive->id != $newYear->id) {
+            $this->copyRoomAssignments($oldActive->id, $newYear->id);
+        }
+        
         return back()->with('success', 'Tahun Ajaran ditambah')->with('active_tab', 'tab-years');
     }
 
     // Update Status Aktif Tahun Ajaran
     public function activateYear($id)
     {
+        $oldActive = AcademicYear::where('is_active', true)->first();
         AcademicYear::query()->update(['is_active' => false]);
         AcademicYear::where('id', $id)->update(['is_active' => true]);
-        return back()->with('success', 'Tahun Ajaran diaktifkan')->with('active_tab', 'tab-years');
+
+        if ($oldActive && $oldActive->id != $id) {
+            $this->copyRoomAssignments($oldActive->id, $id);
+        }
+
+        return back()->with('success', 'Tahun Ajaran diaktifkan. Penempatan kamar otomatis disalin.')->with('active_tab', 'tab-years');
+    }
+
+    private function copyRoomAssignments($oldYearId, $newYearId)
+    {
+        $oldAssignments = \App\Models\RoomAssignment::where('academic_year_id', $oldYearId)->get();
+        $newAssignments = [];
+        $activeStudents = \App\Models\Student::where('status', 'active')->pluck('id')->toArray();
+
+        foreach ($oldAssignments as $assignment) {
+            if (in_array($assignment->student_id, $activeStudents)) {
+                $exists = \App\Models\RoomAssignment::where('academic_year_id', $newYearId)
+                            ->where('student_id', $assignment->student_id)
+                            ->exists();
+                
+                if (!$exists) {
+                    $newAssignments[] = [
+                        'id' => (string) \Illuminate\Support\Str::ulid(),
+                        'student_id' => $assignment->student_id,
+                        'room_id' => $assignment->room_id,
+                        'academic_year_id' => $newYearId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+        }
+
+        if (!empty($newAssignments)) {
+            \App\Models\RoomAssignment::insert($newAssignments);
+        }
     }
 
     // Tambahkan method destroy/update sesuai kebutuhan...

@@ -126,6 +126,10 @@
                 @can('kelola-asrama-kamar')
                 <li class="pc-item"><a class="pc-link" href="{{ route('assignments.create') }}">Penempatan Kamar</a></li>
                 @endcan
+                @canany(['lihat-asrama', 'kelola-asrama-kamar'])
+                <li class="pc-item"><a class="pc-link" href="{{ route('dorm-attendance.index') }}">Absensi Asrama</a></li>
+                <li class="pc-item"><a class="pc-link" href="{{ route('dorm-attendance.recap') }}">Rekap Absen Asrama</a></li>
+                @endcanany
                 @can('kelola-perizinan-santri')
                 <li class="pc-item"><a class="pc-link" href="{{ route('permissions.index') }}">Perizinan</a></li>
                 @endcan

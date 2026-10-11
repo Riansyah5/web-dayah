@@ -22,6 +22,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataMasterController;
+use App\Http\Controllers\DormAttendanceController;
 use App\Http\Controllers\DormController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KategoriController;
@@ -271,6 +272,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('/rooms', RoomController::class);
     Route::get('assignments/create', [RoomAssignmentController::class, 'create'])->name('assignments.create');
     Route::post('assignments', [RoomAssignmentController::class, 'store'])->name('assignments.store');
+    Route::get('dorm-attendance/recap', [DormAttendanceController::class, 'recap'])->name('dorm-attendance.recap');
+    Route::resource('dorm-attendance', DormAttendanceController::class);
   });
 
   Route::middleware(['permission:kelola-perizinan-santri'])->group(function () {

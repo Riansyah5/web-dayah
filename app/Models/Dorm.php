@@ -16,4 +16,9 @@ class Dorm extends Model
     {
         return $this->hasMany(Room::class);
     }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(DormAttendance::class);
+    }
 }
