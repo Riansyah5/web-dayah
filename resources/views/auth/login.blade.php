@@ -16,6 +16,14 @@
 
   <!-- [Favicon] icon -->
   <link rel="icon" href="{{ asset('assets/images/logo_dayah.png') }}" type="image/x-icon" />
+
+  <!-- [PWA Manifest & Meta Tags] -->
+  <link rel="manifest" href="{{ asset('manifest.json') }}" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Dayah Mataqu" />
+  <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}" />
   <!-- [Google Font] Family -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
     id="main-font-link" />
@@ -176,6 +184,20 @@
     preset_change('preset-1');
   </script>
 
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => {
+            console.log('PWA Service Worker registered:', reg.scope);
+          })
+          .catch((err) => {
+            console.error('PWA Service Worker registration failed:', err);
+          });
+      });
+    }
+  </script>
 
 </body>
 <!-- [Body] end -->

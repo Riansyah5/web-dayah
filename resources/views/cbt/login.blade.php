@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Ujian | CBT Pesantren Modern</title>
+    <link rel="icon" href="{{ asset('assets/images/logo_dayah.png') }}" type="image/x-icon" />
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="CBT Dayah" />
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -201,5 +209,19 @@
         </div>
     </div>
 
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => {
+              console.log('CBT PWA registered:', reg.scope);
+            })
+            .catch((err) => {
+              console.error('CBT PWA registration failed:', err);
+            });
+        });
+      }
+    </script>
 </body>
 </html>

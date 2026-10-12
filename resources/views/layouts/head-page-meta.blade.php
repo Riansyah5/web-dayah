@@ -17,4 +17,12 @@
 <!-- [Favicon] icon -->
 <link rel="icon" href="{{ asset('assets/images/logo_dayah.png') }}" type="image/x-icon" />
 
+<!-- [PWA Manifest & Meta Tags] -->
+<link rel="manifest" href="{{ asset('manifest.json') }}" />
+<meta name="theme-color" content="#4f46e5" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Dayah Mataqu" />
+<link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}" />
+
 
