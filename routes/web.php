@@ -158,6 +158,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/student/{student}/history', [StudentHistoryController::class, 'show'])->name('student.history');
     Route::get('/student/{student}/biodata', [StudentHistoryController::class, 'printBiodata'])->name('student.biodata.print');
     Route::get('/student/{student}/biodatashow', [StudentHistoryController::class, 'showBiodata'])->name('student.biodata.show');
+    Route::get('/student/{student}/history/{classroom}/edit', [StudentHistoryController::class, 'editReport'])->name('student.report.edit');
+    Route::put('/student/{student}/history/{classroom}', [StudentHistoryController::class, 'updateReport'])->name('student.report.update');
     
     Route::post('/students/{student}/exit', [StudentExitController::class, 'store'])->name('students.exit.store');
     Route::get('/students/{student}/print-mutation', [StudentExitController::class, 'printLetter'])->name('students.exit.print');

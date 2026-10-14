@@ -7,6 +7,10 @@ use App\Models\Student;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
 use App\Models\ReportSetting; // Jangan lupa import
+use App\Models\Course;
+use App\Models\Grade;
+use App\Models\ReportCard;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class StudentHistoryController extends Controller
@@ -211,5 +215,123 @@ class StudentHistoryController extends Controller
             'latestClass',
             'isPdf'
         ));
+    }
+
+    /**
+     * Form edit nilai dan rekap rapor santri untuk semester/kelas tertentu.
+     */
+    public function editReport(Student $student, Classroom $classroom)
+    {
+        $classroom->load(['academicYear', 'level.stage']);
+
+        // Ambil semua mata pelajaran di kelas ini
+        $courses = Course::with('subject')
+            ->where('classroom_id', $classroom->id)
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->orderBy('subjects.group')
+            ->orderBy('subjects.name')
+            ->select('courses.*')
+            ->get();
+
+        // Ambil nilai yang sudah ada untuk santri ini
+        $grades = Grade::where('student_id', $student->id)
+            ->whereIn('course_id', $courses->pluck('id'))
+            ->get()
+            ->keyBy('course_id');
+
+        // Ambil rekap rapor (ReportCard)
+        $reportCard = ReportCard::firstOrNew([
+            'student_id'   => $student->id,
+            'classroom_id' => $classroom->id,
+        ]);
+
+        return view('academic.report.edit_report', compact('student', 'classroom', 'courses', 'grades', 'reportCard'));
+    }
+
+    /**
+     * Simpan pembaruan nilai dan rekap rapor santri.
+     */
+    public function updateReport(Request $request, Student $student, Classroom $classroom)
+    {
+        $request->validate([
+            'grades'             => 'nullable|array',
+            'grades.*.harian'    => 'nullable|numeric|min:0|max:100',
+            'grades.*.uts'       => 'nullable|numeric|min:0|max:100',
+            'grades.*.uas'       => 'nullable|numeric|min:0|max:100',
+            'grades.*.final'     => 'nullable|numeric|min:0|max:100',
+            'grades.*.notes'     => 'nullable|string',
+            'report.sick'        => 'nullable|integer|min:0',
+            'report.permission'  => 'nullable|integer|min:0',
+            'report.absent'      => 'nullable|integer|min:0',
+            'report.notes'       => 'nullable|string',
+            'report.status'      => 'nullable|string|max:50',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // 1. Simpan/Update Nilai per Mapel
+            if ($request->has('grades')) {
+                foreach ($request->grades as $courseId => $scoreData) {
+                    $harian = isset($scoreData['harian']) && $scoreData['harian'] !== '' ? (float) $scoreData['harian'] : 0;
+                    $uts    = isset($scoreData['uts']) && $scoreData['uts'] !== '' ? (float) $scoreData['uts'] : 0;
+                    $uas    = isset($scoreData['uas']) && $scoreData['uas'] !== '' ? (float) $scoreData['uas'] : 0;
+
+                    // Hitung nilai akhir jika tidak diisi manual (40% harian, 30% uts, 30% uas)
+                    if (isset($scoreData['final']) && $scoreData['final'] !== '') {
+                        $final = (float) $scoreData['final'];
+                    } else {
+                        $final = round(($harian * 0.4) + ($uts * 0.3) + ($uas * 0.3), 1);
+                    }
+
+                    // Tentukan Predikat
+                    $gradeLetter = match (true) {
+                        $final >= 85 => 'A',
+                        $final >= 75 => 'B',
+                        $final >= 60 => 'C',
+                        $final >= 50 => 'D',
+                        default      => 'E',
+                    };
+
+                    Grade::updateOrCreate(
+                        [
+                            'course_id'  => $courseId,
+                            'student_id' => $student->id,
+                        ],
+                        [
+                            'score_harian' => $harian,
+                            'score_uts'    => $uts,
+                            'score_uas'    => $uas,
+                            'score_final'  => $final,
+                            'grade_letter' => $gradeLetter,
+                            'description'  => $scoreData['notes'] ?? null,
+                        ]
+                    );
+                }
+            }
+
+            // 2. Simpan/Update Rekap Rapor (ReportCard)
+            $reportData = $request->input('report', []);
+            ReportCard::updateOrCreate(
+                [
+                    'student_id'   => $student->id,
+                    'classroom_id' => $classroom->id,
+                ],
+                [
+                    'sick'       => $reportData['sick'] ?? 0,
+                    'permission' => $reportData['permission'] ?? 0,
+                    'absent'     => $reportData['absent'] ?? 0,
+                    'notes'      => $reportData['notes'] ?? null,
+                    'status'     => $reportData['status'] ?? 'Naik Kelas',
+                ]
+            );
+
+            DB::commit();
+
+            return redirect()->route('student.history', $student->id)
+                ->with('success', "Rapor {$student->name} untuk kelas {$classroom->name} berhasil diperbarui.");
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan perubahan rapor: ' . $e->getMessage());
+        }
     }
 }
