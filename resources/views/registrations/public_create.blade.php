@@ -347,8 +347,15 @@
                 <select name="target_stage" class="form-select" required>
                   <option value="" disabled {{ old('target_stage') ? '' : 'selected' }}>-- Pilih Jenjang --</option>
                   @foreach($stages as $stg)
-                    <option value="{{ $stg->name }}" {{ old('target_stage') == $stg->name ? 'selected' : '' }}>{{ $stg->name }}</option>
-                  @endforeach
+    <option value="{{ $stg->name }}"
+        {{ old('target_stage') == $stg->name ? 'selected' : '' }}>
+        {{ match($stg->name) {
+            'SALAFIYAH WUSTHA' => 'Wustha (SMP/MTs)',
+            'SALAFIYAH ULYA' => 'Ulya (SMA/MA)',
+            default => $stg->name
+        } }}
+    </option>
+@endforeach
                   @if($stages->isEmpty())
                     <option value="MTS">MTS / SMP</option>
                     <option value="MA">MA / SMA</option>
