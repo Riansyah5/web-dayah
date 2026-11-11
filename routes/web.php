@@ -29,6 +29,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SidebarSettingController;
@@ -64,6 +65,17 @@ use App\Http\Controllers\Cbt\Admin\CbtMonitorController;
 Route::middleware('guest')->group(function () {
   Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
   Route::post('/login', [AuthController::class, 'login'])->name('login.process');
+});
+
+// ==========================================
+// PORTAL PSB (PENERIMAAN SANTRI BARU) PUBLIK
+// ==========================================
+Route::prefix('psb')->name('psb.')->group(function () {
+  Route::get('/daftar', [RegistrationController::class, 'publicCreate'])->name('register');
+  Route::post('/daftar', [RegistrationController::class, 'publicStore'])->name('store');
+  Route::get('/berhasil/{regNumber}', [RegistrationController::class, 'publicSuccess'])->name('success');
+  Route::get('/cek-status', [RegistrationController::class, 'publicCheckStatus'])->name('check');
+  Route::get('/cetak-bukti/{registration}', [RegistrationController::class, 'printSlip'])->name('slip');
 });
 
 // ==========================================
@@ -164,6 +176,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/students/{student}/exit', [StudentExitController::class, 'store'])->name('students.exit.store');
     Route::get('/students/{student}/print-mutation', [StudentExitController::class, 'printLetter'])->name('students.exit.print');
     Route::get('/students/{student}/print-skl', [StudentExitController::class, 'printSkl'])->name('students.exit.print-skl');
+
+    // PENERIMAAN SANTRI BARU (PSB ADMIN)
+    Route::prefix('admin/registrations')->name('registrations.')->group(function () {
+      Route::get('/', [RegistrationController::class, 'index'])->name('index');
+      Route::get('/{registration}', [RegistrationController::class, 'show'])->name('show');
+      Route::put('/{registration}/status', [RegistrationController::class, 'updateStatus'])->name('update-status');
+      Route::post('/{registration}/enroll', [RegistrationController::class, 'enroll'])->name('enroll');
+      Route::delete('/{registration}', [RegistrationController::class, 'destroy'])->name('destroy');
+    });
 
 
     Route::prefix('academic/graduation')->name('graduation.')->group(function () {

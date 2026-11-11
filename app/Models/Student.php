@@ -120,4 +120,10 @@ class Student extends Model
     {
         return $this->hasMany(DormAttendanceDetail::class);
     }
+
+    // Relasi ke Data Registrasi Pendaftaran Awal (PSB)
+    public function registration(): HasOne
+    {
+        return $this->hasOne(Registration::class);
+    }
 }
