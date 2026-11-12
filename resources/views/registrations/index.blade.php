@@ -229,8 +229,16 @@
               <option value="enrolled" {{ request('status') == 'enrolled' ? 'selected' : '' }}>Santri Aktif</option>
             </select>
           </div>
-          <div class="col-6 col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary flex-grow-1"><i class="ti ti-filter"></i> Filter</button>
+          <div class="col-6 col-md-2">
+            <select name="payment_status" class="form-select" onchange="this.form.submit()">
+              <option value="">Semua Pembayaran</option>
+              <option value="unverified" {{ request('payment_status') == 'unverified' ? 'selected' : '' }}>Perlu Cek Slip</option>
+              <option value="verified" {{ request('payment_status') == 'verified' ? 'selected' : '' }}>Pembayaran Sah / Lunas</option>
+              <option value="rejected" {{ request('payment_status') == 'rejected' ? 'selected' : '' }}>Pembayaran Ditolak</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-1 d-flex gap-1">
+            <button type="submit" class="btn btn-primary" title="Filter"><i class="ti ti-filter"></i></button>
             <a href="{{ route('registrations.index') }}" class="btn btn-outline-secondary" title="Reset Filter"><i class="ti ti-refresh"></i></a>
           </div>
         </form>
@@ -244,6 +252,7 @@
               <th>Calon Santri</th>
               <th>Jenjang & Sekolah Asal</th>
               <th>Kontak Wali / Ortu</th>
+              <th>Pembayaran</th>
               <th>Nilai Seleksi</th>
               <th>Status</th>
               <th class="text-center" style="width: 140px;">Aksi</th>
@@ -292,6 +301,16 @@
                   @endif
                 </td>
                 <td>
+                  <div class="d-flex flex-column gap-1">
+                    <div>{!! $reg->payment_status_badge !!}</div>
+                    @if($reg->payment_receipt)
+                      <a href="{{ $reg->payment_receipt_url }}" target="_blank" class="small text-primary text-decoration-none d-inline-flex align-items-center gap-1">
+                        <i class="ti ti-file-text"></i> Lihat Slip
+                      </a>
+                    @endif
+                  </div>
+                </td>
+                <td>
                   @if($reg->selection_score !== null)
                     <span class="fw-bold fs-6 {{ $reg->selection_score >= 70 ? 'text-success' : 'text-danger' }}">
                       {{ number_format($reg->selection_score, 1) }}
@@ -334,7 +353,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="7" class="text-center py-5">
+                <td colspan="8" class="text-center py-5">
                   <div class="text-muted">
                     <i class="ti ti-file-search fs-1 d-block mb-2 text-secondary"></i>
                     <p class="mb-0 fw-medium">Belum ada data pendaftar santri baru.</p>

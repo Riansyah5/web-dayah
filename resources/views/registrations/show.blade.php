@@ -82,6 +82,9 @@
         <a href="{{ route('psb.slip', $registration->id) }}" target="_blank" class="btn btn-outline-primary">
           <i class="ti ti-printer"></i> Cetak Bukti PDF
         </a>
+        {{-- <button type="button" class="btn btn-outline-warning text-dark" data-bs-toggle="modal" data-bs-target="#verifyPaymentModal">
+          <i class="ti ti-receipt"></i> Verifikasi Pembayaran
+        </button> --}}
         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
           <i class="ti ti-edit"></i> Ubah Status / Nilai
         </button>
@@ -143,6 +146,7 @@
             <span class="badge {{ $badgeColors[$registration->status] ?? 'bg-secondary' }} px-3 py-1">
               {{ $registration->status_label }}
             </span>
+            {!! $registration->payment_status_badge !!}
           </div>
           <div class="text-muted small">
             No. Registrasi: <span class="fw-semibold text-primary font-monospace">{{ $registration->registration_number }}</span>
@@ -164,6 +168,92 @@
           <strong><i class="ti ti-notes"></i> Catatan Panitia:</strong> {{ $registration->notes }}
         </div>
       @endif
+    </div>
+  </div>
+
+  <!-- BUKTI & INFORMASI PEMBAYARAN -->
+  <div class="col-12 mb-4">
+    <div class="berry-card">
+      <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <i class="ti ti-receipt text-primary fs-5"></i>
+          <h6 class="mb-0 fw-bold">Bukti & Informasi Pembayaran Pendaftaran</h6>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          {!! $registration->payment_status_badge !!}
+          <button type="button" class="btn btn-sm btn-outline-warning text-dark" data-bs-toggle="modal" data-bs-target="#verifyPaymentModal">
+            <i class="ti ti-edit"></i> Verifikasi Pembayaran
+          </button>
+        </div>
+      </div>
+      <div class="p-3 p-md-4">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-4 text-center">
+            @if($registration->payment_receipt)
+              @php
+                $ext = pathinfo($registration->payment_receipt, PATHINFO_EXTENSION);
+                $isImage = in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'webp']);
+              @endphp
+              @if($isImage)
+                <div class="border rounded p-2 bg-light d-inline-block position-relative">
+                  <img src="{{ $registration->payment_receipt_url }}" alt="Slip Pembayaran" class="img-fluid rounded shadow-sm" style="max-height: 200px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#receiptPreviewModal">
+                  <div class="mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#receiptPreviewModal">
+                      <i class="ti ti-zoom-in"></i> Perbesar Slip
+                    </button>
+                    <a href="{{ $registration->payment_receipt_url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                      <i class="ti ti-external-link"></i> Tab Baru
+                    </a>
+                  </div>
+                </div>
+              @else
+                <div class="p-4 border rounded bg-light text-center">
+                  <i class="ti ti-file-text fs-1 text-danger d-block mb-2"></i>
+                  <a href="{{ $registration->payment_receipt_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="ti ti-download"></i> Buka Berkas Slip (PDF)
+                  </a>
+                </div>
+              @endif
+            @else
+              <div class="p-4 border rounded bg-light text-center text-muted">
+                <i class="ti ti-file-off fs-1 d-block mb-2"></i>
+                <small>Tidak ada berkas slip pembayaran yang dilampirkan.</small>
+              </div>
+            @endif
+          </div>
+          <div class="col-12 col-md-8">
+            <div class="row">
+              <div class="col-12 col-sm-6 info-group">
+                <div class="info-label">Nama Pengirim / Pemilik Rekening</div>
+                <div class="info-value">{{ $registration->payment_sender_name ?: '-' }}</div>
+              </div>
+              <div class="col-12 col-sm-6 info-group">
+                <div class="info-label">Bank Pengirim</div>
+                <div class="info-value">{{ $registration->payment_bank_name ?: '-' }}</div>
+              </div>
+              <div class="col-12 col-sm-6 info-group">
+                <div class="info-label">Nominal Transfer</div>
+                <div class="info-value text-success fw-bold fs-6">
+                  Rp {{ $registration->payment_amount ? number_format($registration->payment_amount, 0, ',', '.') : '-' }}
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 info-group">
+                <div class="info-label">Tanggal Transfer</div>
+                <div class="info-value">
+                  {{ $registration->payment_date ? $registration->payment_date->translatedFormat('d F Y') : '-' }}
+                </div>
+              </div>
+              @if($registration->payment_notes)
+                <div class="col-12">
+                  <div class="alert alert-light border py-2 px-3 mb-0 small">
+                    <strong><i class="ti ti-info-circle"></i> Catatan Verifikator Keuangan:</strong> {{ $registration->payment_notes }}
+                  </div>
+                </div>
+              @endif
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -367,6 +457,63 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL VERIFIKASI PEMBAYARAN -->
+<div class="modal fade" id="verifyPaymentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ route('registrations.verify-payment', $registration->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        <div class="modal-header">
+          <h5 class="modal-title">Verifikasi Pembayaran Pendaftaran</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Status Pembayaran <span class="text-danger">*</span></label>
+            <select name="payment_status" class="form-select" required>
+              <option value="verified" {{ $registration->payment_status == 'verified' ? 'selected' : '' }}>Pembayaran Sah / Lunas (Verified)</option>
+              <option value="unverified" {{ $registration->payment_status == 'unverified' ? 'selected' : '' }}>Menunggu Verifikasi (Unverified)</option>
+              <option value="rejected" {{ $registration->payment_status == 'rejected' ? 'selected' : '' }}>Ditolak / Slip Tidak Valid (Rejected)</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Catatan Verifikasi Keuangan</label>
+            <textarea name="payment_notes" class="form-control" rows="3" placeholder="Contoh: Dana masuk sesuai mutasi BSI atau struk transfer tidak terbaca...">{{ $registration->payment_notes }}</textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Verifikasi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PREVIEW SLIP BESAR -->
+@if($registration->payment_receipt)
+<div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bukti Transfer - {{ $registration->payment_sender_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-2 bg-dark">
+        <img src="{{ $registration->payment_receipt_url }}" alt="Slip Pembayaran" class="img-fluid" style="max-height: 80vh;">
+      </div>
+      <div class="modal-footer">
+        <a href="{{ $registration->payment_receipt_url }}" download class="btn btn-outline-secondary">
+          <i class="ti ti-download"></i> Unduh Gambar
+        </a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
 
 <!-- MODAL UPDATE STATUS & SKOR -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-hidden="true">

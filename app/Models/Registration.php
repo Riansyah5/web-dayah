@@ -15,8 +15,45 @@ class Registration extends Model
 
     protected $casts = [
         'birth_date' => 'date',
+        'payment_date' => 'date',
+        'payment_amount' => 'integer',
         'selection_score' => 'float',
     ];
+
+    /**
+     * URL Bukti Slip Pembayaran
+     */
+    public function getPaymentReceiptUrlAttribute(): ?string
+    {
+        if ($this->payment_receipt) {
+            return asset('storage/' . $this->payment_receipt);
+        }
+        return null;
+    }
+
+    /**
+     * Label Status Pembayaran
+     */
+    public function getPaymentStatusLabelAttribute(): string
+    {
+        return match ($this->payment_status) {
+            'verified' => 'Pembayaran Sah',
+            'rejected' => 'Pembayaran Ditolak',
+            default => 'Menunggu Verifikasi',
+        };
+    }
+
+    /**
+     * Badge Status Pembayaran
+     */
+    public function getPaymentStatusBadgeAttribute(): string
+    {
+        return match ($this->payment_status) {
+            'verified' => '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="ti ti-check me-1"></i>Lunas</span>',
+            'rejected' => '<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="ti ti-x me-1"></i>Tidak Valid</span>',
+            default => '<span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="ti ti-clock me-1"></i>Perlu Dicek</span>',
+        };
+    }
 
     /**
      * Relasi ke Tahun Ajaran tujuan pendaftaran

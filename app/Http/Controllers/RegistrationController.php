@@ -9,6 +9,7 @@ use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class RegistrationController extends Controller
 {
@@ -28,6 +29,11 @@ class RegistrationController extends Controller
         // Filter status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        // Filter status pembayaran
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
         }
 
         // Filter jenjang
@@ -66,6 +72,7 @@ class RegistrationController extends Controller
             'verified' => (clone $statQuery)->where('status', 'verified')->count(),
             'passed' => (clone $statQuery)->where('status', 'passed')->count(),
             'enrolled' => (clone $statQuery)->where('status', 'enrolled')->count(),
+            'payment_unverified' => (clone $statQuery)->where('payment_status', 'unverified')->count(),
         ];
 
         return view('registrations.index', compact('registrations', 'stages', 'academicYears', 'activeYear', 'stats'));
@@ -94,6 +101,21 @@ class RegistrationController extends Controller
         $registration->update($validated);
 
         return back()->with('success', 'Status pendaftaran dan catatan berhasil diperbarui.');
+    }
+
+    /**
+     * Verifikasi Slip Bukti Pembayaran Pendaftaran
+     */
+    public function verifyPayment(Request $request, Registration $registration)
+    {
+        $validated = $request->validate([
+            'payment_status' => 'required|in:verified,rejected,unverified',
+            'payment_notes' => 'nullable|string|max:500',
+        ]);
+
+        $registration->update($validated);
+
+        return back()->with('success', 'Status verifikasi pembayaran berhasil diperbarui.');
     }
 
     /**
@@ -202,6 +224,14 @@ class RegistrationController extends Controller
     public function publicStore(Request $request)
     {
         $validated = $request->validate([
+            // Bukti Pembayaran
+            'payment_receipt' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'payment_sender_name' => 'required|string|max:255',
+            'payment_bank_name' => 'nullable|string|max:100',
+            'payment_amount' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
+
+            // Data Santri & Jenjang
             'target_stage' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'gender' => 'required|in:L,P',
@@ -233,12 +263,31 @@ class RegistrationController extends Controller
             'guardian_education' => 'nullable|string|max:255',
             'guardian_occupation' => 'nullable|string|max:255',
             'guardian_occupation_detail' => 'nullable|string|max:255',
+        ], [
+            'payment_receipt.required' => 'Wajib mengunggah bukti/slip pembayaran pendaftaran.',
+            'payment_receipt.mimes' => 'Format file slip pembayaran harus berupa JPG, JPEG, PNG, atau PDF.',
+            'payment_receipt.max' => 'Ukuran file slip pembayaran maksimal 3 MB.',
+            'payment_sender_name.required' => 'Nama pemilik rekening / pengirim transfer wajib diisi.',
+            'target_stage.required' => 'Pilihan jenjang pendidikan wajib dipilih.',
+            'name.required' => 'Nama lengkap calon santri wajib diisi.',
+            'gender.required' => 'Jenis kelamin wajib dipilih.',
+            'birth_place.required' => 'Tempat lahir wajib diisi.',
+            'birth_date.required' => 'Tanggal lahir wajib diisi.',
         ]);
 
         $activeYear = AcademicYear::where('is_active', true)->first();
         $validated['academic_year_id'] = $activeYear?->id;
         $validated['registration_number'] = Registration::generateRegistrationNumber();
         $validated['status'] = 'pending';
+        $validated['payment_status'] = 'unverified';
+
+        // Simpan file slip transfer
+        if ($request->hasFile('payment_receipt')) {
+            $file = $request->file('payment_receipt');
+            $filename = 'slip_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('psb_receipts', $filename, 'public');
+            $validated['payment_receipt'] = $path;
+        }
 
         // Konversi format nomor telepon (08 -> 62)
         foreach (['father_phone', 'mother_phone', 'guardian_phone'] as $phoneField) {

@@ -127,13 +127,21 @@
   <div class="reg-box">
     <table>
       <tr>
-        <td style="width: 60%;">
+        <td style="width: 55%;">
           <span style="font-size: 8.5pt; color: #555;">NOMOR REGISTRASI:</span><br>
-          <strong style="font-size: 14pt; letter-spacing: 1px; color: #1565c0;">{{ $registration->registration_number }}</strong>
+          <strong style="font-size: 13pt; letter-spacing: 1px; color: #1565c0;">{{ $registration->registration_number }}</strong>
         </td>
-        <td style="width: 40%; text-align: right;">
-          <span style="font-size: 8.5pt; color: #555;">TANGGAL PENDAFTARAN:</span><br>
-          <strong>{{ $registration->created_at->format('d/m/Y - H:i') }} WIB</strong>
+        <td style="width: 45%; text-align: right;">
+          <span style="font-size: 8.5pt; color: #555;">STATUS BIAYA PENDAFTARAN:</span><br>
+          <strong style="font-size: 10pt; color: {{ $registration->payment_status == 'verified' ? '#008000' : '#d97706' }};">
+            {{ strtoupper($registration->payment_status_label) }}
+          </strong>
+          <div style="font-size: 8pt; color: #666;">
+            Pengirim: {{ $registration->payment_sender_name ?: '-' }}
+            @if($registration->payment_amount)
+              &bull; Rp {{ number_format($registration->payment_amount, 0, ',', '.') }}
+            @endif
+          </div>
         </td>
       </tr>
     </table>

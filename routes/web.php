@@ -182,6 +182,7 @@ Route::middleware('auth')->group(function () {
       Route::get('/', [RegistrationController::class, 'index'])->name('index');
       Route::get('/{registration}', [RegistrationController::class, 'show'])->name('show');
       Route::put('/{registration}/status', [RegistrationController::class, 'updateStatus'])->name('update-status');
+      Route::put('/{registration}/verify-payment', [RegistrationController::class, 'verifyPayment'])->name('verify-payment');
       Route::post('/{registration}/enroll', [RegistrationController::class, 'enroll'])->name('enroll');
       Route::delete('/{registration}', [RegistrationController::class, 'destroy'])->name('destroy');
     });

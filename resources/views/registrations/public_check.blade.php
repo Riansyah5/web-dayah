@@ -134,6 +134,14 @@
             <div class="col-sm-4 text-muted">Tanggal Daftar:</div>
             <div class="col-sm-8 text-dark">{{ $registration->created_at->format('d F Y, H:i') }} WIB</div>
 
+            <div class="col-sm-4 text-muted">Status Pembayaran:</div>
+            <div class="col-sm-8">
+              {!! $registration->payment_status_badge !!}
+              @if($registration->payment_notes)
+                <div class="text-danger small mt-1"><em>Catatan: {{ $registration->payment_notes }}</em></div>
+              @endif
+            </div>
+
             @if($registration->selection_score !== null)
               <div class="col-sm-4 text-muted">Nilai Seleksi:</div>
               <div class="col-sm-8 fw-bold {{ $registration->selection_score >= 70 ? 'text-success' : 'text-danger' }}">
