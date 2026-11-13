@@ -25,6 +25,7 @@ class RolePermissionSeeder extends Seeder
             // --- KESISWAAN & ASRAMA ---
             'lihat-data-santri',
             'kelola-data-santri',       // CRUD Siswa, Import, Mutasi, Promosi, Kelulusan
+            'kelola-psb',               // Penerimaan Santri Baru (PSB)
             'lihat-asrama',
             'kelola-asrama-kamar',      // CRUD Dorm, Room, Assignment
             'kelola-pelanggaran',       // Input & pantau pelanggaran
@@ -103,6 +104,7 @@ class RolePermissionSeeder extends Seeder
             'kelola-user-pegawai',
             'lihat-data-santri',
             'kelola-data-santri',
+            'kelola-psb',
             'kelola-asrama-kamar',
             'kelola-pelanggaran',
             'kelola-perizinan-santri',

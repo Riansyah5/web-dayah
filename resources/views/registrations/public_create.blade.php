@@ -758,9 +758,9 @@
                 <span class="fw-bold text-primary fs-6">Biaya Pendaftaran: Rp 350.000</span>
               </div>
               <div class="row align-items-center g-2 mt-1">
-                <div class="col-12 col-md-4">
-                  <div class="text-muted small">Bank Tujuan:</div>
-                  <strong class="text-dark fs-6"><i class="bi bi-bank me-1 text-primary"></i> Bank Syariah Indonesia (BSI)</strong>
+                <div class="col-12 col-md-5">
+                  <div class="text-muted small d-flex align-items-center gap-2">Bank Tujuan: </div>
+                  <img src="{{ asset('assets/images/bsi.png') }}" alt="" class="img-fluid" style="max-height: 33px;"><strong class="text-dark fs-6"> Bank Syariah Indonesia (BSI)</strong>
                 </div>
                 <div class="col-12 col-md-4">
                   <div class="text-muted small">Nomor Rekening:</div>
@@ -771,7 +771,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                   <div class="text-muted small">Atas Nama:</div>
                   <strong class="text-dark">PSB MATAQU</strong>
                 </div>
@@ -809,7 +809,7 @@
                 <div class="upload-zone" onclick="document.getElementById('payment_receipt').click()">
                   <i class="bi bi-cloud-arrow-up fs-1 text-primary d-block mb-1"></i>
                   <span class="fw-semibold text-dark d-block">Klik di sini untuk memilih foto / file slip transfer</span>
-                  <small class="text-muted d-block">Format JPG, JPEG, PNG, atau PDF (Maksimal 3 MB)</small>
+                  <small class="text-muted d-block">Format JPG, JPEG, PNG, atau PDF (Maksimal 5 MB)</small>
                   <span id="fileChosenLabel" class="badge bg-success-subtle text-success border border-success-subtle mt-2 d-none">
                     <i class="bi bi-file-earmark-check me-1"></i> File terpilih
                   </span>

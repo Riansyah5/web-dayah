@@ -175,7 +175,7 @@ class UserController extends Controller
         // 1. Definisikan Peta Kelompok Modul (Berdasarkan Seeder Anda)
         $mappedGroups = [
             'Pengaturan & Master Data' => ['kelola-pengaturan-sistem', 'kelola-master-data', 'kelola-user-pegawai'],
-            'Kesiswaan & Asrama' => ['lihat-data-santri', 'kelola-data-santri', 'lihat-asrama', 'kelola-asrama-kamar', 'kelola-pelanggaran', 'kelola-perizinan-santri'],
+            'Kesiswaan & Asrama' => ['lihat-data-santri', 'kelola-data-santri', 'kelola-psb', 'lihat-asrama', 'kelola-asrama-kamar', 'kelola-pelanggaran', 'kelola-perizinan-santri'],
             'Akademik & KBM' => ['lihat-jadwal-pelajaran', 'kelola-jadwal-pelajaran', 'kelola-piket-badal', 'ajukan-izin-guru', 'isi-jurnal-guru', 'lihat-kelas', 'kelola-kelas'],
             'Rapor & Penilaian' => ['isi-nilai-mapel', 'kelola-leger-rapor', 'kelola-setting-rapor'],
             'Modul Tahfizh' => ['kelola-jadwal-tahfizh', 'pantau-tahfizh-admin', 'lihat-halaqah', 'kelola-halaqah', 'isi-jurnal-tahfizh', 'isi-setoran-tahfizh', 'kelola-rapor-tahfizh'],

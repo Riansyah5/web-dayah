@@ -53,13 +53,17 @@
         @endif
 
         @if($sidebar['menu_santri'] ?? true)
-            @canany(['lihat-data-santri', 'kelola-data-santri'])
+            @canany(['lihat-data-santri', 'kelola-data-santri', 'kelola-psb'])
             <li class="pc-item pc-hasmenu {{ request()->routeIs('students.*') || request()->routeIs('registrations.*') || request()->routeIs('alumni.*') ? 'active pc-trigger' : '' }}">
               <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-school"></i></span><span class="pc-mtext">Santri</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
               <ul class="pc-submenu">
+                @can('kelola-psb')
                 <li class="pc-item {{ request()->routeIs('registrations.*') ? 'active' : '' }}"><a class="pc-link" href="{{ route('registrations.index') }}">Penerimaan Santri (PSB)</a></li>
+                @endcan
+                @canany(['lihat-data-santri', 'kelola-data-santri'])
                 <li class="pc-item {{ request()->routeIs('students.index') ? 'active' : '' }}"><a class="pc-link" href="{{ route('students.index') }}">Santri Aktif</a></li>
                 <li class="pc-item {{ request()->routeIs('alumni.*') ? 'active' : '' }}"><a class="pc-link" href="{{ route('alumni.index') }}">Alumni</a></li>
+                @endcanany
               </ul>
             </li>
             @endcanany

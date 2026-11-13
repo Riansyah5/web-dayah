@@ -177,22 +177,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/students/{student}/print-mutation', [StudentExitController::class, 'printLetter'])->name('students.exit.print');
     Route::get('/students/{student}/print-skl', [StudentExitController::class, 'printSkl'])->name('students.exit.print-skl');
 
-    // PENERIMAAN SANTRI BARU (PSB ADMIN)
-    Route::prefix('admin/registrations')->name('registrations.')->group(function () {
-      Route::get('/', [RegistrationController::class, 'index'])->name('index');
-      Route::get('/{registration}', [RegistrationController::class, 'show'])->name('show');
-      Route::put('/{registration}/status', [RegistrationController::class, 'updateStatus'])->name('update-status');
-      Route::put('/{registration}/verify-payment', [RegistrationController::class, 'verifyPayment'])->name('verify-payment');
-      Route::post('/{registration}/enroll', [RegistrationController::class, 'enroll'])->name('enroll');
-      Route::delete('/{registration}', [RegistrationController::class, 'destroy'])->name('destroy');
-    });
-
-
     Route::prefix('academic/graduation')->name('graduation.')->group(function () {
       Route::get('/', [GraduationController::class, 'index'])->name('index');
       Route::get('/{classroom}', [GraduationController::class, 'create'])->name('create');
       Route::post('/{classroom}', [GraduationController::class, 'store'])->name('store');
     });
+  });
+
+  // ==========================================
+  // PENERIMAAN SANTRI BARU (PSB ADMIN)
+  // ==========================================
+  Route::middleware(['permission:kelola-psb'])->prefix('admin/registrations')->name('registrations.')->group(function () {
+    Route::get('/', [RegistrationController::class, 'index'])->name('index');
+    Route::get('/{registration}', [RegistrationController::class, 'show'])->name('show');
+    Route::put('/{registration}/status', [RegistrationController::class, 'updateStatus'])->name('update-status');
+    Route::put('/{registration}/verify-payment', [RegistrationController::class, 'verifyPayment'])->name('verify-payment');
+    Route::post('/{registration}/enroll', [RegistrationController::class, 'enroll'])->name('enroll');
+    Route::delete('/{registration}', [RegistrationController::class, 'destroy'])->name('destroy');
   });
 
 

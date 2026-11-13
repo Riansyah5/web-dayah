@@ -225,7 +225,7 @@ class RegistrationController extends Controller
     {
         $validated = $request->validate([
             // Bukti Pembayaran
-            'payment_receipt' => 'required|file|mimes:jpg,jpeg,png,pdf|max:3072',
+            'payment_receipt' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120', // Maks 5 MB
             'payment_sender_name' => 'required|string|max:255',
             'payment_bank_name' => 'nullable|string|max:100',
             'payment_amount' => 'nullable|numeric|min:0',
