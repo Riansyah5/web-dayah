@@ -33,21 +33,26 @@ class AuthController extends Controller
 
         // Attempt Login secara eksplisit menggunakan guard 'web'
         if (Auth::guard('web')->attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::guard('web')->user();
             
             // Cek status menggunakan guard 'web'
-            if (Auth::guard('web')->user()->status !== 'Aktif') {
+            if ($user->status !== 'Aktif') {
                 Auth::guard('web')->logout();
                 return back()->withErrors([
                     'nonaktif' => 'Akun Anda dinonaktifkan.'
                 ]);
             }
 
+            // Cek jika aplikasi dalam mode pemeliharaan (maintenance)
+            if (\App\Models\AppSetting::isMaintenance() && !$user->hasRole('Superadmin')) {
+                Auth::guard('web')->logout();
+                return back()->withErrors([
+                    'login' => 'Aplikasi sedang dinonaktifkan untuk pemeliharaan sistem. Saat ini hanya Superadmin yang diizinkan masuk.'
+                ]);
+            }
+
             $request->session()->regenerate();
             
-            // Opsional: Baris ini sepertinya tidak dipakai di bawahnya, 
-            // bisa dihapus jika memang tidak diteruskan ke view/session.
-            $total = Pegawai::count(); 
-
             return redirect()->intended('dashboard');
         }
 

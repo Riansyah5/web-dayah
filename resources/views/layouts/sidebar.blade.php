@@ -262,6 +262,13 @@
                 <li class="pc-item"><a class="pc-link" href="{{ route('sidebar-settings.index') }}">Pengaturan Sidebar</a></li>
                 <li class="pc-item"><a class="pc-link" href="{{ route('system.maintenance.index') }}">Cleanup Akademik</a></li>
                 <li class="pc-item"><a class="pc-link" href="{{ route('tahfizh.admin.cleanup.index') }}">Cleanup Tahfizh</a></li>
+                @role('Superadmin')
+                <li class="pc-item {{ request()->routeIs('system.maintenance-mode.*') ? 'active' : '' }}">
+                  <a class="pc-link" href="{{ route('system.maintenance-mode.index') }}">
+                    <span class="pc-mtext text-danger fw-bold"><i class="ti ti-power me-1"></i> Mode Pemeliharaan</span>
+                  </a>
+                </li>
+                @endrole
               </ul>
             </li>
             @endcan

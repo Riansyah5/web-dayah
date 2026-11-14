@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Daftarkan middleware pemeliharaan sistem global untuk web
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckMaintenanceMode::class,
+        ]);
+
         // Daftarkan alias di sini
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,

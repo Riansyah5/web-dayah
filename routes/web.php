@@ -35,6 +35,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SidebarSettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentExitController;
+use App\Http\Controllers\System\AppMaintenanceController;
 use App\Http\Controllers\System\SystemMaintenanceController;
 use App\Http\Controllers\Tahfizh\Admin\MasterScheduleController;
 use App\Http\Controllers\Tahfizh\Admin\TahfizhAttendanceReportController;
@@ -68,6 +69,11 @@ Route::middleware('guest')->group(function () {
 });
 
 // ==========================================
+// HALAMAN PEMELIHARAAN SISTEM (MAINTENANCE)
+// ==========================================
+Route::get('/maintenance', [AppMaintenanceController::class, 'publicScreen'])->name('maintenance.screen');
+
+// ==========================================
 // PORTAL PSB (PENERIMAAN SANTRI BARU) PUBLIK
 // ==========================================
 Route::prefix('psb')->name('psb.')->group(function () {
@@ -96,6 +102,12 @@ Route::middleware('auth')->group(function () {
     Route::prefix('system')->name('system.')->group(function () {
       Route::get('/maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
       Route::post('/maintenance/cleanup', [SystemMaintenanceController::class, 'cleanup'])->name('maintenance.cleanup');
+    });
+
+    // MODE PEMELIHARAAN SISTEM (KHUSUS SUPERADMIN)
+    Route::middleware(['role:Superadmin'])->prefix('system/maintenance-mode')->name('system.maintenance-mode.')->group(function () {
+      Route::get('/', [AppMaintenanceController::class, 'index'])->name('index');
+      Route::post('/update', [AppMaintenanceController::class, 'update'])->name('update');
     });
 
     Route::prefix('tahfizh/admin/cleanup')->name('tahfizh.admin.cleanup.')->group(function () {
