@@ -182,6 +182,19 @@ class UserController extends Controller
             'Computer Based Test (CBT)' => ['kelola-akun-cbt', 'kelola-jadwal-ujian-cbt', 'pantau-ujian-cbt', 'kelola-bank-soal', 'koreksi-hasil-ujian'],
         ];
 
+        // Auto-heal: Pastikan permission di mappedGroups selalu ada di database (berguna saat deploy ke hosting)
+        $allMapped = collect($mappedGroups)->flatten();
+        $missing = $allMapped->diff($permissions->pluck('name'));
+        if ($missing->isNotEmpty()) {
+            foreach ($missing as $permName) {
+                $p = Permission::firstOrCreate(['name' => $permName]);
+                Role::where('name', 'Superadmin')->first()?->givePermissionTo($p);
+                Role::where('name', 'Admin')->first()?->givePermissionTo($p);
+            }
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            $permissions = Permission::all();
+        }
+
         // 2. Proses Pengelompokan Data
         $groupedPermissions = [];
         foreach ($mappedGroups as $group => $names) {
