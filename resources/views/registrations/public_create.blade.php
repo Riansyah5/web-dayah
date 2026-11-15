@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pendaftaran Santri Baru (PSB Online) - Dayah Mataqu</title>
-  
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
@@ -45,12 +45,14 @@
       top: 0;
       z-index: 100;
     }
+
     .psb-header .brand-title {
       font-weight: 700;
       font-size: 1.15rem;
       color: var(--iz-heading);
       margin: 0;
     }
+
     .psb-header .brand-sub {
       font-size: .8rem;
       color: var(--iz-muted);
@@ -71,8 +73,18 @@
       margin-bottom: 1.5rem;
       box-shadow: 0 10px 30px rgba(103, 58, 183, .15);
     }
-    .psb-hero h2 { font-weight: 700; font-size: 1.75rem; margin-bottom: .4rem; }
-    .psb-hero p { margin-bottom: 0; opacity: .9; font-size: .95rem; }
+
+    .psb-hero h2 {
+      font-weight: 700;
+      font-size: 1.75rem;
+      margin-bottom: .4rem;
+    }
+
+    .psb-hero p {
+      margin-bottom: 0;
+      opacity: .9;
+      font-size: .95rem;
+    }
 
     .card-form {
       background: var(--iz-surface);
@@ -91,6 +103,7 @@
       padding: 1.5rem 1.75rem 1.25rem;
       background: #ffffff;
     }
+
     .psb-steps-line {
       position: absolute;
       left: 2.5rem;
@@ -100,6 +113,7 @@
       background: var(--iz-line);
       z-index: 1;
     }
+
     .psb-step {
       position: relative;
       z-index: 2;
@@ -113,6 +127,7 @@
       color: var(--iz-muted);
       max-width: 100px;
     }
+
     .psb-step-circle {
       width: var(--circle);
       height: var(--circle);
@@ -127,6 +142,7 @@
       color: var(--iz-muted);
       transition: all .25s ease;
     }
+
     .psb-step-text {
       font-size: .75rem;
       font-weight: 600;
@@ -135,19 +151,27 @@
       transition: color .25s ease;
       white-space: nowrap;
     }
+
     .psb-step.active .psb-step-circle {
       background: var(--iz-secondary);
       border-color: var(--iz-secondary);
       color: #fff;
       box-shadow: 0 0 0 4px var(--iz-secondary-light);
     }
-    .psb-step.active .psb-step-text { color: var(--iz-secondary); }
+
+    .psb-step.active .psb-step-text {
+      color: var(--iz-secondary);
+    }
+
     .psb-step.completed .psb-step-circle {
       background: var(--iz-success);
       border-color: var(--iz-success);
       color: #fff;
     }
-    .psb-step.completed .psb-step-text { color: var(--iz-success); }
+
+    .psb-step.completed .psb-step-text {
+      color: var(--iz-success);
+    }
 
     .form-body {
       padding: 2rem;
@@ -160,6 +184,7 @@
       gap: .85rem;
       margin-bottom: 1.5rem;
     }
+
     .step-section-icon {
       width: 44px;
       height: 44px;
@@ -171,12 +196,14 @@
       justify-content: center;
       font-size: 1.25rem;
     }
+
     .step-section-title {
       font-size: 1.15rem;
       font-weight: 700;
       color: var(--iz-heading);
       margin: 0;
     }
+
     .step-section-desc {
       font-size: .85rem;
       color: var(--iz-muted);
@@ -190,6 +217,7 @@
       padding: 1.25rem;
       margin-bottom: 1.5rem;
     }
+
     .bank-badge {
       background: #0056b3;
       color: #fff;
@@ -207,14 +235,18 @@
       color: var(--iz-heading);
       margin-bottom: .35rem;
     }
-    .form-control, .form-select {
+
+    .form-control,
+    .form-select {
       border: 1px solid #cdd5df;
       border-radius: 8px;
       padding: .65rem .95rem;
       font-size: .92rem;
       color: var(--iz-body);
     }
-    .form-control:focus, .form-select:focus {
+
+    .form-control:focus,
+    .form-select:focus {
       border-color: var(--iz-secondary);
       box-shadow: 0 0 0 .2rem rgba(103, 58, 183, .15);
     }
@@ -236,6 +268,7 @@
       cursor: pointer;
       transition: all .2s;
     }
+
     .upload-zone:hover {
       border-color: var(--iz-secondary);
       background: #f8f6fc;
@@ -259,6 +292,7 @@
       border-radius: 8px;
       transition: all .2s;
     }
+
     .btn-secondary-custom:hover {
       background: var(--iz-secondary-dark);
       border-color: var(--iz-secondary-dark);
@@ -266,10 +300,21 @@
     }
 
     @media (max-width: 767.98px) {
-      .psb-hero { padding: 1.5rem 1.25rem; }
-      .psb-steps { padding: 1rem .5rem; }
-      .psb-step-text { font-size: .68rem; }
-      .form-body { padding: 1.25rem 1rem; }
+      .psb-hero {
+        padding: 1.5rem 1.25rem;
+      }
+
+      .psb-steps {
+        padding: 1rem .5rem;
+      }
+
+      .psb-step-text {
+        font-size: .68rem;
+      }
+
+      .form-body {
+        padding: 1.25rem 1rem;
+      }
     }
 
 
@@ -309,14 +354,20 @@
       backdrop-filter: blur(14px);
     }
 
-    .psb-header .container > div:first-child > div:first-child {
+    .psb-header .container>div:first-child>div:first-child {
       background: linear-gradient(135deg, #078f2d, #0b7130 58%, #8bbd2f) !important;
       color: #fff !important;
       box-shadow: 0 8px 18px rgba(5, 144, 45, .22);
     }
 
-    .psb-header .brand-title { color: #12351f; letter-spacing: .035em; }
-    .psb-header .brand-sub { color: #718276; }
+    .psb-header .brand-title {
+      color: #12351f;
+      letter-spacing: .035em;
+    }
+
+    .psb-header .brand-sub {
+      color: #718276;
+    }
 
     .psb-header .btn-outline-secondary {
       color: #08752b;
@@ -335,18 +386,21 @@
       transform: translateY(-1px);
     }
 
-    .main-wrapper { max-width: 940px; margin-top: 2.25rem; }
+    .main-wrapper {
+      max-width: 940px;
+      margin-top: 2.25rem;
+    }
 
     .psb-hero {
       position: relative;
       isolation: isolate;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,.3);
+      border: 1px solid rgba(255, 255, 255, .3);
       border-radius: 22px;
       padding: 2.35rem 2.5rem;
       background:
-        radial-gradient(circle at 88% 18%, rgba(255,255,255,.23), transparent 9rem),
-        radial-gradient(circle at 72% 110%, rgba(193,229,67,.34), transparent 15rem),
+        radial-gradient(circle at 88% 18%, rgba(255, 255, 255, .23), transparent 9rem),
+        radial-gradient(circle at 72% 110%, rgba(193, 229, 67, .34), transparent 15rem),
         linear-gradient(118deg, #056d25 0%, #078f2d 52%, #83b92c 100%);
       box-shadow: 0 18px 42px rgba(5, 109, 37, .19);
     }
@@ -356,7 +410,7 @@
       content: "";
       position: absolute;
       z-index: -1;
-      border: 1px solid rgba(255,255,255,.2);
+      border: 1px solid rgba(255, 255, 255, .2);
       border-radius: 50%;
       pointer-events: none;
     }
@@ -366,7 +420,7 @@
       height: 230px;
       right: -55px;
       top: -115px;
-      box-shadow: 0 0 0 22px rgba(255,255,255,.045), 0 0 0 48px rgba(255,255,255,.035);
+      box-shadow: 0 0 0 22px rgba(255, 255, 255, .045), 0 0 0 48px rgba(255, 255, 255, .035);
     }
 
     .psb-hero::after {
@@ -374,7 +428,7 @@
       height: 105px;
       right: 20%;
       bottom: -72px;
-      background: rgba(255,255,255,.07);
+      background: rgba(255, 255, 255, .07);
     }
 
     .psb-hero h2 {
@@ -385,7 +439,7 @@
     }
 
     .psb-hero .badge {
-      border: 1px solid rgba(255,255,255,.7);
+      border: 1px solid rgba(255, 255, 255, .7);
       box-shadow: 0 5px 16px rgba(15, 23, 42, .12);
       padding: .65rem 1rem !important;
     }
@@ -415,10 +469,21 @@
       box-shadow: 0 3px 9px rgba(18, 53, 31, .04);
     }
 
-    .psb-step:nth-of-type(2) .psb-step-circle { border-color: #c5e4b5; }
-    .psb-step:nth-of-type(3) .psb-step-circle { border-color: #d8e99a; }
-    .psb-step:nth-of-type(4) .psb-step-circle { border-color: #b9dfbd; }
-    .psb-step:nth-of-type(5) .psb-step-circle { border-color: #a7d9a8; }
+    .psb-step:nth-of-type(2) .psb-step-circle {
+      border-color: #c5e4b5;
+    }
+
+    .psb-step:nth-of-type(3) .psb-step-circle {
+      border-color: #d8e99a;
+    }
+
+    .psb-step:nth-of-type(4) .psb-step-circle {
+      border-color: #b9dfbd;
+    }
+
+    .psb-step:nth-of-type(5) .psb-step-circle {
+      border-color: #a7d9a8;
+    }
 
     .psb-step.active .psb-step-circle {
       background: linear-gradient(135deg, #078f2d, #65a928);
@@ -428,7 +493,9 @@
       transform: translateY(-2px);
     }
 
-    .psb-step.active .psb-step-text { color: #078f2d; }
+    .psb-step.active .psb-step-text {
+      color: #078f2d;
+    }
 
     .psb-step.completed .psb-step-circle {
       background: linear-gradient(135deg, #16833b, #79ad2c);
@@ -437,7 +504,9 @@
       box-shadow: 0 0 0 4px #e5f6e8;
     }
 
-    .psb-step.completed .psb-step-text { color: #16833b; }
+    .psb-step.completed .psb-step-text {
+      color: #16833b;
+    }
 
     .form-body {
       background: linear-gradient(180deg, #fff 0%, #fdfffb 100%);
@@ -459,10 +528,18 @@
       box-shadow: 0 7px 16px rgba(5, 144, 45, .18);
     }
 
-    .step-section-title { color: #12351f; }
-    .step-section-desc { color: #718276; }
+    .step-section-title {
+      color: #12351f;
+    }
 
-    .form-label { color: #263f2d; font-size: .84rem; }
+    .step-section-desc {
+      color: #718276;
+    }
+
+    .form-label {
+      color: #263f2d;
+      font-size: .84rem;
+    }
 
     .form-control,
     .form-select {
@@ -474,7 +551,9 @@
     }
 
     .form-control:hover,
-    .form-select:hover { border-color: #9bc78a; }
+    .form-select:hover {
+      border-color: #9bc78a;
+    }
 
     .form-control:focus,
     .form-select:focus {
@@ -560,9 +639,14 @@
       transform: translateY(-1px);
     }
 
-    .upload-zone > i { color: #078f2d !important; }
+    .upload-zone>i {
+      color: #078f2d !important;
+    }
 
-    .action-bar { border-top: 1px solid #e5efdf; gap: .75rem; }
+    .action-bar {
+      border-top: 1px solid #e5efdf;
+      gap: .75rem;
+    }
 
     .btn-secondary-custom {
       background: linear-gradient(100deg, #078f2d, #65a928);
@@ -608,31 +692,74 @@
       color: #9f1239;
     }
 
-    footer { color: #718276 !important; }
+    footer {
+      color: #718276 !important;
+    }
 
     @media (max-width: 767.98px) {
-      .main-wrapper { margin-top: 1.25rem; }
-      .psb-hero { padding: 1.6rem 1.25rem; border-radius: 17px; }
-      .psb-hero h2 { max-width: 17rem; }
-      .psb-steps { padding: 1.15rem .45rem 1rem; }
-      .psb-steps-line { left: 1.8rem; right: 1.8rem; }
-      .psb-step { max-width: 68px; }
-      .psb-step-circle { width: 34px; height: 34px; font-size: .9rem; }
+      .main-wrapper {
+        margin-top: 1.25rem;
+      }
+
+      .psb-hero {
+        padding: 1.6rem 1.25rem;
+        border-radius: 17px;
+      }
+
+      .psb-hero h2 {
+        max-width: 17rem;
+      }
+
+      .psb-steps {
+        padding: 1.15rem .45rem 1rem;
+      }
+
+      .psb-steps-line {
+        left: 1.8rem;
+        right: 1.8rem;
+      }
+
+      .psb-step {
+        max-width: 68px;
+      }
+
+      .psb-step-circle {
+        width: 34px;
+        height: 34px;
+        font-size: .9rem;
+      }
+
       .psb-step-text {
         font-size: .62rem;
         white-space: normal;
         line-height: 1.2;
         max-width: 65px;
       }
-      .form-body { padding: 1.2rem .95rem; }
-      .step-section-title { font-size: 1rem; }
-      .step-section-desc { font-size: .78rem; }
-      .action-bar { align-items: stretch; }
-      .action-bar > button,
-      .action-bar .ms-auto > button { min-height: 43px; }
+
+      .form-body {
+        padding: 1.2rem .95rem;
+      }
+
+      .step-section-title {
+        font-size: 1rem;
+      }
+
+      .step-section-desc {
+        font-size: .78rem;
+      }
+
+      .action-bar {
+        align-items: stretch;
+      }
+
+      .action-bar>button,
+      .action-bar .ms-auto>button {
+        min-height: 43px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
+
       *,
       *::before,
       *::after {
@@ -712,33 +839,33 @@
       <!-- FORM BODY -->
       <div class="form-body">
         @if ($errors->any())
-          <div class="alert alert-danger d-flex align-items-start gap-2 mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill fs-5 mt-1"></i>
-            <div>
-              <strong class="d-block mb-1">Ada data yang belum lengkap atau tidak valid:</strong>
-              <ul class="mb-0 ps-3">
-                @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-                @endforeach
-              </ul>
-            </div>
+        <div class="alert alert-danger d-flex align-items-start gap-2 mb-4" role="alert">
+          <i class="bi bi-exclamation-triangle-fill fs-5 mt-1"></i>
+          <div>
+            <strong class="d-block mb-1">Ada data yang belum lengkap atau tidak valid:</strong>
+            <ul class="mb-0 ps-3">
+              @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+              @endforeach
+            </ul>
           </div>
+        </div>
         @endif
 
         <form id="psbForm" action="{{ route('psb.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
 
           @php
-            $occupations = [
-              'PNS', 'PPPK', 'TNI', 'POLRI', 'Pegawai BUMN/BUMD', 'Karyawan Swasta', 'Wiraswasta', 'Pedagang',
-              'Petani', 'Nelayan', 'Peternak', 'Buruh', 'Sopir/Driver', 'Tukang', 'Guru/Dosen', 'Tenaga Kesehatan',
-              'TKI/PMI', 'Ibu Rumah Tangga', 'Tidak Bekerja', 'Lainnya',
-            ];
+          $occupations = [
+          'PNS', 'PPPK', 'TNI', 'POLRI', 'Pegawai BUMN/BUMD', 'Karyawan Swasta', 'Wiraswasta', 'Pedagang',
+          'Petani', 'Nelayan', 'Peternak', 'Buruh', 'Sopir/Driver', 'Tukang', 'Guru/Dosen', 'Tenaga Kesehatan',
+          'TKI/PMI', 'Ibu Rumah Tangga', 'Tidak Bekerja', 'Lainnya',
+          ];
 
-            $educations = [
-              'Tidak Sekolah', 'Tidak Tamat SD', 'SD/MI', 'SMP/MTs', 'SMA/MA/SMK',
-              'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3',
-            ];
+          $educations = [
+          'Tidak Sekolah', 'Tidak Tamat SD', 'SD/MI', 'SMP/MTs', 'SMA/MA/SMK',
+          'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3',
+          ];
           @endphp
 
           <!-- =================== STEP 1: PEMBAYARAN & UPLOAD SLIP =================== -->
@@ -834,13 +961,23 @@
               <div class="col-12 col-md-6">
                 <label class="form-label">Pilihan Jenjang Pendidikan <span class="text-danger">*</span></label>
                 <select name="target_stage" class="form-select" required>
-                  <option value="" disabled {{ old('target_stage') ? '' : 'selected' }}>-- Pilih Jenjang --</option>
+                  <option value="" disabled {{ old('target_stage') ? '' : 'selected' }}>
+                    -- Pilih Jenjang --
+                  </option>
+
                   @foreach($stages as $stg)
-                    <option value="{{ $stg->name }}" {{ old('target_stage') == $stg->name ? 'selected' : '' }}>{{ $stg->name }}</option>
+                  <option value="{{ $stg->name }}" {{ old('target_stage') == $stg->name ? 'selected' : '' }}>
+                    {{ $stg->name == 'SALAFIYAH WUSTHA'
+                                ? 'SALAFIYAH WUSTHA (MTs/SMP)'
+                                : ($stg->name == 'SALAFIYAH ULYA'
+                                    ? 'SALAFIYAH ULYA (MA/SMA)'
+                                    : $stg->name) }}
+                  </option>
                   @endforeach
+
                   @if($stages->isEmpty())
-                    <option value="MTS">MTS / SMP</option>
-                    <option value="MA">MA / SMA</option>
+                  <option value="MTS">MTS / SMP</option>
+                  <option value="MA">MA / SMA</option>
                   @endif
                 </select>
               </div>
@@ -953,7 +1090,7 @@
                   <select name="father_education" class="form-select">
                     <option value="">-- Pilih Pendidikan --</option>
                     @foreach($educations as $edu)
-                      <option value="{{ $edu }}" {{ old('father_education') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                    <option value="{{ $edu }}" {{ old('father_education') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -962,7 +1099,7 @@
                   <select name="father_occupation" class="form-select">
                     <option value="">-- Pilih Pekerjaan --</option>
                     @foreach($occupations as $job)
-                      <option value="{{ $job }}" {{ old('father_occupation') == $job ? 'selected' : '' }}>{{ $job }}</option>
+                    <option value="{{ $job }}" {{ old('father_occupation') == $job ? 'selected' : '' }}>{{ $job }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -999,7 +1136,7 @@
                   <select name="mother_education" class="form-select">
                     <option value="">-- Pilih Pendidikan --</option>
                     @foreach($educations as $edu)
-                      <option value="{{ $edu }}" {{ old('mother_education') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                    <option value="{{ $edu }}" {{ old('mother_education') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -1008,7 +1145,7 @@
                   <select name="mother_occupation" class="form-select">
                     <option value="">-- Pilih Pekerjaan --</option>
                     @foreach($occupations as $job)
-                      <option value="{{ $job }}" {{ old('mother_occupation') == $job ? 'selected' : '' }}>{{ $job }}</option>
+                    <option value="{{ $job }}" {{ old('mother_occupation') == $job ? 'selected' : '' }}>{{ $job }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -1048,7 +1185,7 @@
                   <select name="guardian_occupation" class="form-select">
                     <option value="">-- Pilih Pekerjaan --</option>
                     @foreach($occupations as $job)
-                      <option value="{{ $job }}" {{ old('guardian_occupation') == $job ? 'selected' : '' }}>{{ $job }}</option>
+                    <option value="{{ $job }}" {{ old('guardian_occupation') == $job ? 'selected' : '' }}>{{ $job }}</option>
                     @endforeach
                   </select>
                 </div>
@@ -1115,7 +1252,7 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
       let currentStep = 1;
       const totalSteps = 5;
 
@@ -1128,7 +1265,7 @@
         for (let i = 1; i <= totalSteps; i++) {
           const stepEl = document.getElementById('step' + i);
           const stepBtn = document.querySelector(`.psb-step[data-step="${i}"]`);
-          
+
           if (i === step) {
             stepEl.classList.remove('d-none');
             stepBtn.classList.add('active');
@@ -1153,7 +1290,10 @@
           btnSubmit.style.display = 'none';
         }
 
-        window.scrollTo({ top: document.querySelector('.card-form').offsetTop - 30, behavior: 'smooth' });
+        window.scrollTo({
+          top: document.querySelector('.card-form').offsetTop - 30
+          , behavior: 'smooth'
+        });
       }
 
       function validateStep(step) {
@@ -1204,7 +1344,7 @@
         return valid;
       }
 
-      btnNext.addEventListener('click', function () {
+      btnNext.addEventListener('click', function() {
         if (validateStep(currentStep)) {
           if (currentStep < totalSteps) {
             currentStep++;
@@ -1213,7 +1353,7 @@
         }
       });
 
-      btnPrev.addEventListener('click', function () {
+      btnPrev.addEventListener('click', function() {
         if (currentStep > 1) {
           currentStep--;
           showStep(currentStep);
@@ -1222,7 +1362,7 @@
 
       // Klik langsung ke step wizard
       document.querySelectorAll('.psb-step').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function() {
           const target = parseInt(this.getAttribute('data-step'));
           if (target < currentStep) {
             currentStep = target;
@@ -1242,6 +1382,7 @@
         input.addEventListener('change', () => input.classList.remove('is-invalid'));
       });
     });
+
   </script>
 </body>
 </html>
