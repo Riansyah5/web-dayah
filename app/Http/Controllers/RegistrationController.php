@@ -232,7 +232,7 @@ class RegistrationController extends Controller
             'payment_date' => 'nullable|date',
 
             // Data Santri & Jenjang
-            'target_stage' => 'required|string|m;ax:50',
+            'target_stage' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'gender' => 'required|in:L,P',
             'nik' => 'nullable|string|size:16',
