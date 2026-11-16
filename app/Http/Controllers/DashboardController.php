@@ -15,8 +15,8 @@ class DashboardController extends Controller
         $pegawaiLaki = Pegawai::where('jenis_kelamin', 'Laki-laki')->count();
         $pegawaiPerempuan = Pegawai::where('jenis_kelamin', 'Perempuan')->count();
         $totalSantri = Student::where('status', 'active')->count();
-        $santriLaki = Student::where('gender', 'L')->count();
-        $santriPerempuan = Student::where('gender', 'P')->count();
+        $santriLaki = Student::where('gender', 'L')->where('status', 'active')->count();
+        $santriPerempuan = Student::where('gender', 'P')->where('status', 'active')->count();
         $santriSMP = Student::where(['education_level' => 'WUSTHA', 'status' => 'active'])->count();
         $santriSMPlaki = Student::where(['education_level' => 'WUSTHA', 'gender' => 'L', 'status' => 'active'])->count();
         $santriSMPperempuan = Student::where(['education_level' => 'WUSTHA', 'gender' => 'P', 'status' => 'active'])->count();
