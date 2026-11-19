@@ -3,6 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>Bukti Pendaftaran - {{ $registration->registration_number }}</title>
+  @php
+    $logoPath = public_path('assets/images/logo_dayah.png');
+    $logoBase64 = '';
+    if (file_exists($logoPath)) {
+        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+    }
+  @endphp
   <style>
     @page {
       margin: 1.5cm;
@@ -12,6 +19,20 @@
       font-size: 10pt;
       line-height: 1.4;
       color: #222;
+    }
+    .watermark {
+      position: fixed;
+      top: 32%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 380px;
+      text-align: center;
+      opacity: 0.13;
+      z-index: -1000;
+    }
+    .watermark img {
+      width: 100%;
+      height: auto;
     }
     .header {
       border-bottom: 2px solid #222;
@@ -47,7 +68,7 @@
     }
     .reg-box {
       border: 1px solid #000;
-      background: #f7f9fa;
+      /* background: #f7f9fa; */
       padding: 8px 12px;
       margin-bottom: 15px;
       width: 100%;
@@ -110,17 +131,23 @@
 </head>
 <body>
 
+  @if($logoBase64)
+  <div class="watermark">
+    <img src="{{ $logoBase64 }}" alt="Watermark Logo Dayah">
+  </div>
+  @endif
+
   <!-- KOP SURAT -->
   <div class="header">
     <h2>PANITIA PENERIMAAN SANTRI BARU (PSB)</h2>
-    <h3>DAYAH MATAQU</h3>
-    <p>Jl. Mataqu No. 01, Aceh &bull; Email: psb@mataqu.sch.id &bull; Website: www.mataqu.sch.id</p>
+    <h3>DAYAH MATAQU UTSMAN BIN AFFAN</h3>
+    <p>Jl. Line Pipa, Desa Alue Lim, Kec. Blang Mangat, Lhokseumawe &bull; Email: psb@mataqu.sch.id &bull; Website: www.mataqu.sch.id</p>
   </div>
 
   <!-- JUDUL DOKUMEN -->
   <div class="doc-title">
     <h4>TANDA BUKTI PENDAFTARAN SANTRI BARU</h4>
-    <span style="font-size: 9pt;">Tahun Ajaran: {{ $registration->academicYear?->name ?? date('Y') . '/' . (date('Y') + 1) }}</span>
+    {{-- <span style="font-size: 9pt;">Tahun Ajaran: {{ $registration->academicYear?->name ?? date('Y') . '/' . (date('Y') + 1) }}</span> --}}
   </div>
 
   <!-- KOTAK NO REGISTRASI -->
@@ -236,10 +263,11 @@
 
   <!-- PETUNJUK & CATATAN -->
   <div class="note-box">
-    <strong>Petunjuk & Kelengkapan Berkas Seleksi:</strong>
+    <strong>Petunjuk:</strong>
+    {{-- <p> & Kelengkapan Berkas Seleksi</p> --}}
     <ul>
       <li>Simpan lembar bukti pendaftaran ini dan bawa saat verifikasi berkas dan pelaksanaan tes seleksi.</li>
-      <li>Membawa fotokopi Kartu Keluarga (KK), Akta Kelahiran, dan Ijazah / Surat Keterangan Lulus (SKL) dari sekolah asal.</li>
+      {{-- <li>Membawa fotokopi Kartu Keluarga (KK), Akta Kelahiran, dan Ijazah / Surat Keterangan Lulus (SKL) dari sekolah asal.</li> --}}
       <li>Informasi jadwal tes dan pengumuman hasil seleksi dapat dicek berkala di portal resmi: <strong>{{ url('/psb/cek-status') }}</strong>.</li>
     </ul>
   </div>
