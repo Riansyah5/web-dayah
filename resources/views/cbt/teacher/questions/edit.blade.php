@@ -263,34 +263,57 @@
 @endsection
 
 @push('scripts')
-<!-- Menggunakan CKEditor 5 Super Build -->
-<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/super-build/ckeditor.js"></script>
+@include('cbt.teacher.questions._ckeditor_mathlive_scripts')
 <script>
   let questionEditor;
 
-  // 1. Definisikan nama plugin yang dibutuhkan
-  const requiredPlugins = [
-    'Essentials', 'Paragraph', 'Heading', 'Bold', 'Italic', 
-    'Link', 'List', 'BlockQuote', 'Table', 'Undo', 'MathType'
-  ];
-
-  // 2. Ambil class/constructor aslinya dari Super Build
-  const loadedPlugins = requiredPlugins.map(pluginName => {
-    return CKEDITOR.ClassicEditor.builtinPlugins.find(plugin => plugin.pluginName === pluginName);
-  }).filter(plugin => plugin !== undefined);
-
-  // 3. Inisialisasi CKEditor
-  CKEDITOR.ClassicEditor
+  // Inisialisasi CKEditor 5 dengan Plugin Yayure/ckeditor5-mathlive
+  CKEditor5.editorClassic.ClassicEditor
     .create(document.querySelector('#q_text'), {
-      plugins: loadedPlugins, // Gunakan array class
+      plugins: [
+        CKEditor5.essentials.Essentials,
+        CKEditor5.paragraph.Paragraph,
+        CKEditor5.heading.Heading,
+        CKEditor5.basicStyles.Bold,
+        CKEditor5.basicStyles.Italic,
+        CKEditor5.link.Link,
+        CKEditor5.list.List,
+        CKEditor5.blockQuote.BlockQuote,
+        CKEditor5.table.Table,
+        CKEditor5.table.TableToolbar,
+        CKEditor5['mathlive'].Mathlive
+      ],
       toolbar: {
         items: [
           'heading', '|', 
           'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
-          'MathType', 'ChemType', '|', 
+          'mathlive', '|', 
           'blockQuote', 'insertTable', 'undo', 'redo'
         ],
         shouldNotGroupWhenFull: true
+      },
+      mathlive: {
+        renderMathPanel: function(element) {
+          let panelView = new CKEditor5['mathlive'].MathlivePanelview();
+          panelView.mount(element);
+          return () => {
+            panelView?.destroy();
+            panelView = null;
+          };
+        },
+        output: {
+          type: 'span',
+          attributes: {
+            class: 'math-tex'
+          }
+        }
+      },
+      table: {
+        contentToolbar: [
+          'tableColumn',
+          'tableRow',
+          'mergeTableCells'
+        ]
       }
     })
     .then(editor => {
