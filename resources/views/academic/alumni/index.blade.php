@@ -192,6 +192,8 @@
     }
     .iz-icon-btn:hover { filter: brightness(.94); }
     .iz-icon-btn--view { background: var(--iz-primary-light); color: var(--iz-primary-dark); }
+    .iz-icon-btn--edit { background: var(--iz-secondary-light); color: var(--iz-secondary-dark); }
+    .iz-icon-btn--restore { background: var(--iz-success-light); color: var(--iz-success); }
     .iz-icon-btn--pdf { background: var(--iz-danger-light); color: var(--iz-danger); }
     .iz-icon-btn--letter { background: var(--iz-warning-light); color: var(--iz-warning); }
 
@@ -314,6 +316,26 @@
         </div>
       </div>
     </div>
+
+    {{-- Notifikasi sukses / gagal --}}
+    @if (session('success'))
+      <div class="alert alert-success alert-dismissible fade show rounded-3 mb-3" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+      </div>
+    @endif
+    @if (session('error'))
+      <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+      </div>
+    @endif
+    @if ($errors->any())
+      <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ $errors->first() }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+      </div>
+    @endif
 
     {{-- Filter (server-side, lewat query string) --}}
     <div class="card iz-filter">
@@ -471,6 +493,28 @@
                           <i class="bi {{ $printIcon }}"></i>
                         </a>
                       @endif
+                      @canany(['kelola-kelas', 'kelola-data-santri'])
+                        <button type="button" class="iz-icon-btn iz-icon-btn--edit btn-edit-alumni"
+                          title="Edit data mutasi" aria-label="Edit data mutasi {{ $student->name }}"
+                          data-url="{{ route('alumni.update', $student->id) }}"
+                          data-name="{{ $student->name }}"
+                          data-nis="{{ $student->nis }}"
+                          data-status="{{ $student->status }}"
+                          data-exit-date="{{ $exit?->exit_date ? $exit->exit_date->format('Y-m-d') : '' }}"
+                          data-sk-number="{{ $exit->sk_number ?? '' }}"
+                          data-destination="{{ $exit->destination ?? '' }}"
+                          data-reason="{{ $exit->reason ?? '' }}"
+                          data-note="{{ $exit->note ?? '' }}">
+                          <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="iz-icon-btn iz-icon-btn--restore btn-restore-alumni"
+                          title="Kembalikan ke santri aktif" aria-label="Kembalikan {{ $student->name }} ke aktif"
+                          data-url="{{ route('alumni.restore', $student->id) }}"
+                          data-name="{{ $student->name }}"
+                          data-nis="{{ $student->nis }}">
+                          <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                      @endcanany
                     </div>
                   </td>
                 </tr>
@@ -543,6 +587,28 @@
                   </a>
                 @endif
               </div>
+              @canany(['kelola-kelas', 'kelola-data-santri'])
+                <div class="iz-alu-actions mt-2">
+                  <button type="button" class="iz-btn iz-btn--light btn-edit-alumni"
+                    data-url="{{ route('alumni.update', $student->id) }}"
+                    data-name="{{ $student->name }}"
+                    data-nis="{{ $student->nis }}"
+                    data-status="{{ $student->status }}"
+                    data-exit-date="{{ $exit?->exit_date ? $exit->exit_date->format('Y-m-d') : '' }}"
+                    data-sk-number="{{ $exit->sk_number ?? '' }}"
+                    data-destination="{{ $exit->destination ?? '' }}"
+                    data-reason="{{ $exit->reason ?? '' }}"
+                    data-note="{{ $exit->note ?? '' }}">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button type="button" class="iz-btn iz-btn--soft-ok btn-restore-alumni"
+                    data-url="{{ route('alumni.restore', $student->id) }}"
+                    data-name="{{ $student->name }}"
+                    data-nis="{{ $student->nis }}">
+                    <i class="bi bi-arrow-counterclockwise"></i> Aktifkan
+                  </button>
+                </div>
+              @endcanany
             </div>
           @endforeach
         </div>
@@ -557,6 +623,101 @@
     </div>
 
   </div>
+
+  @canany(['kelola-kelas', 'kelola-data-santri'])
+    {{-- Modal Edit Data Alumni / Mutasi --}}
+    <div class="modal fade" id="editAlumniModal" tabindex="-1" aria-labelledby="editAlumniModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+          <form id="editAlumniForm" method="POST" action="">
+            @csrf
+            @method('PUT')
+            <div class="modal-header border-bottom">
+              <div>
+                <h5 class="modal-title fw-bold mb-0" id="editAlumniModalLabel">Edit Data Mutasi / Alumni</h5>
+                <small class="text-muted" id="editAlumniSubtitle"></small>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body p-4">
+              <div class="mb-3">
+                <label for="editStatus" class="form-label fw-semibold">Status Keluar <span class="text-danger">*</span></label>
+                <select name="status" id="editStatus" class="form-select" required>
+                  <option value="graduated">Lulus (Alumni)</option>
+                  <option value="moved">Pindah (Mutasi)</option>
+                  <option value="suspended">DO / Keluar</option>
+                  <option value="deceased">Meninggal</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="editExitDate" class="form-label fw-semibold">Tanggal Keluar <span class="text-danger">*</span></label>
+                <input type="date" name="exit_date" id="editExitDate" class="form-control" required>
+              </div>
+
+              <div class="mb-3" id="editSkGroup">
+                <label for="editSkNumber" class="form-label fw-semibold">No. SK / Ijazah</label>
+                <input type="text" name="sk_number" id="editSkNumber" class="form-control" placeholder="Contoh: 012/SKL/2026">
+              </div>
+
+              <div class="mb-3" id="editDestinationGroup">
+                <label for="editDestination" class="form-label fw-semibold">Sekolah / Dayah Tujuan</label>
+                <input type="text" name="destination" id="editDestination" class="form-control" placeholder="Nama sekolah/pesantren tujuan">
+              </div>
+
+              <div class="mb-3">
+                <label for="editReason" class="form-label fw-semibold">Alasan</label>
+                <textarea name="reason" id="editReason" class="form-control" rows="2" placeholder="Alasan keluar / mutasi (opsional)"></textarea>
+              </div>
+
+              <div class="mb-0">
+                <label for="editNote" class="form-label fw-semibold">Catatan Tambahan</label>
+                <textarea name="note" id="editNote" class="form-control" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer border-top">
+              <button type="button" class="iz-btn iz-btn--light" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-primary iz-btn">
+                <i class="bi bi-save"></i> Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {{-- Modal Konfirmasi Kembalikan ke Aktif (Batal Mutasi) --}}
+    <div class="modal fade" id="restoreAlumniModal" tabindex="-1" aria-labelledby="restoreAlumniModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+          <form id="restoreAlumniForm" method="POST" action="">
+            @csrf
+            <div class="modal-header border-bottom">
+              <h5 class="modal-title fw-bold mb-0" id="restoreAlumniModalLabel">Kembalikan ke Santri Aktif</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body p-4">
+              <p class="mb-2">Apakah Anda yakin ingin membatalkan mutasi/kelulusan untuk santri berikut?</p>
+              <div class="p-3 rounded-3 bg-light border mb-3">
+                <div class="fw-bold text-dark" id="restoreStudentName"></div>
+                <div class="small text-muted" id="restoreStudentNis"></div>
+              </div>
+              <div class="small text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Status santri akan dikembalikan menjadi <strong>Aktif</strong> dan data mutasinya akan dihapus agar tidak bentrok jika dimutasi lagi di kemudian hari.
+              </div>
+            </div>
+            <div class="modal-footer border-top">
+              <button type="button" class="iz-btn iz-btn--light" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="iz-btn iz-btn--soft-ok">
+                <i class="bi bi-arrow-counterclockwise"></i> Ya, Aktifkan Kembali
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  @endcanany
 @endsection
 
 @push('scripts')
@@ -604,6 +765,50 @@
       // Tombol Export Excel di header
       $('#btnExportExcel').on('click', function () {
         table.button('.buttons-excel').trigger();
+      });
+    });
+
+    // Handler Modal Edit & Kembalikan Santri
+    document.addEventListener('DOMContentLoaded', function () {
+      const editStatusEl = document.getElementById('editStatus');
+      const editSkGroup = document.getElementById('editSkGroup');
+      const editDestinationGroup = document.getElementById('editDestinationGroup');
+
+      function toggleEditFields() {
+        if (!editStatusEl) return;
+        const val = editStatusEl.value;
+        if (editSkGroup) editSkGroup.style.display = (val === 'graduated') ? 'block' : 'none';
+        if (editDestinationGroup) editDestinationGroup.style.display = (val === 'moved') ? 'block' : 'none';
+      }
+
+      if (editStatusEl) {
+        editStatusEl.addEventListener('change', toggleEditFields);
+      }
+
+      document.querySelectorAll('.btn-edit-alumni').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.getElementById('editAlumniForm').action = this.dataset.url;
+          document.getElementById('editAlumniSubtitle').textContent = `${this.dataset.name} (NIS: ${this.dataset.nis})`;
+          document.getElementById('editStatus').value = this.dataset.status || 'graduated';
+          document.getElementById('editExitDate').value = this.dataset.exitDate || '';
+          document.getElementById('editSkNumber').value = this.dataset.skNumber || '';
+          document.getElementById('editDestination').value = this.dataset.destination || '';
+          document.getElementById('editReason').value = this.dataset.reason || '';
+          document.getElementById('editNote').value = this.dataset.note || '';
+          toggleEditFields();
+
+          new bootstrap.Modal(document.getElementById('editAlumniModal')).show();
+        });
+      });
+
+      document.querySelectorAll('.btn-restore-alumni').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.getElementById('restoreAlumniForm').action = this.dataset.url;
+          document.getElementById('restoreStudentName').textContent = this.dataset.name;
+          document.getElementById('restoreStudentNis').textContent = 'NIS: ' + this.dataset.nis;
+
+          new bootstrap.Modal(document.getElementById('restoreAlumniModal')).show();
+        });
       });
     });
   </script>

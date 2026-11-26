@@ -214,6 +214,10 @@ Route::middleware('auth')->group(function () {
   // ==========================================================
   Route::middleware(['permission:lihat-kelas|kelola-kelas'])->group(function () {
 		Route::get('/academic/alumni', [AlumniController::class, 'index'])->name('alumni.index');
+    Route::middleware(['permission:kelola-kelas|kelola-data-santri'])->group(function () {
+      Route::put('/academic/alumni/{student}', [AlumniController::class, 'update'])->name('alumni.update');
+      Route::post('/academic/alumni/{student}/restore', [AlumniController::class, 'restore'])->name('alumni.restore');
+    });
     Route::resource('academic/classrooms', ClassroomController::class);
     Route::post('academic/classrooms/{classroom}/add', [ClassroomController::class, 'addStudent'])->name('classrooms.addStudent');
     Route::delete('academic/classrooms/{classroom}/remove/{studentId}', [ClassroomController::class, 'removeStudent'])->name('classrooms.removeStudent');
