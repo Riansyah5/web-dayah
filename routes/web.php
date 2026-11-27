@@ -201,6 +201,7 @@ Route::middleware('auth')->group(function () {
   // ==========================================
   Route::middleware(['permission:kelola-psb'])->prefix('admin/registrations')->name('registrations.')->group(function () {
     Route::get('/', [RegistrationController::class, 'index'])->name('index');
+    Route::get('/export', [RegistrationController::class, 'export'])->name('export');
     Route::get('/{registration}', [RegistrationController::class, 'show'])->name('show');
     Route::put('/{registration}/status', [RegistrationController::class, 'updateStatus'])->name('update-status');
     Route::put('/{registration}/verify-payment', [RegistrationController::class, 'verifyPayment'])->name('verify-payment');

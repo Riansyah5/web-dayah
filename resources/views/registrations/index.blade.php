@@ -102,6 +102,10 @@
         <h4 class="page-title">Penerimaan Santri Baru (PSB)</h4>
       </div>
       <div class="d-flex flex-wrap align-items-center gap-2">
+        <a href="{{ route('registrations.export', request()->query()) }}" class="btn btn-success d-inline-flex align-items-center gap-2">
+          <i class="ti ti-file-spreadsheet"></i>
+          <span>Export Excel</span>
+        </a>
         <a href="{{ route('psb.register') }}" target="_blank" class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
           <i class="ti ti-external-link"></i>
           <span>Buka Form Pendaftaran</span>

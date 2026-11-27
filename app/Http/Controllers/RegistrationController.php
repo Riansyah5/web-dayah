@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RegistrationsExport;
 use App\Models\AcademicYear;
 use App\Models\Registration;
 use App\Models\Stage;
@@ -10,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RegistrationController extends Controller
 {
@@ -18,38 +20,31 @@ class RegistrationController extends Controller
      * PANEL ADMIN (KELOLA PENDAFTAR PSB)
      * ==============================================================
      */
-    public function index(Request $request)
+    /**
+     * Bangun query filter pendaftar PSB untuk index & export.
+     */
+    private function buildFilteredQuery(Request $request, ?AcademicYear $activeYear = null)
     {
-        $stages = Stage::all();
-        $academicYears = AcademicYear::orderBy('name', 'desc')->get();
-        $activeYear = AcademicYear::where('is_active', true)->first();
-
         $query = Registration::with(['academicYear', 'student']);
 
-        // Filter status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter status pembayaran
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
         }
 
-        // Filter jenjang
         if ($request->filled('stage')) {
             $query->where('target_stage', $request->stage);
         }
 
-        // Filter tahun ajaran
         if ($request->filled('academic_year_id')) {
             $query->where('academic_year_id', $request->academic_year_id);
         } elseif ($activeYear) {
-            // Default filter ke tahun ajaran aktif jika ada
             $query->where('academic_year_id', $activeYear->id);
         }
 
-        // Filter pencarian nama/no pendaftaran/NIK
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -60,7 +55,18 @@ class RegistrationController extends Controller
             });
         }
 
-        $registrations = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        return $query->orderBy('created_at', 'desc');
+    }
+
+    public function index(Request $request)
+    {
+        $stages = Stage::all();
+        $academicYears = AcademicYear::orderBy('name', 'desc')->get();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+
+        $registrations = $this->buildFilteredQuery($request, $activeYear)
+            ->paginate(15)
+            ->withQueryString();
 
         // Ringkasan metrik PSB
         $yearId = $request->academic_year_id ?: ($activeYear->id ?? null);
@@ -76,6 +82,15 @@ class RegistrationController extends Controller
         ];
 
         return view('registrations.index', compact('registrations', 'stages', 'academicYears', 'activeYear', 'stats'));
+    }
+
+    public function export(Request $request)
+    {
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $query = $this->buildFilteredQuery($request, $activeYear);
+        $filename = 'data-pendaftar-psb-' . now()->format('Ymd-His') . '.xlsx';
+
+        return Excel::download(new RegistrationsExport($query), $filename);
     }
 
     /**
